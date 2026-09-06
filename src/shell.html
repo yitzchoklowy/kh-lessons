@@ -1,0 +1,105 @@
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap">
+
+<style>
+  <!--@include partials/tokens.css-->
+  <!--@include partials/chart.css-->
+  <!--@include partials/practice.css-->
+
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+         font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .page { max-width:53rem; margin:0 auto; padding:1.8rem 1.1rem 4rem; }
+
+  header { border-bottom:1px solid var(--line); padding-bottom:1.1rem; }
+  .eyebrow { font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  h1 { font-family:var(--serif); font-weight:700; font-size:2rem; line-height:1.15; margin:.3rem 0 .4rem; }
+  h1 .heb { display:block; font-size:1.4rem; color:var(--muted); direction:rtl; text-align:left; font-weight:500; }
+  .lede { margin:0; color:var(--muted); max-width:41rem; }
+  .updown { font-size:.85rem; margin-top:.7rem; color:var(--faint); }
+  .updown a { color:var(--brass); }
+
+  h2 { font-family:var(--serif); font-size:1.28rem; font-weight:700; margin:2.2rem 0 .2rem; }
+  .sub { margin:0 0 1rem; color:var(--muted); max-width:42rem; }
+  p { margin:0 0 1rem; }
+
+  .rig { margin-top:1.3rem; background:var(--card); border:1px solid var(--line);
+         border-radius:12px; box-shadow:var(--shadow); overflow:hidden; }
+  .dials { display:grid; grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));
+           gap:1rem 1.4rem; padding:1.1rem 1.2rem; }
+  .dial { display:flex; flex-direction:column; gap:.08rem; }
+  .dial .lbl { font-family:var(--serif); font-size:1.04rem; direction:rtl; color:var(--c);
+               display:flex; align-items:center; gap:.4rem; }
+  .dial .lbl i { width:.6rem; height:.6rem; border-radius:50%; background:var(--c); flex:none; }
+  .dial .en { font-size:.73rem; color:var(--faint); }
+  .dial .val { font-family:var(--mono); font-size:1.3rem; font-weight:500; color:var(--c);
+               font-variant-numeric:tabular-nums; line-height:1.25; }
+  .dial .in { font-size:.79rem; color:var(--muted); }
+
+  .transport { border-top:1px solid var(--line); background:var(--sunk); display:flex;
+               align-items:center; gap:.4rem; flex-wrap:wrap; padding:.7rem .9rem; }
+  .transport.second { border-top:1px solid var(--hair); padding-top:.55rem; }
+  .transport button { font:inherit; font-size:.83rem; cursor:pointer; padding:.38rem .68rem;
+    background:var(--card); border:1px solid var(--line); border-radius:7px; color:var(--muted);
+    font-variant-numeric:tabular-nums; }
+  .transport button:hover { border-color:var(--brass); color:var(--ink); }
+  .transport button.run.on { border-color:var(--brass); background:var(--brass); color:var(--card); font-weight:600; }
+  .transport .gap { flex:1; }
+  .transport .tag { font-size:.72rem; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  .transport label { font-size:.77rem; color:var(--faint); display:inline-flex; align-items:center; gap:.35rem; }
+  .transport input[type=number] { font:inherit; font-family:var(--mono); font-size:.79rem; width:6.6rem;
+    color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:6px; padding:.26rem .4rem; }
+
+  .book { margin-top:1.1rem; background:var(--card); border:1px solid var(--line); border-radius:11px;
+          box-shadow:var(--shadow); padding:1rem 1.1rem 1.1rem; }
+  .book h3 { margin:0 0 .1rem; font-family:var(--serif); font-size:1.14rem; direction:rtl; color:var(--c); }
+  .book .cap { font-size:.77rem; color:var(--faint); margin:0 0 .7rem; }
+  table.led { width:100%; border-collapse:collapse; font-size:.82rem; }
+  table.led th { text-align:right; font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--faint); font-weight:600; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  table.led th:first-child { text-align:left; }
+  table.led td { padding:.25rem 0; vertical-align:baseline; }
+  table.led td.l { color:var(--muted); padding-right:.5rem; }
+  table.led td.l small { display:block; font-size:.7rem; color:var(--faint); }
+  table.led td.a, table.led td.t { text-align:right; font-family:var(--mono);
+    font-variant-numeric:tabular-nums; white-space:nowrap; }
+  table.led td.a { color:var(--ink); padding-right:.7rem; }
+  table.led td.t { color:var(--faint); }
+  table.led tr.drop td.l { color:var(--faint); font-style:italic; }
+  table.led tr.drop td.a { color:var(--faint); }
+  table.led tr.out td { border-top:1px solid var(--line); padding-top:.4rem; }
+  table.led tr.out td.l { color:var(--ink); font-weight:600; }
+  table.led tr.out td.t { color:var(--c); font-weight:500; font-size:.95rem; }
+
+  .quotes { margin-top:1.1rem; display:flex; flex-direction:column; gap:.7rem; }
+  .q { background:var(--card); border:1px solid var(--line); border-radius:10px;
+       padding:.8rem 1rem; font-size:.92rem; color:var(--muted); }
+  .q b { color:var(--ink); font-family:var(--mono); font-size:.74rem; letter-spacing:.06em;
+         display:block; margin-bottom:.22rem; }
+  .q span { font-family:var(--serif); color:var(--ink); font-size:1rem; }
+
+  .note { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); font-size:.83rem; color:var(--faint); }
+  a { color:var(--brass); }
+  :focus-visible { outline:2px solid var(--brass); outline-offset:2px; border-radius:5px; }
+</style>
+
+<div class="page" id="page"></div>
+
+<!--ENGINE-->
+
+<script>
+  <!--@include partials/zodiac.js-->
+  <!--@include partials/chart-blocks.js-->
+  <!--@include partials/chart-rows.js-->
+  <!--@include partials/practice.js-->
+  <!--@include lib/lesson.js-->
+</script>
+
+<script>
+<!--@spec-->
+</script>
+
+<script>buildLesson(LESSON);</script>

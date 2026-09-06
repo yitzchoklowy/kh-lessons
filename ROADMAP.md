@@ -4,7 +4,9 @@ Chapters 1–5 (the court, the witnesses, the procedure) are out of scope.
 What follows is one page per *thing the Rambam does*, not per numbered halacha.
 Each page names the halachos it covers and follows [CLAUDE.md](CLAUDE.md).
 
-**Done: 2 of 50.**
+**Done: 4 of 50.** Table lessons are now generated from a spec in `src/lessons/`
+through `src/shell.html` + `src/lib/lesson.js`, so a page is a description of
+which halachos, which table and which drill — not a bespoke file.
 
 Legend: `▸` ready to build now · `⚙` needs engine work first · `✎` needs a table
 the engine does not carry.
@@ -47,10 +49,10 @@ Write it, and pin it to hebcal in the tests.
 
 ## The sun — KH 12–13 ▸
 
-| # | page | halachos | chart |
-|---|---|---|---|
-| 20 | The sun's mean motion, and its blocks | 12:1 | `SUN_MEAN_PERIOD_BLOCKS` |
-| 21 | The govah, and how slowly it drifts | 12:2 | `SUN_APOGEE_PERIOD_BLOCKS` |
+| # | page | halachos | chart | status |
+|---|---|---|---|---|
+| 20 | The sun's mean motion, and its blocks | 12:1 | `SUN_MEAN_PERIOD_BLOCKS` | **done** |
+| 21 | The govah, and how slowly it drifts | 12:2 | `SUN_APOGEE_PERIOD_BLOCKS` | **done** |
 | 22 | The maslul — distance from the govah | 13:1–3 | — |
 | 23 | The correction table, and interpolating inside it | 13:4, 13:7–8 | `SUN_MASLUL_CORRECTIONS` |
 | 24 | Add or take off: אמצעי → אמיתי | 13:2, 13:5–6 | — |

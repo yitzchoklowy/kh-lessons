@@ -1,0 +1,24 @@
+  :root {
+    --bg:#e7e9ee; --card:#fbfbfd; --sunk:#eff0f4; --ink:#0f1218; --muted:#555c6b;
+    --faint:#838b9b; --line:#d1d5de; --hair:#e2e5ec; --brass:#8a6a1f;
+    --sun:#b4601c; --moon:#256b73; --mas:#8a6805;
+    --yes:#2f6a45; --no:#8c3a3a;
+    --shadow:0 1px 2px rgba(15,18,24,.05), 0 10px 30px -16px rgba(15,18,24,.28);
+    --serif:'Frank Ruhl Libre','David',Georgia,serif;
+    --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#0a0c11; --card:#13161d; --sunk:#0e1116; --ink:#e7e9f0; --muted:#99a0b0;
+      --faint:#767e8f; --line:#242a34; --hair:#1d222b; --brass:#d8b264;
+      --sun:#e8925a; --moon:#63c3cd; --mas:#dcd44e; --yes:#5fb083; --no:#d97a7a;
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0a0c11; --card:#13161d; --sunk:#0e1116; --ink:#e7e9f0; --muted:#99a0b0;
+    --faint:#767e8f; --line:#242a34; --hair:#1d222b; --brass:#d8b264;
+    --sun:#e8925a; --moon:#63c3cd; --mas:#dcd44e; --yes:#5fb083; --no:#d97a7a;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.9);
+  }

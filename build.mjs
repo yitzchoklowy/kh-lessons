@@ -36,6 +36,23 @@ fs.rmSync(R('dist'), { recursive: true, force: true });
 fs.mkdirSync(R('dist'), { recursive: true });
 
 let built = 0;
+
+// lessons: a spec file dropped into src/lessons becomes a page via the shared shell
+const shell = read('src/shell.html');
+for (const file of fs.readdirSync(R('src/lessons')).filter((f) => f.endsWith('.js'))) {
+  const spec = read(path.join('src/lessons', file));
+  const title = (spec.match(/title:\s*"([^"]+)"/) || [, file])[1];
+  let html = shell.replace('__TITLE__', title).replace('<!--@spec-->', () => spec);
+  html = include(html);
+  html = html.replace('<!--ENGINE-->', () => ENGINE_BLOCK).replace('<!--WORKING-->', () => WORKING_BLOCK);
+  const left = html.match(/<!--(?:@include|@spec|ENGINE|WORKING)[^>]*-->/);
+  if (left) throw new Error(`${file}: placeholder left unfilled — ${left[0]}`);
+  const out = file.replace(/\.js$/, '.html');
+  fs.writeFileSync(R('dist', out), html);
+  console.log(String(out).padEnd(22), (html.length / 1024).toFixed(0) + ' KB');
+  built++;
+}
+
 for (const file of fs.readdirSync(R('src/pages')).filter((f) => f.endsWith('.html'))) {
   let html = read(path.join('src/pages', file));
   html = include(html);
@@ -51,6 +68,8 @@ for (const file of fs.readdirSync(R('src/pages')).filter((f) => f.endsWith('.htm
 
 // a plain index so dist/ is browsable on its own
 const pages = [
+  ['kh12-sun-mean.html', 'KH 12:1 · The sun’s mean motion', 'One rate, one table of blocks.'],
+  ['kh12-govah.html', 'KH 12:2 · The sun’s far point', 'The govah, and how slowly it drifts.'],
   ['kh14-means.html', 'KH 14:1–4 · The two means', 'Two circles turning, and every degree accounted for.'],
   ['kh14-sun.html', 'KH 14:5–6 · The sun’s nudge', 'The nine bands as a ring of the year, and why they are what they are.'],
   ['galgalim.html', 'KH 14–16 · The four galgalim', 'The moon model built up one chapter at a time.'],
