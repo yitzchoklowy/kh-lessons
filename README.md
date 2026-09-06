@@ -18,6 +18,9 @@ engine — nothing is fetched at runtime, so a built page works offline.
 | `galgalim.html` | KH 14–16 | The four galgalim, built up one chapter at a time. |
 | `calculator.html` | KH 11–17 | All 26 astronomical steps for ליל ל׳ of any month. |
 
+The full plan — one page per concept across KH 6–19, 50 of them, 2 done — is in
+[ROADMAP.md](ROADMAP.md).
+
 ## How it fits together
 
 ```
