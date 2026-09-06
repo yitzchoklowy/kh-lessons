@@ -115,6 +115,8 @@
          display:block; margin-bottom:.22rem; }
   .q span { font-family:var(--serif); color:var(--ink); font-size:1rem; }
 
+  <!--@include partials/chart.css-->
+
   .note { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); font-size:.83rem; color:var(--faint); }
   a { color:var(--brass); }
   :focus-visible { outline:2px solid var(--brass); outline-offset:2px; border-radius:5px; }
@@ -289,6 +291,14 @@
     </div>
   </div>
 
+  <h2>The table he actually gives you</h2>
+  <p class="sub">
+    Eight bands, in his order, starting from the middle of דגים and running
+    forward through the mazalos. Read down until you reach the one the sun is
+    standing in.
+  </p>
+  <div id="chartBands" class="rchart" style="--c:var(--sunc)"></div>
+
   <div class="quotes">
     <div class="q"><b>KH 14:5</b><span>“If the sun is located between midway in the constellation of Pisces and
       midway in the constellation of Aries, the moon's mean should be left without emendation. If the sun is
@@ -338,7 +348,7 @@
   ["bands","ring","eqLine","eqA","eqB","solA","solB","sunPtr","sunBody","hubTime","hubDelta","hubBand",
    "dDays","dDate","dSun","dSunZ","dMean","dSight","dFix","ledSight","play","speed","dayIn",
    "zNaive","zFix","zNaiveT","zFixT","zGap","zGapT","zoomTicks",
-   "cGrid","cCurve","cSteps","cAxis","cSun"].forEach(function (id) { el[id] = document.getElementById(id); });
+   "cGrid","cCurve","cSteps","cAxis","cSun","chartBands"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   function P(r, deg) { var t = deg * RAD; return [CX + r * Math.cos(t), CY - r * Math.sin(t)]; }
   function put(n, x, y) { n.setAttribute("x", x.toFixed(2)); n.setAttribute("y", y.toFixed(2)); }
@@ -366,6 +376,8 @@
     for (var q = 0; q < B.length; q++) if (lon >= B[q].sunFrom && lon < B[q].sunTo) return B[q];
     return B[0];
   }
+
+  <!--@include partials/chart-bands.js-->
 
   // ── the nine bands, on a wheel ──
   (function () {
@@ -569,6 +581,9 @@
     el.zoomTicks.innerHTML = t;
   }
 
+  renderBandChart(el.chartBands, "תיקון אמצע הירח לשעת הראייה", "KH 14:5",
+    "What to do to the mean, according to where the sun stands.");
+
   function refresh() {
     var v = atDay(Math.floor(day)), band = bandFor(v.sun.result), adj = band.adjustment;
     var h = sunsetHours(v.sun.result);
@@ -583,6 +598,7 @@
         a: adj === 0 ? "0′" : (adj > 0 ? "+ " : "− ") + F(Math.abs(adj)), t: F(N(v.mean.result + adj)) },
       { l: "אמצע הירח לשעת הראייה", a: "", t: F(N(v.mean.result + adj)), out: true }
     ]);
+    traceBandChart(el.chartBands, v.sun.result, band, v.mean.result);
     if (document.activeElement !== el.dayIn) el.dayIn.value = Math.floor(day);
   }
 

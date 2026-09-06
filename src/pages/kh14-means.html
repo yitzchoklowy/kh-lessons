@@ -153,6 +153,8 @@
          display:block; margin-bottom:.22rem; }
   .q span { font-family:var(--serif); color:var(--ink); font-size:1rem; }
 
+  <!--@include partials/chart.css-->
+
   .note { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); font-size:.83rem; color:var(--faint); }
   a { color:var(--brass); }
   :focus-visible { outline:2px solid var(--brass); outline-offset:2px; border-radius:5px; }
@@ -336,6 +338,18 @@
       </div>
     </div>
 
+    <h2>The tables he actually gives you</h2>
+    <p class="sub">
+      The Rambam does not tell you to multiply. He prints a table of blocks and
+      tells you to add the ones you need. Here they are as he gives them — every
+      row, in his order, at his precision — with the rows this day count draws on
+      lit up, and what each one contributes.
+    </p>
+    <div class="rcharts">
+      <div id="chartMean" class="rchart" style="--c:var(--mean)"></div>
+      <div id="chartMas" class="rchart" style="--c:var(--mas)"></div>
+    </div>
+
     <div class="extra">
       <label class="sw"><input type="checkbox" id="swSpeed">
         Show why the moon runs fast on some days and slow on others</label>
@@ -491,7 +505,7 @@
    "dDays","dDate","dMean","dMeanZ","dMas","dSun","dSunZ","dSight","dFix",
    "ledMean","ledMas","ledSight","play","speed","dayIn","rig","tabs","swSpeed","speedBody",
    "gDot","gTxt","zNaive","zFix","zNaiveT","zFixT","zGap","zGapT","zoomTicks",
-   "bandCells","bandAxis","bandSun"].forEach(function (id) { el[id] = document.getElementById(id); });
+   "bandCells","bandAxis","bandSun","chartMean","chartMas"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   function P(r, deg) { var t = deg * RAD; return [CX + r * Math.cos(t), CY - r * Math.sin(t)]; }
   function put(node, x, y) { node.setAttribute("x", x.toFixed(2)); node.setAttribute("y", y.toFixed(2)); }
@@ -579,6 +593,8 @@
     for (var q = 0; q < B.length; q++) if (lon >= B[q].sunFrom && lon < B[q].sunTo) return B[q];
     return B[0];
   }
+
+  <!--@include partials/chart-blocks.js-->
 
   // ── the running-total ledger, the Rambam's way ──
   var BLOCKS = [["k",10000,"10,000"],["j",1000,"1,000"],["i",100,"100"],["h",10,"10"]];
@@ -761,6 +777,17 @@
     }
   }
 
+  renderBlockChart(el.chartMean, {
+    title: "מהלך אמצע הירח", ref: "KH 14:1–2",
+    note: "How far the mean moves in each block of days.",
+    blocks: CONSTANTS.MOON_MEAN_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY
+  });
+  renderBlockChart(el.chartMas, {
+    title: "מהלך אמצע המסלול", ref: "KH 14:3",
+    note: "The same, for the course round the small circle.",
+    blocks: CONSTANTS.MOON_MASLUL_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MASLUL_MEAN_MOTION
+  });
+
   function refreshBooks() {
     var v = atDay(Math.floor(day));
     paint(el.ledMean, ledger(v.mean, "MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
@@ -778,6 +805,8 @@
         a: adj === 0 ? "0′" : (adj > 0 ? "+ " : "− ") + F(Math.abs(adj)), t: F(N(v.mean.result + adj)) },
       { l: "אמצע הירח לשעת הראייה", a: "", t: F(N(v.mean.result + adj)), out: true }
     ]);
+    traceBlockChart(el.chartMean, v.mean.inputs, v.mean, "1° 14′ 43″ in שור");
+    traceBlockChart(el.chartMas, v.mas.inputs, v.mas, "84° 28′ 42″");
     if (document.activeElement !== el.dayIn) el.dayIn.value = Math.floor(day);
   }
 

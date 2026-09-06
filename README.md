@@ -38,6 +38,20 @@ and lists it if you add a row to the `pages` array in `build.mjs`.
 
 ## The rules this repo keeps
 
+Written out in full in [CLAUDE.md](CLAUDE.md), which is binding on every page
+added here. In short:
+
+- **Every chart the Rambam gives is reproduced as a static chart, laid out the
+  way he lays it out** — every row, in his order, at his precision, with his own
+  phrasing and reference.
+- **Every chart is traceable**: beside each row, what this calculation does with
+  it — which rows are drawn on, how many times, what each contributes.
+- **Chart values are read from the engine, never retyped.** `npm test` pins the
+  engine's tables against the Mishneh Torah as printed, and fails if a chart
+  partial contains a typed degree value.
+
+And the older ones:
+
 - **The engine is the authority.** Every ledger recomputes its own total and
   refuses to render if it disagrees with the engine, rather than showing a
   number the engine would not stand behind.

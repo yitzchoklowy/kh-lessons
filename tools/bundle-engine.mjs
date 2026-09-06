@@ -49,7 +49,9 @@ export function bundleEngine(engineDir) {
   return out.join('\n');
 }
 
-if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`) {
+const invokedDirectly = process.argv[1]
+  && import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`;
+if (invokedDirectly) {
   const root = path.resolve(path.dirname(new URL(import.meta.url).pathname.slice(1)), '..');
   const js = bundleEngine(path.join(root, 'src/engine'));
   fs.mkdirSync(path.join(root, 'build'), { recursive: true });
