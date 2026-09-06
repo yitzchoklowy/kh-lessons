@@ -49,6 +49,9 @@ added here. In short:
   phrasing and reference.
 - **Every chart is traceable**: beside each row, what this calculation does with
   it — which rows are drawn on, how many times, what each contributes.
+- **Every page is something you do.** Each has a drill that asks you to work the
+  calculation yourself, one piece at a time, on a fresh day each go, marked
+  against the engine.
 - **Chart values are read from the engine, never retyped.** `npm test` pins the
   engine's tables against the Mishneh Torah as printed, and fails if a chart
   partial contains a typed degree value.

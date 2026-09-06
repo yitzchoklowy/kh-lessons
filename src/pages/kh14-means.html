@@ -155,6 +155,8 @@
 
   <!--@include partials/chart.css-->
 
+  <!--@include partials/practice.css-->
+
   .note { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); font-size:.83rem; color:var(--faint); }
   a { color:var(--brass); }
   :focus-visible { outline:2px solid var(--brass); outline-offset:2px; border-radius:5px; }
@@ -350,6 +352,14 @@
       <div id="chartMas" class="rchart" style="--c:var(--mas)"></div>
     </div>
 
+    <h2>Now work one yourself</h2>
+    <p class="sub">
+      The tables are above; use them. Each piece unlocks the next, and nothing is
+      marked from a stored answer — every figure is worked out by the engine when
+      you press Check.
+    </p>
+    <div id="drillMean" class="drill" style="--c:var(--mean)"></div>
+
     <div class="extra">
       <label class="sw"><input type="checkbox" id="swSpeed">
         Show why the moon runs fast on some days and slow on others</label>
@@ -505,7 +515,7 @@
    "dDays","dDate","dMean","dMeanZ","dMas","dSun","dSunZ","dSight","dFix",
    "ledMean","ledMas","ledSight","play","speed","dayIn","rig","tabs","swSpeed","speedBody",
    "gDot","gTxt","zNaive","zFix","zNaiveT","zFixT","zGap","zGapT","zoomTicks",
-   "bandCells","bandAxis","bandSun","chartMean","chartMas"].forEach(function (id) { el[id] = document.getElementById(id); });
+   "bandCells","bandAxis","bandSun","chartMean","chartMas","drillMean"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   function P(r, deg) { var t = deg * RAD; return [CX + r * Math.cos(t), CY - r * Math.sin(t)]; }
   function put(node, x, y) { node.setAttribute("x", x.toFixed(2)); node.setAttribute("y", y.toFixed(2)); }
@@ -595,6 +605,8 @@
   }
 
   <!--@include partials/chart-blocks.js-->
+
+  <!--@include partials/practice.js-->
 
   // ── the running-total ledger, the Rambam's way ──
   var BLOCKS = [["k",10000,"10,000"],["j",1000,"1,000"],["i",100,"100"],["h",10,"10"]];
@@ -786,6 +798,49 @@
     title: "מהלך אמצע המסלול", ref: "KH 14:3",
     note: "The same, for the course round the small circle.",
     blocks: CONSTANTS.MOON_MASLUL_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MASLUL_MEAN_MOTION
+  });
+
+  // ── practice: decompose a day count and finish the mean ──
+  var BLOCK_SIZES = [["k", 10000, "10,000"], ["j", 1000, "1,000"], ["i", 100, "100"], ["h", 10, "10"]];
+  drill(el.drillMean, {
+    title: "Work out אמצע הירח", ref: "KH 14:1–2, 14:4",
+    note: "Six pieces. The Rambam's table is right above — read the rows off it.",
+    newCase: function () {
+      var d = 280000 + Math.floor(Math.random() * 60000);
+      return { day: d, step: calculateMoonMeanLongitude(d) };
+    },
+    caseLine: function (c) {
+      return "Days from the epoch: <b>" + c.day.toLocaleString() + "</b>  ·  that is " +
+        new Date(EPOCH_MS + c.day * 86400000)
+          .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) +
+        ". You start at <b>1° 14′ 43″</b> in שור.";
+    },
+    steps: BLOCK_SIZES.map(function (b, n) {
+      return {
+        ask: function (c) { return "How many whole blocks of <b>" + b[2] + " days</b> are in it" +
+          (n ? ", after the bigger blocks are taken out" : "") + "?"; },
+        type: "int",
+        answer: function (c) { return c.step.inputs[b[0]].value; },
+        hint: function () { return "Divide, and keep only the whole number — the remainder goes to the next row down."; },
+        after: function (c) {
+          var one = dmsToDecimal(CONSTANTS.MOON_MEAN_PERIOD_BLOCKS["p" + b[1]]);
+          return "That row is " + formatDms(one) + " each, so it brings " +
+            formatDms(normalizeDegrees(c.step.inputs[b[0]].value * one)) + ".";
+        }
+      };
+    }).concat([
+      { ask: function () { return "And how many single days are left over?"; },
+        type: "int",
+        answer: function (c) { return c.step.inputs.d.value; },
+        after: function (c) { return "At 13° 10′ 35″ a day, those bring " +
+          formatDms(normalizeDegrees(c.step.inputs.d.value * dmsToDecimal(CONSTANTS.MOON.MEAN_MOTION_PER_DAY))) + "."; } },
+      { ask: function () { return "Add the starting place and all five rows, drop the whole circles. What is <span dir=\"rtl\">אמצע הירח</span>?"; },
+        type: "dms",
+        answer: function (c) { return c.step.result; },
+        hint: function () { return "Start at 1° 14′ 43″ in שור — that is 31° 14′ 43″ from the beginning of טלה — then add each row above."; },
+        after: function (c) { return "Which puts it " + zodiacPosition(c.step.result).ordinalDegree +
+          "° into " + zodiacPosition(c.step.result).hebrew + "."; } }
+    ])
   });
 
   function refreshBooks() {

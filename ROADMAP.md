@@ -11,10 +11,12 @@ the engine does not carry.
 
 ## The fixed calendar — KH 6–10 ⚙
 
-All ten of these need the fixed-calendar arithmetic, which is pure integer work
-on days/hours/chalakim. `src/engine/fc-*.js` is vendored but still imports
-`hebcal`, so nothing here is buildable until that is either bundled or the
-arithmetic is written and checked against it.
+These need the fixed-calendar arithmetic — pure integer work on days, hours and
+chalakim. `hebcal` is now a dev dependency and `test/epoch-shim.test.mjs` checks
+against it, so this is not blocked on a package; it is blocked on *writing* the
+arithmetic. And it should be written rather than imported: for these chapters the
+arithmetic **is** the lesson, so calling `HDate` would be importing the answer.
+Write it, and pin it to hebcal in the tests.
 
 | # | page | halachos |
 |---|---|---|

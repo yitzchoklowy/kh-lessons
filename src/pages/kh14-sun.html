@@ -117,6 +117,8 @@
 
   <!--@include partials/chart.css-->
 
+  <!--@include partials/practice.css-->
+
   .note { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); font-size:.83rem; color:var(--faint); }
   a { color:var(--brass); }
   :focus-visible { outline:2px solid var(--brass); outline-offset:2px; border-radius:5px; }
@@ -299,6 +301,13 @@
   </p>
   <div id="chartBands" class="rchart" style="--c:var(--sunc)"></div>
 
+  <h2>Now work one yourself</h2>
+  <p class="sub">
+    The sun's place is given — it comes from chapters 12–13. Everything after it
+    is this halacha, and the table is right above.
+  </p>
+  <div id="drillSun" class="drill" style="--c:var(--sunc)"></div>
+
   <div class="quotes">
     <div class="q"><b>KH 14:5</b><span>“If the sun is located between midway in the constellation of Pisces and
       midway in the constellation of Aries, the moon's mean should be left without emendation. If the sun is
@@ -348,7 +357,7 @@
   ["bands","ring","eqLine","eqA","eqB","solA","solB","sunPtr","sunBody","hubTime","hubDelta","hubBand",
    "dDays","dDate","dSun","dSunZ","dMean","dSight","dFix","ledSight","play","speed","dayIn",
    "zNaive","zFix","zNaiveT","zFixT","zGap","zGapT","zoomTicks",
-   "cGrid","cCurve","cSteps","cAxis","cSun","chartBands"].forEach(function (id) { el[id] = document.getElementById(id); });
+   "cGrid","cCurve","cSteps","cAxis","cSun","chartBands","drillSun"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   function P(r, deg) { var t = deg * RAD; return [CX + r * Math.cos(t), CY - r * Math.sin(t)]; }
   function put(n, x, y) { n.setAttribute("x", x.toFixed(2)); n.setAttribute("y", y.toFixed(2)); }
@@ -378,6 +387,8 @@
   }
 
   <!--@include partials/chart-bands.js-->
+
+  <!--@include partials/practice.js-->
 
   // ── the nine bands, on a wheel ──
   (function () {
@@ -583,6 +594,59 @@
 
   renderBandChart(el.chartBands, "תיקון אמצע הירח לשעת הראייה", "KH 14:5",
     "What to do to the mean, according to where the sun stands.");
+
+  // ── practice: read the band off the sun, and apply it ──
+  var ACTIONS = [
+    { label: "leave it as it is", value: 0 },
+    { label: "add 15′", value: 0.25 },
+    { label: "add 30′", value: 0.5 },
+    { label: "take off 15′", value: -0.25 },
+    { label: "take off 30′", value: -0.5 }
+  ];
+  drill(el.drillSun, {
+    title: "Work out אמצע הירח לשעת הראייה", ref: "KH 14:5–6",
+    note: "Three pieces: find the band, read what it asks, and do it.",
+    newCase: function () {
+      var d = 280000 + Math.floor(Math.random() * 60000), v = atDay(d);
+      return { day: d, sun: v.sun.result, mean: v.mean.result, band: bandFor(v.sun.result) };
+    },
+    caseLine: function (c) {
+      return "The true sun stands at <b>" + formatDms(c.sun) + "</b> — " +
+        zodiacPosition(c.sun).ordinalDegree + "° into " + zodiacPosition(c.sun).hebrew +
+        ". The moon's mean is <b>" + formatDms(c.mean) + "</b>.";
+    },
+    steps: [
+      { ask: function () { return "Which of the Rambam's bands is the sun standing in?"; },
+        type: "pick",
+        choices: function () {
+          var out = [], seen = false;
+          CONSTANTS.SEASON_CORRECTIONS.forEach(function (b) {
+            if (b.sunFrom === 345 || b.sunFrom === 0) {
+              if (seen) return; seen = true;
+              out.push({ label: "345°–15°", value: 345 });
+            } else out.push({ label: b.sunFrom + "°–" + b.sunTo + "°", value: b.sunFrom });
+          });
+          return out.sort(function (a, b) { return a.value - b.value; });
+        },
+        answer: function (c) { return (c.band.sunFrom === 0 ? 345 : c.band.sunFrom); },
+        hint: function (c) { return "The sun is at " + Math.floor(c.sun) + "°. Read down the table until a band contains it."; },
+        after: function (c) { return c.band.sourcePhrase; } },
+
+      { ask: function () { return "So what does that band tell you to do to the mean?"; },
+        type: "pick",
+        choices: function () { return ACTIONS; },
+        answer: function (c) { return c.band.adjustment; },
+        hint: function () { return "Sunset later than six means the moon has gone further; earlier means less far."; },
+        after: function (c) { return "Because sunset there falls at about " +
+          clock(sunsetHours(c.sun)) + ", against six o'clock."; } },
+
+      { ask: function () { return "Do it. What is <span dir=\"rtl\">אמצע הירח לשעת הראייה</span>?"; },
+        type: "dms",
+        answer: function (c) { return normalizeDegrees(c.mean + c.band.adjustment); },
+        hint: function (c) { return "Take " + formatDms(c.mean) + " and apply what you just chose."; },
+        after: function () { return "That is the figure chapter 15 picks up."; } }
+    ]
+  });
 
   function refresh() {
     var v = atDay(Math.floor(day)), band = bandFor(v.sun.result), adj = band.adjustment;

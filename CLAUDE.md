@@ -42,24 +42,43 @@ needs a value the engine does not expose, add it to the engine bundle's surface
 printed in the Mishneh Torah. If a refresh from upstream changes a number, that
 test fires before any page ships.
 
-## 4. The engine is the authority
+## 4. Every page is something you do, not something you watch
+
+A page is not finished when it explains a calculation. It is finished when a
+reader can **work that calculation themselves**, piece by piece, and be told
+whether they got it right.
+
+Use the shared drill (`src/partials/practice.js`). Its rules:
+
+- **One piece at a time.** Steps unlock in order, so nothing is asked before the
+  thing it rests on has been settled.
+- **A fresh case each time.** "Another day" picks a new day count, so the answers
+  cannot be memorised — the reader has to actually use the table.
+- **Answers come from the engine at check time**, never stored in the page. A
+  drill cannot drift from the lesson above it.
+- **Being wrong teaches.** Say the right answer, how far off they were, and what
+  the figure means. "Show me" gives a hint first, the answer second.
+- **The reader's own units.** Degrees, minutes and seconds — the way the Rambam
+  writes them — not decimals.
+
+## 5. The engine is the authority
 
 Any arithmetic a page performs itself must be checked against the engine at
 runtime and must **hide itself rather than display a figure the engine would not
 stand behind**. See `traceBlockChart` and the ledger in `src/lib/working.js`.
 
-## 5. Nothing invented, and say when it is not his
+## 6. Nothing invented, and say when it is not his
 
 Where a page shows something the Rambam does not compute — the sunset curve on
 the KH 14:5 page, the sight line on the KH 14:1 page — it says so on the page,
 names whose arithmetic it is, and states the size of the divergence.
 
-## 6. One halacha per page
+## 7. One halacha per page
 
 If a page needs a result from an earlier chapter, it says where it came from and
 links the page that derives it. A page does not quietly borrow.
 
-## 7. Every chart gets the same transport
+## 8. Every chart gets the same transport
 
 Step by day, and **watch one day / one month / one year**. Same control, same
 place, every page.

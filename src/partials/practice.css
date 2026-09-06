@@ -1,0 +1,53 @@
+  /* ── practice: work the Rambam's calculation yourself, piece by piece ── */
+  .drill { margin-top:1.1rem; background:var(--card); border:1px solid var(--line);
+           border-radius:11px; box-shadow:var(--shadow); padding:1rem 1.1rem 1.1rem; }
+  .drill .dr-head { display:flex; align-items:baseline; justify-content:space-between; gap:.6rem; }
+  .drill h3 { margin:0; font-family:var(--serif); font-size:1.16rem; color:var(--c); }
+  .drill .dr-ref { font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; color:var(--faint); }
+  .drill .dr-note { margin:.15rem 0 .9rem; font-size:.8rem; color:var(--faint); }
+  .drill .dr-case { font-size:.88rem; color:var(--muted); background:var(--sunk);
+                    border:1px solid var(--hair); border-radius:8px; padding:.6rem .8rem; margin-bottom:.9rem; }
+  .drill .dr-case b { color:var(--ink); font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  .dr-step { border-top:1px solid var(--hair); padding:.75rem 0 .1rem; }
+  .dr-step:first-of-type { border-top:0; padding-top:0; }
+  .dr-step[data-state="locked"] { opacity:.35; pointer-events:none; }
+  .dr-ask { display:flex; gap:.55rem; align-items:baseline; font-size:.97rem; }
+  .dr-n { font-family:var(--mono); font-size:.78rem; color:var(--faint); flex:none; padding-top:.15rem; }
+  .dr-ask .dr-q { color:var(--ink); }
+  .dr-ask .dr-q b { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  .dr-row { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin:.55rem 0 0 1.6rem; }
+  .dr-row input { font:inherit; font-family:var(--mono); font-size:.9rem; color:var(--ink);
+                  background:var(--sunk); border:1px solid var(--line); border-radius:6px;
+                  padding:.32rem .45rem; width:4.6rem; text-align:right; }
+  .dr-row input.wide { width:7.5rem; }
+  .dr-row .unit { color:var(--faint); font-size:.85rem; margin-right:.35rem; }
+  .dr-row button { font:inherit; font-size:.83rem; cursor:pointer; padding:.34rem .8rem;
+                   border-radius:7px; border:1px solid var(--line); background:var(--card); color:var(--muted); }
+  .dr-row button.check { border-color:var(--c); color:var(--c); font-weight:600; }
+  .dr-row button:hover { border-color:var(--c); color:var(--ink); }
+  .dr-row button.pick { font-family:var(--serif); font-size:.92rem; }
+  .dr-row button.pick[aria-pressed="true"] { border-color:var(--c); background:var(--c); color:var(--card); }
+
+  .dr-say { margin:.5rem 0 .2rem 1.6rem; font-size:.88rem; }
+  .dr-say.ok { color:var(--yes,#2f6a45); }
+  .dr-say.near { color:var(--brass); }
+  .dr-say.no { color:var(--no,#8c3a3a); }
+  .dr-say.told { color:var(--muted); }
+  .dr-say b { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .dr-say .why { display:block; color:var(--muted); margin-top:.2rem; }
+  @media (prefers-color-scheme:dark) {
+    :root:not([data-theme="light"]) .dr-say.ok { color:#5fb083; }
+    :root:not([data-theme="light"]) .dr-say.no { color:#d97a7a; }
+  }
+  :root[data-theme="dark"] .dr-say.ok { color:#5fb083; }
+  :root[data-theme="dark"] .dr-say.no { color:#d97a7a; }
+
+  .dr-foot { display:flex; align-items:center; gap:.6rem; margin-top:1rem;
+             padding-top:.8rem; border-top:1px solid var(--line); }
+  .dr-foot button { font:inherit; font-size:.84rem; cursor:pointer; padding:.4rem .85rem;
+                    border-radius:7px; border:1px solid var(--line); background:var(--card); color:var(--ink); }
+  .dr-foot button:hover { border-color:var(--c); }
+  .dr-foot .score { margin-left:auto; font-size:.8rem; color:var(--faint);
+                    font-family:var(--mono); font-variant-numeric:tabular-nums; }

@@ -10,5 +10,8 @@
     "dev": "node build.mjs && node tools/serve.mjs",
     "test": "node --test test/"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "hebcal": "^2.3.2"
+  }
 }
