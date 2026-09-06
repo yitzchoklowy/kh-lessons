@@ -1,16 +1,13 @@
 var LESSON = {
   ch: "12:1", heb: "מהלך אמצע השמש", title: "The sun's mean motion",
-  lede: "One rate and one table. The sun moves a hair under a degree a day, always the " +
-        "same amount — and the Rambam hands you a table of blocks so you never have to " +
-        "multiply by a day count.",
+  lede: "0° 59′ 8⅓″ a day, and a table of blocks.",
   next: { href: "kh12-govah.html", label: "the govah, KH 12:2" },
   step: function (d) { return calculateSunMeanLongitude(d); },
   dials: [
     { heb: "אמצע השמש", en: "the mean sun — where an evenly-moving sun would be",
       colour: "--sun", zodiac: true, value: function (d, st) { return st.result; } }
   ],
-  chartsNote: "Every row he lists, in his order. The ones this day count draws on are lit, " +
-              "with how many times each is taken and what it brings.",
+  chartsNote: "The rows this day count draws on are lit.",
   charts: [{
     type: "blocks", colour: "--sun",
     title: "מהלך אמצע השמש", ref: "KH 12:1",
@@ -26,7 +23,7 @@ var LESSON = {
   drill: {
     colour: "--sun",
     title: "Work out אמצע השמש", ref: "KH 12:1–2",
-    note: "Six pieces. His table is right above — read the rows off it.",
+    note: "Read the rows off the table above.",
     newCase: function () {
       var d = 280000 + Math.floor(Math.random() * 60000);
       return { day: d, step: calculateSunMeanLongitude(d) };
@@ -44,6 +41,4 @@ var LESSON = {
     { ref: "KH 12:2", text: "“The position of the sun's mean on Wednesday night, the third of Nisan 4938 … " +
       "was 7 degrees, 3 minutes and 32 seconds in the constellation of Aries.”" }
   ],
-  note: "Chapter 12 stops here — this sun is where the tables say, not where you would point. " +
-        "Chapter 13 corrects it."
 };

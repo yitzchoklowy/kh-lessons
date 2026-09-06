@@ -165,14 +165,9 @@
 <div class="page">
 
   <header>
-    <div class="eyebrow">Rambam · Hilchos Kiddush HaChodesh — chapter 14, and nothing else</div>
+    <div class="eyebrow">Rambam · Hilchos Kiddush HaChodesh 14:1–4</div>
     <h1><span class="heb">אמצע הירח ואמצע המסלול</span>Chapter fourteen, turning</h1>
-    <p class="lede">
-      The chapter does two separate things. This page is the first of them, and
-      nothing else: the two means, from the Rambam's own tables. The sun does not
-      appear here at all — it gets
-      <a href="https://claude.ai/code/artifact/1fca4103-1eec-4ef3-8290-1d82fbf1a2eb">a page of its own</a>.
-    </p>
+    <p class="lede">שני אמצעים — the two means, from his tables.</p>
   </header>
 
   <div class="rig" id="rig" data-step="1">
@@ -225,7 +220,7 @@
           <text id="farLbl" font-size="9.5" fill="var(--mas)" fill-opacity=".9" text-anchor="middle">0°</text>
           <path id="arcMas" fill="none" stroke="var(--mas)" stroke-width="1.7" stroke-opacity=".95"
                 stroke-dasharray="4 3" marker-end="url(#tipMas)"></path>
-          <line id="sightLine" hidden x1="310" y1="372" x2="523" y2="372" stroke="var(--ink)" stroke-width="1.4"></line>
+          <line id="sightLine" x1="310" y1="372" x2="523" y2="372" stroke="var(--ink)" stroke-width="1.5"></line>
           <use id="moonBody" href="#gMoon" x="0" y="0"></use>
           <use id="sunBody" class="p2" href="#gSun" x="0" y="0"></use>
 
@@ -247,7 +242,7 @@
           </g>
 
           <text x="310" y="684" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".45" id="scaleNote">
-            The small circle is drawn far larger than life. Both angles on screen are the numbers on the right.
+            Small circle drawn larger than life.
           </text>
         </svg>
       </div>
@@ -315,11 +310,7 @@
   <!-- ══════════ STEP 1 ══════════ -->
   <div class="panel p1">
     <h2>Step one — the two means, and nothing else</h2>
-    <p class="sub">
-      Chapter 14 asks for two numbers and gives you two tables to get them. No sun,
-      no corrections, no sighting: only where the big circle has carried the small
-      one, and how far round the small one the moon has gone.
-    </p>
+    <p class="sub">Two numbers, two tables.</p>
 
     <div class="books">
       <div class="book m">
@@ -341,37 +332,23 @@
     </div>
 
     <h2>The tables he actually gives you</h2>
-    <p class="sub">
-      The Rambam does not tell you to multiply. He prints a table of blocks and
-      tells you to add the ones you need. Here they are as he gives them — every
-      row, in his order, at his precision — with the rows this day count draws on
-      lit up, and what each one contributes.
-    </p>
+    <p class="sub">Add the rows you need. The ones in use are lit.</p>
     <div class="rcharts">
       <div id="chartMean" class="rchart" style="--c:var(--mean)"></div>
       <div id="chartMas" class="rchart" style="--c:var(--mas)"></div>
     </div>
 
     <h2>Now work one yourself</h2>
-    <p class="sub">
-      The tables are above; use them. Each piece unlocks the next, and nothing is
-      marked from a stored answer — every figure is worked out by the engine when
-      you press Check.
-    </p>
+    <p class="sub">Read the rows off the tables above.</p>
     <div id="drillMean" class="drill" style="--c:var(--mean)"></div>
 
     <div class="extra">
       <label class="sw"><input type="checkbox" id="swSpeed">
         Show why the moon runs fast on some days and slow on others</label>
       <div class="body" id="speedBody" hidden>
-        <p>
-          The small circle is now at its <b>true proportion</b> — its radius is 5° of
-          the big circle, the model's own figure — and a solid line runs from the
-          earth <b>through the moon itself</b>. Watch it swing ahead of and behind the
-          dashed mean line.
-        </p>
-        <div class="gauge">
-          <svg viewBox="0 0 620 74" role="img" aria-label="Today's apparent motion against the slowest and fastest days.">
+        <p>The small circle is at its true proportion — radius 5° of the big one —
+        and the line runs through the moon.</p>
+        <div class="gauge"><svg viewBox="0 0 620 74" role="img" aria-label="Today's apparent motion against the slowest and fastest days.">
             <line x1="40" y1="42" x2="580" y2="42" stroke="currentColor" stroke-opacity=".25"></line>
             <line x1="40" y1="34" x2="40" y2="50" stroke="currentColor" stroke-opacity=".35"></line>
             <line x1="580" y1="34" x2="580" y2="50" stroke="currentColor" stroke-opacity=".35"></line>
@@ -382,8 +359,12 @@
             <circle id="gDot" cx="316" cy="42" r="6" fill="var(--ink)"></circle>
             <text id="gTxt" x="316" y="66" font-size="12" text-anchor="middle" fill="var(--ink)"
                   font-family="IBM Plex Mono, monospace"></text>
-          </svg>
-        </div>
+          </svg></div>
+        <p>Both circles turn evenly. The angle from the earth does not:
+        <b>12° 7′ 51″</b> to <b>14° 25′ 13″</b> in a day, never more than
+        <b>5°</b> from the mean. <em>not his — geometry of these two circles;
+        his table is KH 15:6, which parts from it by up to 1° 23′.</em></p>
+      </div>
         <p>
           Both circles turn perfectly evenly. What is <em>not</em> even is the angle
           you see them at from the earth: near the far point of the small circle the
@@ -735,17 +716,18 @@
     var ft = P(R_PTR, sight);
     el.ptrFix.setAttribute("x2", ft[0].toFixed(2)); el.ptrFix.setAttribute("y2", ft[1].toFixed(2));
 
+    var moonDir = Math.atan2(CY - Mo[1], Mo[0] - CX) / RAD;
+    var lp = P(R_PTR, moonDir);
+    el.sightLine.setAttribute("x2", lp[0].toFixed(2)); el.sightLine.setAttribute("y2", lp[1].toFixed(2));
+
     if (trueScale) {
-      var la = sightAngle(mean, mas), lp = P(R_PTR, la);
-      el.sightLine.hidden = false;
-      el.sightLine.setAttribute("x2", lp[0].toFixed(2)); el.sightLine.setAttribute("y2", lp[1].toFixed(2));
       var rate = ((sightAngle(b.mean.result, b.mas.result) - sightAngle(a.mean.result, a.mas.result) + 540) % 360) - 180;
       var lo = 12 + 7 / 60 + 51 / 3600, hi = 14 + 25 / 60 + 13 / 3600;
       var x = 40 + Math.max(0, Math.min(1, (rate - lo) / (hi - lo))) * 540;
       el.gDot.setAttribute("cx", x.toFixed(1));
       el.gTxt.setAttribute("x", Math.max(96, Math.min(524, x)).toFixed(1));
       el.gTxt.textContent = F(rate) + " today";
-    } else { el.sightLine.hidden = true; }
+    }
 
     var z = zodiacPosition(mean), zs = zodiacPosition(sun);
     el.dDays.textContent = n.toLocaleString();
@@ -904,8 +886,8 @@
 
   function setNote() {
     el.scaleNote.textContent = trueScale
-      ? "Everything is at the model's own proportions now — the small circle's radius is " + KATAN_DEG + "° of the big one."
-      : "The small circle is drawn far larger than life. Both angles on screen are the numbers on the right.";
+      ? "True proportion: the small circle's radius is " + KATAN_DEG + "° of the big one."
+      : "Small circle drawn larger than life.";
   }
   function setStep(s) {
     step = s;

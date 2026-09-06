@@ -67,16 +67,24 @@ Any arithmetic a page performs itself must be checked against the engine at
 runtime and must **hide itself rather than display a figure the engine would not
 stand behind**. See `traceBlockChart` and the ledger in `src/lib/working.js`.
 
-## 6. Nothing invented, and say when it is not his
+## 6. His words, not yours
 
-Where a page shows something the Rambam does not compute — the sunset curve on
-the KH 14:5 page, the sight line on the KH 14:1 page — it says so on the page,
-names whose arithmetic it is, and states the size of the divergence.
+Use the Rambam's own terms, in Hebrew. Gloss a term once, in three or four
+words, and never again. Illustrate instead of explaining: a drawn thing needs no
+paragraph under it.
+
+**Never write about what the page is not doing.** No "chapter 14 stops here",
+no "this is not yet where you would point", no "the next chapter will…". The
+reader is on this page; tell them what is on it.
+
+Anything not the Rambam's own carries a short label — `not his` — and a figure.
+Not a paragraph.
+
+Cut every sentence that survives its own deletion.
 
 ## 7. One halacha per page
 
-If a page needs a result from an earlier chapter, it says where it came from and
-links the page that derives it. A page does not quietly borrow.
+A page that needs an earlier result links the page that derives it. One line.
 
 ## 8. Every chart gets the same transport
 
