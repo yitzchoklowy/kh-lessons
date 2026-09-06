@@ -1,0 +1,685 @@
+<title>The Moon's Four Galgalim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --bg:    #e7e9ee;
+    --card:  #fbfbfd;
+    --sunk:  #eff0f4;
+    --ink:   #0f1218;
+    --muted: #555c6b;
+    --faint: #838b9b;
+    --line:  #d1d5de;
+    --hair:  #e2e5ec;
+    --brass: #8a6a1f;
+    --sun:   #a8501c;
+    /* Rabbi Losh's four colours, tuned to hold contrast on a light ground */
+    --red:   #b23b3b;
+    --blue:  #2f6fae;
+    --green: #2c8340;
+    --gold:  #8d6f05;
+    --shadow: 0 1px 2px rgba(15,18,24,.05), 0 10px 30px -16px rgba(15,18,24,.28);
+    --serif: 'Frank Ruhl Libre', 'David', Georgia, serif;
+    --sans:  'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --mono:  'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:    #0a0c11;
+      --card:  #13161d;
+      --sunk:  #0e1116;
+      --ink:   #e7e9f0;
+      --muted: #99a0b0;
+      --faint: #767e8f;
+      --line:  #242a34;
+      --hair:  #1d222b;
+      --brass: #d8b264;
+      --sun:   #e18c52;
+      --red:   #e07070;
+      --blue:  #74acdf;
+      --green: #63c072;
+      --gold:  #dcd44e;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:    #0a0c11;
+    --card:  #13161d;
+    --sunk:  #0e1116;
+    --ink:   #e7e9f0;
+    --muted: #99a0b0;
+    --faint: #767e8f;
+    --line:  #242a34;
+    --hair:  #1d222b;
+    --brass: #d8b264;
+    --sun:   #e18c52;
+    --red:   #e07070;
+    --blue:  #74acdf;
+    --green: #63c072;
+    --gold:  #dcd44e;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.9);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); font-size: 16px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 50rem; margin: 0 auto; padding: 2rem 1.1rem 4rem; }
+
+  header { border-bottom: 1px solid var(--line); padding-bottom: 1.2rem; }
+  .eyebrow {
+    font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--faint); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: 2.05rem;
+    line-height: 1.15; margin: .3rem 0 .4rem; text-wrap: balance;
+  }
+  h1 .heb { display: block; font-size: 1.45rem; color: var(--muted); direction: rtl; text-align: left; font-weight: 500; }
+  .lede { margin: 0; color: var(--muted); font-size: 1.05rem; max-width: 40rem; }
+
+  h2 {
+    font-family: var(--serif); font-size: 1.32rem; font-weight: 700;
+    margin: 2.6rem 0 .2rem; text-wrap: balance;
+  }
+  .sub { margin: 0 0 1.1rem; color: var(--muted); max-width: 42rem; }
+  p { margin: 0 0 1rem; }
+
+  /* ─────────── the staged figure ─────────── */
+  .build {
+    margin: 1.4rem 0 0; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; box-shadow: var(--shadow); overflow: hidden;
+  }
+  .chapters { display: flex; border-bottom: 1px solid var(--line); }
+  .chapters button {
+    flex: 1; font: inherit; cursor: pointer; background: transparent; border: 0;
+    padding: .7rem .5rem .6rem; color: var(--muted); text-align: center;
+    border-right: 1px solid var(--line); line-height: 1.3;
+  }
+  .chapters button:last-child { border-right: 0; }
+  .chapters button .ch {
+    display: block; font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--faint);
+  }
+  .chapters button .nm { display: block; font-size: .92rem; }
+  .chapters button.on { background: var(--sunk); color: var(--ink); }
+  .chapters button.on .nm { font-weight: 600; }
+  .chapters button.on .ch { color: var(--stage-c); }
+  .chapters button:hover:not(.on) { color: var(--ink); }
+
+  .plate { padding: 1.2rem 1rem .4rem; }
+  .plate svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .edgeon { margin-top: .2rem; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: .4rem .9rem; justify-content: center;
+    padding: .2rem 1rem .9rem; font-size: .8rem; color: var(--muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: .35rem; }
+  .legend i { width: .62rem; height: .62rem; border-radius: 50%; display: inline-block; }
+
+  .say {
+    border-top: 1px solid var(--line); background: var(--sunk);
+    padding: 1.1rem 1.2rem 1.2rem; display: flex; flex-direction: column; gap: .7rem;
+  }
+  .say .quote {
+    font-family: var(--serif); font-size: 1.05rem; line-height: 1.5; color: var(--ink);
+    border-left: 2px solid var(--stage-c); padding-left: .9rem; margin: 0;
+  }
+  .say .quote cite { display: block; font-size: .78rem; font-style: normal; color: var(--faint); font-family: var(--sans); margin-top: .3rem; }
+  .say p { margin: 0; color: var(--muted); font-size: .96rem; }
+  .say p b { color: var(--ink); font-weight: 600; }
+  .gained {
+    display: flex; flex-wrap: wrap; gap: .4rem;
+    padding-top: .2rem;
+  }
+  .gained b {
+    font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--faint); font-weight: 600; align-self: center; margin-right: .2rem;
+  }
+  .gained em {
+    font-style: normal; font-family: var(--serif); font-size: .95rem; direction: rtl;
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: .15rem .7rem; color: var(--ink);
+  }
+
+  .steps { display: flex; gap: .7rem; padding: 0 1.2rem 1.2rem; background: var(--sunk); }
+  .steps button {
+    flex: 1; font: inherit; font-size: .88rem; cursor: pointer; padding: .55rem .9rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px; color: var(--muted);
+  }
+  .steps button:hover:not(:disabled) { border-color: var(--stage-c); color: var(--ink); }
+  .steps button:disabled { opacity: .35; cursor: default; }
+  .steps button.fwd { border-color: var(--stage-c); color: var(--stage-c); font-weight: 600; }
+
+  /* stage gating */
+  .build { --stage-c: var(--gold); }
+  .build[data-stage="2"] { --stage-c: var(--green); }
+  .build[data-stage="3"] { --stage-c: var(--blue); }
+  .build[data-stage="1"] .from-2,
+  .build[data-stage="1"] .from-3,
+  .build[data-stage="2"] .from-3 { display: none; }
+  .build[data-stage="2"] .only-1,
+  .build[data-stage="3"] .only-1 { display: none; }
+  .say > .s { display: none; }
+  .build[data-stage="1"] .say > .s1,
+  .build[data-stage="2"] .say > .s2,
+  .build[data-stage="3"] .say > .s3 { display: contents; }
+
+  figure {
+    margin: 1.4rem 0; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; box-shadow: var(--shadow); padding: 1.1rem 1rem .9rem;
+    overflow-x: auto;
+  }
+  figure svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  figcaption {
+    margin-top: .8rem; padding-top: .7rem; border-top: 1px solid var(--hair);
+    font-size: .88rem; color: var(--muted);
+  }
+  figcaption b { color: var(--ink); font-weight: 600; }
+
+  .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+  .g {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: .45rem;
+  }
+  .g .top { display: flex; align-items: center; gap: .55rem; }
+  .g .dot { width: .7rem; height: .7rem; border-radius: 50%; flex: none; background: var(--c); }
+  .g .heb { font-family: var(--serif); font-size: 1.22rem; direction: rtl; color: var(--c); }
+  .g .tl { font-size: .8rem; color: var(--faint); font-style: italic; }
+  .g .why { margin: 0; font-size: .94rem; color: var(--muted); }
+  .g .why b { color: var(--ink); font-weight: 600; }
+  .g dl { margin: .2rem 0 0; display: grid; grid-template-columns: auto 1fr; gap: .1rem .7rem; font-size: .83rem; }
+  .g dt { color: var(--faint); }
+  .g dd { margin: 0; font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .g.red { --c: var(--red); } .g.blue { --c: var(--blue); }
+  .g.green { --c: var(--green); } .g.gold { --c: var(--gold); }
+
+  table.map { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  table.map th {
+    text-align: left; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--faint); font-weight: 600; padding: 0 .5rem .4rem 0; border-bottom: 1px solid var(--line);
+  }
+  table.map td { padding: .55rem .5rem; border-bottom: 1px solid var(--hair); vertical-align: top; }
+  table.map td:first-child, table.map th:first-child { padding-left: 0; }
+  table.map td.who { white-space: nowrap; font-family: var(--serif); font-size: 1.05rem; direction: rtl; }
+  table.map td.ref { font-family: var(--mono); font-size: .8rem; color: var(--faint); white-space: nowrap; }
+  table.map td.what { color: var(--muted); }
+  table.map td.what b { color: var(--ink); font-weight: 600; }
+
+  .note {
+    margin-top: 2.4rem; padding-top: 1rem; border-top: 1px solid var(--line);
+    font-size: .84rem; color: var(--faint);
+  }
+  a { color: var(--brass); }
+  .cta {
+    display: inline-block; font-weight: 600; font-size: .95rem;
+    color: var(--brass); text-decoration: none; border-bottom: 1px solid currentColor;
+  }
+  :focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+
+  <header>
+    <div class="eyebrow">Rambam · Hilchos Kiddush HaChodesh 14 – 16</div>
+    <h1><span class="heb">ארבעת גלגלי הירח</span>The moon's four galgalim</h1>
+    <p class="lede">
+      The sun took two galgalim. The moon takes four — but not all at once. The
+      Rambam hands them to you one chapter at a time, and each new circle exists
+      to fix something the last picture got wrong. Start with chapter 14 and add.
+    </p>
+  </header>
+
+  <div class="build" id="build" data-stage="1">
+
+    <div class="chapters" id="chapters">
+      <button type="button" data-s="1" class="on"><span class="ch">KH 14</span><span class="nm">Two circles</span></button>
+      <button type="button" data-s="2"><span class="ch">KH 15</span><span class="nm">Off centre, and the sun</span></button>
+      <button type="button" data-s="3"><span class="ch">KH 16</span><span class="nm">The tilt</span></button>
+    </div>
+
+    <div class="plate">
+      <svg viewBox="0 0 700 500" role="img" id="faceon"
+           aria-label="The moon's galgalim seen face-on, built up chapter by chapter: a large circle around the earth carrying a small circle the moon sits on; then the large circle shown off-centre with its far point, and the sun on the belt; then the red and blue galgalim added outside it.">
+        <defs>
+          <marker id="a-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--gold)"></path>
+          </marker>
+          <marker id="a-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--green)"></path>
+          </marker>
+          <marker id="a-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--red)"></path>
+          </marker>
+          <marker id="a-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path>
+          </marker>
+        </defs>
+
+        <!-- the belt of mazalos: the thing every position is read against -->
+        <circle cx="320" cy="300" r="214" fill="none" stroke="currentColor" stroke-opacity=".3"
+                stroke-width="1" stroke-dasharray="3 4"></circle>
+        <text x="546" y="306" font-size="12" fill="currentColor" fill-opacity=".6">קו המזלות</text>
+        <text x="546" y="321" font-size="10.5" fill="currentColor" fill-opacity=".42">what you read the answer off</text>
+
+        <!-- ════ KH 16: the two outer galgalim ════ -->
+        <g class="from-3">
+          <circle cx="320" cy="300" r="196" fill="none" stroke="var(--red)" stroke-width="2"></circle>
+          <circle cx="320" cy="300" r="172" fill="none" stroke="var(--blue)" stroke-width="2"></circle>
+          <line x1="124" y1="300" x2="80" y2="272" stroke="var(--red)" stroke-width="1" stroke-opacity=".55"></line>
+          <text x="76" y="268" font-size="12.5" text-anchor="end" fill="var(--red)">גלגל דומה</text>
+          <text x="76" y="283" font-size="10.5" text-anchor="end" fill="var(--red)" fill-opacity=".8">lies on the belt</text>
+          <line x1="148" y1="300" x2="86" y2="336" stroke="var(--blue)" stroke-width="1" stroke-opacity=".55"></line>
+          <text x="82" y="340" font-size="12.5" text-anchor="end" fill="var(--blue)">גלגל נוטה</text>
+          <text x="82" y="355" font-size="10.5" text-anchor="end" fill="var(--blue)" fill-opacity=".8">tilted 5° off it</text>
+          <path d="M 196 428 A 196 196 0 0 1 156 358" fill="none" stroke="var(--red)"
+                stroke-width="2.5" marker-end="url(#a-red)"></path>
+          <text x="206" y="446" font-size="12" fill="var(--red)">11° 12′ a day, east → west</text>
+        </g>
+
+        <!-- ════ KH 14: the large circle, centred on the earth ════ -->
+        <g class="only-1">
+          <circle cx="320" cy="300" r="132" fill="none" stroke="currentColor" stroke-opacity=".75" stroke-width="2"></circle>
+          <line x1="188" y1="300" x2="128" y2="266" stroke="currentColor" stroke-opacity=".5" stroke-width="1"></line>
+          <text x="124" y="262" font-size="12.5" text-anchor="end" fill="currentColor">גלגל גדול</text>
+          <text x="124" y="277" font-size="10.5" text-anchor="end" fill="currentColor" fill-opacity=".6">goes round the earth</text>
+          <path d="M 232 392 A 132 132 0 0 0 320 432" fill="none" stroke="currentColor"
+                stroke-width="2" marker-end="url(#a-ink)"></path>
+          <text x="330" y="437" font-size="12" fill="currentColor" fill-opacity=".8">13° 10′ 35″ a day</text>
+          <!-- katan, centred version -->
+          <circle cx="320" cy="168" r="36" fill="none" stroke="var(--gold)" stroke-width="2"></circle>
+          <circle cx="320" cy="168" r="2.5" fill="var(--gold)"></circle>
+          <circle cx="299.4" cy="197.5" r="6" fill="var(--ink)"></circle>
+          <line x1="320" y1="300" x2="320" y2="86" stroke="currentColor" stroke-opacity=".5"
+                stroke-width="1" stroke-dasharray="4 3"></line>
+          <text x="330" y="76" font-size="12.5" fill="currentColor" fill-opacity=".8">אמצע הירח</text>
+          <text x="330" y="91" font-size="10.5" fill="currentColor" fill-opacity=".55">the mean — where the tables put it</text>
+          <path d="M 349 152 A 36 36 0 0 0 331 135" fill="none" stroke="var(--gold)"
+                stroke-width="2.5" marker-end="url(#a-gold)"></path>
+          <text x="366" y="140" font-size="12" fill="var(--gold)">13° 3′ 54″ a day</text>
+          <text x="366" y="155" font-size="10.5" fill="var(--gold)" fill-opacity=".85">the other way round</text>
+          <line x1="284" y1="204" x2="212" y2="180" stroke="var(--gold)" stroke-width="1" stroke-opacity=".55"></line>
+          <text x="208" y="176" font-size="12.5" text-anchor="end" fill="var(--gold)">גלגל קטן</text>
+          <text x="208" y="191" font-size="10.5" text-anchor="end" fill="var(--gold)" fill-opacity=".85">does not go round the earth</text>
+        </g>
+
+        <!-- ════ KH 15: the same large circle, off centre ════ -->
+        <g class="from-2">
+          <circle cx="337.2" cy="275.4" r="132" fill="none" stroke="var(--green)" stroke-width="2"></circle>
+          <circle cx="337.2" cy="275.4" r="2.5" fill="var(--green)"></circle>
+          <line x1="320" y1="300" x2="337.2" y2="275.4" stroke="var(--green)" stroke-width="1.5"></line>
+          <line x1="337.2" y1="275.4" x2="412.9" y2="167.3" stroke="var(--green)" stroke-width="1"
+                stroke-dasharray="3 3" stroke-opacity=".8"></line>
+          <circle cx="412.9" cy="167.3" r="3.5" fill="var(--green)"></circle>
+          <text x="422" y="160" font-size="12.5" fill="var(--green)">גובה</text>
+          <text x="422" y="175" font-size="10.5" fill="var(--green)" fill-opacity=".8">its far point</text>
+          <line x1="463.9" y1="292.6" x2="524" y2="344" stroke="var(--green)" stroke-width="1" stroke-opacity=".55"></line>
+          <text x="530" y="348" font-size="12.5" fill="var(--green)">גלגל יוצא מרכז</text>
+          <text x="530" y="363" font-size="10.5" fill="var(--green)" fill-opacity=".8">the earth is off its centre</text>
+          <path d="M 258 378 A 132 132 0 0 0 344 407" fill="none" stroke="var(--green)"
+                stroke-width="2.5" marker-end="url(#a-green)"></path>
+          <text x="356" y="412" font-size="12" fill="var(--green)">24° 23′ a day, west → east</text>
+
+          <!-- katan on the off-centre rim -->
+          <circle cx="314.3" cy="145.4" r="36" fill="none" stroke="var(--gold)" stroke-width="2"></circle>
+          <circle cx="314.3" cy="145.4" r="2.5" fill="var(--gold)"></circle>
+          <circle cx="293.7" cy="174.9" r="6" fill="var(--ink)"></circle>
+          <line x1="278" y1="181" x2="206" y2="158" stroke="var(--gold)" stroke-width="1" stroke-opacity=".55"></line>
+          <text x="202" y="154" font-size="12.5" text-anchor="end" fill="var(--gold)">גלגל קטן</text>
+          <text x="202" y="169" font-size="10.5" text-anchor="end" fill="var(--gold)" fill-opacity=".85">the moon sits on its rim</text>
+
+          <!-- the two sight lines that no longer agree -->
+          <line x1="320" y1="300" x2="312.1" y2="86.1" stroke="currentColor" stroke-opacity=".5"
+                stroke-width="1" stroke-dasharray="4 3"></line>
+          <text x="330" y="60" font-size="12.5" fill="currentColor" fill-opacity=".8">אמצע הירח</text>
+          <text x="330" y="75" font-size="10.5" fill="currentColor" fill-opacity=".55">the mean</text>
+          <line x1="320" y1="300" x2="276" y2="90.6" stroke="var(--ink)" stroke-width="1.5"></line>
+          <text x="252" y="60" font-size="12.5" text-anchor="end" fill="var(--ink)">הירח האמיתי</text>
+          <text x="252" y="75" font-size="10.5" text-anchor="end" fill="currentColor" fill-opacity=".55">what you actually see</text>
+          <path d="M 312.1 86.1 A 214 214 0 0 0 276 90.6" fill="none" stroke="var(--brass)" stroke-width="3"></path>
+          <line x1="294" y1="86" x2="214" y2="112" stroke="var(--brass)" stroke-width="1" stroke-opacity=".6"></line>
+          <text x="210" y="110" font-size="12" text-anchor="end" fill="var(--brass)">מנת המסלול</text>
+          <text x="210" y="125" font-size="10.5" text-anchor="end" fill="var(--brass)" fill-opacity=".8">the gap between them</text>
+
+          <!-- the sun, and the distance that gets doubled -->
+          <circle cx="521.1" cy="226.8" r="8" fill="var(--sun)"></circle>
+          <line x1="320" y1="300" x2="521.1" y2="226.8" stroke="var(--sun)" stroke-width="1"
+                stroke-dasharray="4 3" stroke-opacity=".75"></line>
+          <text x="536" y="222" font-size="12.5" fill="var(--sun)">השמש</text>
+          <path d="M 521.1 226.8 A 214 214 0 0 0 312.1 86.1" fill="none" stroke="var(--sun)"
+                stroke-width="2" stroke-opacity=".6" stroke-dasharray="6 4"></path>
+          <text x="452" y="104" font-size="12" fill="var(--sun)">מרחק כפול</text>
+          <text x="452" y="119" font-size="10.5" fill="var(--sun)" fill-opacity=".85">this distance, doubled</text>
+        </g>
+
+        <!-- earth, always -->
+        <circle cx="320" cy="300" r="7" fill="currentColor"></circle>
+        <text x="330" y="320" font-size="12.5" fill="currentColor">הארץ</text>
+
+        <text x="60" y="484" font-size="10.5" fill="currentColor" fill-opacity=".45" class="only-1">
+          Arrangement, not scale — the small circle is drawn far larger than life.
+        </text>
+        <text x="60" y="484" font-size="10.5" fill="currentColor" fill-opacity=".45" class="from-2">
+          Arrangement, not scale — the off-centre and the small circle are both drawn far larger than life.
+        </text>
+      </svg>
+
+      <svg viewBox="0 0 700 250" class="edgeon from-3" role="img"
+           aria-label="Edge-on: the red galgal lies flat along the belt while the blue crosses it at two points, the rosh going north and the zanav going south, reaching five degrees at its furthest, and the crossing points slide backwards.">
+        <defs>
+          <marker id="a-back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--red)"></path>
+          </marker>
+        </defs>
+        <text x="60" y="26" font-size="11.5" fill="currentColor" fill-opacity=".55">
+          The same two outer galgalim, seen edge-on — the only view that shows the tilt:
+        </text>
+        <line x1="60" y1="130" x2="660" y2="130" stroke="var(--red)" stroke-width="2.5"></line>
+        <path d="M 60 130 C 125 130 125 72 190 72 C 255 72 255 130 320 130
+                 C 385 130 385 188 450 188 C 515 188 515 130 580 130"
+              fill="none" stroke="var(--blue)" stroke-width="2.5"></path>
+        <text x="600" y="122" font-size="12.5" fill="var(--blue)">נוטה</text>
+        <text x="600" y="150" font-size="12.5" fill="var(--red)">דומה</text>
+        <text x="600" y="165" font-size="10.5" fill="var(--red)" fill-opacity=".8">flat on the belt</text>
+
+        <circle cx="60" cy="130" r="5" fill="var(--blue)"></circle>
+        <text x="60" y="154" font-size="12.5" text-anchor="middle" fill="var(--blue)">ראש</text>
+        <text x="60" y="169" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".55">crossing north</text>
+        <circle cx="320" cy="130" r="5" fill="var(--blue)"></circle>
+        <text x="320" y="154" font-size="12.5" text-anchor="middle" fill="var(--blue)">זנב</text>
+        <text x="320" y="169" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".55">crossing south</text>
+
+        <line x1="190" y1="72" x2="190" y2="130" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="3 3"></line>
+        <text x="204" y="60" font-size="11.5" fill="currentColor" fill-opacity=".7">5° — the furthest north it ever gets,</text>
+        <text x="204" y="76" font-size="11.5" fill="currentColor" fill-opacity=".7">a quarter turn past the ראש</text>
+        <text x="450" y="212" font-size="11.5" text-anchor="middle" fill="currentColor" fill-opacity=".6">5° south, half a turn later</text>
+
+        <circle cx="125" cy="101" r="6" fill="var(--ink)"></circle>
+        <line x1="125" y1="107" x2="125" y2="130" stroke="currentColor" stroke-opacity=".55" stroke-dasharray="2 3"></line>
+        <text x="116" y="122" font-size="11.5" text-anchor="end" fill="currentColor" fill-opacity=".75">רוחב</text>
+        <line x1="120" y1="242" x2="62" y2="242" stroke="var(--red)" stroke-width="1.5" marker-end="url(#a-back)"></line>
+        <text x="130" y="246" font-size="11" fill="var(--red)">
+          the ראש itself slides backwards 3′ 11″ a day — טלה → דגים → דלי, right round in about 18½ years
+        </text>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <span class="only-1"><i style="background:currentColor"></i> the large circle</span>
+      <span class="from-2"><i style="background:var(--green)"></i> יוצא מרכז — off centre</span>
+      <span><i style="background:var(--gold)"></i> גלגל קטן — the small circle</span>
+      <span class="from-2"><i style="background:var(--sun)"></i> the sun</span>
+      <span class="from-3"><i style="background:var(--red)"></i> דומה</span>
+      <span class="from-3"><i style="background:var(--blue)"></i> נוטה</span>
+    </div>
+
+    <div class="say">
+      <div class="s s1">
+        <blockquote class="quote">
+          “The moon revolves in a small orbit that does not encompass the earth…
+          The small orbit itself rotates in a larger orbit that encompasses the earth.”
+          <cite>KH 14:1</cite>
+        </blockquote>
+        <p>
+          Two circles, and that is the entire chapter. The <b>large one</b> goes round
+          the earth and carries the small one with it. The <b>small one</b> never goes
+          round the earth at all — the moon just sits on its rim.
+        </p>
+        <p>
+          So there are two speeds to keep, not one: how fast the small circle's centre
+          travels round the earth, and how fast the moon travels round the small circle.
+          Chapter 14 gives you both, and nothing else. No corrections yet — this moon
+          is exactly where the tables say, which is not yet where anyone can see it.
+        </p>
+        <div class="gained">
+          <b>you can now find</b><em>אמצע הירח</em><em>אמצע המסלול</em>
+        </div>
+      </div>
+
+      <div class="s s2">
+        <blockquote class="quote">
+          “Subtract the sun's mean from the moon's mean and double the remainder.”
+          <cite>KH 15:1</cite>
+        </blockquote>
+        <p>
+          Chapter 15 tells you the same large circle twice over. First: the earth is
+          <b>not at its centre</b> — it is <span dir="rtl">יוצא מרכז</span>, which gives it a near side and a
+          far side, a <span dir="rtl">גובה</span> of its own. Second: the <b>sun</b> is now in the picture,
+          because how far the moon has pulled ahead of it — doubled — changes where the
+          moon really sits on the small circle.
+        </p>
+        <p>
+          And now the two lines from the earth come apart. One runs through the small
+          circle's centre; the other runs through the moon itself. The arc between them
+          where they meet the belt is the correction you look up, and it is the whole
+          difference between the moon of the tables and the moon in the sky.
+        </p>
+        <div class="gained">
+          <b>you can now find</b><em>מרחק כפול</em><em>המסלול הנכון</em><em>מנת המסלול</em><em>הירח האמיתי</em>
+        </div>
+      </div>
+
+      <div class="s s3">
+        <blockquote class="quote">
+          “The orbit in which the moon revolves intersects the orbit in which the sun
+          revolves at an angle, so that a portion of it is inclined to the north of the
+          sun's orbit and a portion is inclined south.”
+          <cite>KH 16:1</cite>
+        </blockquote>
+        <p>
+          Everything so far has been flat — as though the moon travelled along the belt
+          itself. It does not. Two more galgalim sit outside the green, both centred on
+          the earth: the <b>red</b>, which lies exactly along the belt, and the
+          <b>blue</b>, which leans 5° off it. They cross at two points — the
+          <span dir="rtl">ראש</span> and the <span dir="rtl">זנב</span>.
+        </p>
+        <p>
+          The red drags the blue round with it, so those crossing points do not stay
+          put: they walk <b>backwards</b> through the mazalos, a full circle in about
+          eighteen and a half years. That is the last thing the calculation needs — how
+          far the moon stands north or south of the sun's path, which decides how high
+          it sits above the horizon when you go out to look for it.
+        </p>
+        <div class="gained">
+          <b>you can now find</b><em>ראש</em><em>זנב</em><em>רוחב הירח</em>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <button type="button" id="back" disabled>← Back</button>
+      <button type="button" id="fwd" class="fwd">Next: chapter 15 →</button>
+    </div>
+  </div>
+
+  <h2>Two motions, pulling against each other</h2>
+  <p class="sub">
+    Once all four are on the page, the thing worth holding on to is that they do
+    not all turn the same way. The outer two carry the whole assembly one way;
+    the green runs the other way inside them. What you see is only what is left.
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 700 190" role="img"
+         aria-label="The green galgal moves 24 degrees 23 minutes a day west to east; the red and blue carry everything 11 degrees 12 minutes back east to west; the difference, 13 degrees 11 minutes, is the moon's daily motion through the mazalos.">
+      <defs>
+        <marker id="n-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--green)"></path>
+        </marker>
+        <marker id="n-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--red)"></path>
+        </marker>
+        <marker id="n-brass" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"></path>
+        </marker>
+      </defs>
+      <line x1="100" y1="26" x2="100" y2="150" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 3"></line>
+      <text x="100" y="18" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".5">yesterday</text>
+      <line x1="100" y1="52" x2="560" y2="52" stroke="var(--green)" stroke-width="2.5" marker-end="url(#n-green)"></line>
+      <text x="330" y="43" font-size="12.5" text-anchor="middle" fill="var(--green)">the green carries it 24° 23′ forward</text>
+      <line x1="560" y1="92" x2="349" y2="92" stroke="var(--red)" stroke-width="2.5" marker-end="url(#n-red)"></line>
+      <text x="455" y="83" font-size="12.5" text-anchor="middle" fill="var(--red)">the red and blue drag it 11° 12′ back</text>
+      <line x1="349" y1="60" x2="349" y2="150" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 3"></line>
+      <line x1="100" y1="128" x2="349" y2="128" stroke="var(--brass)" stroke-width="2.5" marker-end="url(#n-brass)"></line>
+      <text x="224" y="120" font-size="12.5" text-anchor="middle" fill="var(--brass)">what is left: 13° 11′ 0″</text>
+      <text x="224" y="150" font-size="11" text-anchor="middle" fill="currentColor" fill-opacity=".6">the moon's motion through the mazalos</text>
+      <text x="366" y="150" font-size="11" fill="currentColor" fill-opacity=".5">today</text>
+    </svg>
+    <figcaption>
+      <b>24° 23′ − 11° 12′ = 13° 11′.</b> The Rambam's own figure for the moon's mean
+      daily motion, in KH 14:1, is 13° 10′ 35″ — twenty-five seconds finer than these
+      round numbers. The point is not the last second. It is that the number you use
+      every day is a remainder between two opposite motions, not a speed anything
+      actually travels at.
+    </figcaption>
+  </figure>
+
+  <h2>The four, side by side</h2>
+
+  <div class="cards">
+    <div class="g red">
+      <div class="top"><span class="dot"></span><span class="heb">גלגל דומה</span><span class="tl">domeh</span></div>
+      <p class="why">
+        <b>Domeh</b> — it resembles the belt of mazalos, lying exactly under it with the
+        earth at its centre. It is the frame the other three are measured against, and
+        it drags the blue round with it.
+      </p>
+      <dl><dt>earth at centre</dt><dd>yes</dd><dt>turns</dt><dd>11° 12′ /day east → west</dd></dl>
+    </div>
+    <div class="g blue">
+      <div class="top"><span class="dot"></span><span class="heb">גלגל נוטה</span><span class="tl">noteh</span></div>
+      <p class="why">
+        <b>Noteh</b> — it leans. Same centre as the red, tilted 5° off the belt, which is
+        the only reason the moon is ever north or south of the sun's path. Being dragged
+        by the red is what walks the crossing points backwards.
+      </p>
+      <dl><dt>earth at centre</dt><dd>yes</dd><dt>tilt</dt><dd>5° each way</dd></dl>
+    </div>
+    <div class="g green">
+      <div class="top"><span class="dot"></span><span class="heb">גלגל יוצא מרכז</span><span class="tl">yoitzeh</span></div>
+      <p class="why">
+        <b>Yotzei merkaz</b> — its centre is off the earth, so it has a near side and a far
+        side, a <span dir="rtl">גובה</span> of its own. It sits inside the blue, runs the opposite way to
+        it, and carries the small circle around.
+      </p>
+      <dl><dt>earth at centre</dt><dd>no</dd><dt>turns</dt><dd>24° 23′ /day west → east</dd></dl>
+    </div>
+    <div class="g gold">
+      <div class="top"><span class="dot"></span><span class="heb">גלגל קטן</span><span class="tl">galgal katan</span></div>
+      <p class="why">
+        <b>The small circle</b> — the one that never goes round the earth. Its centre is
+        <span dir="rtl">אמצע הירח</span>, the moon of the tables; the moon itself sits on the rim. Where
+        on the rim is the whole difference between the mean and the true.
+      </p>
+      <dl><dt>earth at centre</dt><dd>no — never</dd><dt>turns</dt><dd>13° 3′ 54″ /day</dd></dl>
+    </div>
+  </div>
+
+  <h2>Which step comes from which</h2>
+  <p class="sub">Every circle in the drawing is doing a job in the arithmetic.</p>
+
+  <table class="map">
+    <thead><tr><th>Galgal</th><th>What it produces</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="who">קטן</td>
+        <td class="what">The <b>maslul</b> — where the moon sits on the rim — and from it the
+          correction that turns <b>אמצע</b> into <b>אמיתי</b>.</td>
+        <td class="ref">KH 14:3, 15:4–6</td>
+      </tr>
+      <tr>
+        <td class="who">יוצא מרכז</td>
+        <td class="what">Its <b>גובה</b>, and — with the sun pulling the small circle round it —
+          the <b>double distance</b> and the corrected course the table is read with.</td>
+        <td class="ref">KH 15:1–3</td>
+      </tr>
+      <tr>
+        <td class="who">דומה</td>
+        <td class="what">The frame everything is measured in, and, by dragging the blue,
+          the backwards march of the <b>ראש</b> through the mazalos.</td>
+        <td class="ref">KH 16:2–4</td>
+      </tr>
+      <tr>
+        <td class="who">נוטה</td>
+        <td class="what">The moon's <b>latitude</b> — how far north or south of the sun's path
+          it sits, up to 5°. The last thing the visibility test asks for.</td>
+        <td class="ref">KH 16:9–10</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:1.6rem">
+    Chapter 17 adds one more correction, and it is not a galgal at all — it is you,
+    standing on the surface of the earth rather than at its centre.
+    <a class="cta" href="https://claude.ai/code/artifact/2b5adc16-4af4-46d7-adbe-4bf900fa785a">
+      Watch all four produce a real number, step by step →
+    </a>
+  </p>
+
+  <p class="note">
+    The four colours are Rabbi Losh's teaching scheme, carried in the project's own
+    <a href="https://www.shluchimexchange.ai/kh/engine/constants.js">constants.js</a>
+    (red #cc4444, blue #4488cc, green #44aa44, yellow #dddd44), adjusted here only enough
+    to stay legible on a light ground as well as a dark one. The daily motions, the 5°
+    tilt and the 3′ 11″ node drift are from those same constants; the chapter quotations
+    are the Rambam via Sefaria; the naming — why <span dir="rtl">דומה</span>, why <span dir="rtl">נוטה</span>, and the
+    24° 23′ against 11° 12′ — is from Rabbi Zajac's class on KH 14–16, hosted with
+    permission. Please credit Rabbi Zajac and link
+    <a href="https://www.chabad.org">Chabad.org</a> when quoting from it.
+    Project: <a href="https://www.shluchimexchange.ai/kh">shluchimexchange.ai/kh</a>, MIT.
+  </p>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var build = document.getElementById("build");
+  var chapters = document.getElementById("chapters");
+  var back = document.getElementById("back");
+  var fwd = document.getElementById("fwd");
+  var NAMES = { 2: "chapter 15", 3: "chapter 16" };
+  var stage = 1;
+
+  function render() {
+    build.setAttribute("data-stage", String(stage));
+    var btns = chapters.querySelectorAll("button");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle("on", Number(btns[i].dataset.s) === stage);
+    }
+    back.disabled = stage === 1;
+    fwd.disabled = stage === 3;
+    fwd.textContent = stage === 3 ? "All four are on the page" : "Next: " + NAMES[stage + 1] + " →";
+  }
+
+  function go(n) {
+    stage = Math.max(1, Math.min(3, n));
+    render();
+    try { history.replaceState(null, "", "#kh" + (stage + 13)); } catch (err) {}
+  }
+
+  chapters.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-s]");
+    if (b) go(Number(b.dataset.s));
+  });
+  fwd.addEventListener("click", function () { go(stage + 1); });
+  back.addEventListener("click", function () { go(stage - 1); });
+  document.addEventListener("keydown", function (e) {
+    if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+    if (e.key === "ArrowRight") go(stage + 1);
+    if (e.key === "ArrowLeft") go(stage - 1);
+  });
+
+  var fromHash = (location.hash.match(/^#kh(1[456])$/) || [])[1];
+  if (fromHash) stage = Number(fromHash) - 13;
+  render();
+})();
+</script>

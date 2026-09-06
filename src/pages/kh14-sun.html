@@ -1,0 +1,649 @@
+<title>The Sun's Nudge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --bg:#e7e9ee; --card:#fbfbfd; --sunk:#eff0f4; --ink:#0f1218; --muted:#555c6b;
+    --faint:#838b9b; --line:#d1d5de; --hair:#e2e5ec; --brass:#8a6a1f;
+    --mean:#256b73; --sunc:#b4601c;
+    --warm:#9a5a12; --cool:#2f5f86;
+    --shadow:0 1px 2px rgba(15,18,24,.05), 0 10px 30px -16px rgba(15,18,24,.28);
+    --serif:'Frank Ruhl Libre','David',Georgia,serif;
+    --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#0a0c11; --card:#13161d; --sunk:#0e1116; --ink:#e7e9f0; --muted:#99a0b0;
+      --faint:#767e8f; --line:#242a34; --hair:#1d222b; --brass:#d8b264;
+      --mean:#63c3cd; --sunc:#e8925a; --warm:#e0a765; --cool:#82aede;
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0a0c11; --card:#13161d; --sunk:#0e1116; --ink:#e7e9f0; --muted:#99a0b0;
+    --faint:#767e8f; --line:#242a34; --hair:#1d222b; --brass:#d8b264;
+    --mean:#63c3cd; --sunc:#e8925a; --warm:#e0a765; --cool:#82aede;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.9);
+  }
+
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+         font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .page { max-width:53rem; margin:0 auto; padding:1.8rem 1.1rem 4rem; }
+
+  header { border-bottom:1px solid var(--line); padding-bottom:1.1rem; }
+  .eyebrow { font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  h1 { font-family:var(--serif); font-weight:700; font-size:2rem; line-height:1.15; margin:.3rem 0 .4rem; }
+  h1 .heb { display:block; font-size:1.4rem; color:var(--muted); direction:rtl; text-align:left; font-weight:500; }
+  .lede { margin:0; color:var(--muted); max-width:41rem; }
+  .back { font-size:.85rem; margin-top:.7rem; }
+
+  h2 { font-family:var(--serif); font-size:1.28rem; font-weight:700; margin:2.2rem 0 .2rem; }
+  .sub { margin:0 0 1rem; color:var(--muted); max-width:42rem; }
+  p { margin:0 0 1rem; }
+
+  .rig { margin-top:1.3rem; background:var(--card); border:1px solid var(--line);
+         border-radius:12px; box-shadow:var(--shadow); overflow:hidden; }
+  .stage { display:grid; grid-template-columns:minmax(0,1fr) 17rem; }
+  @media (max-width:800px) { .stage { grid-template-columns:1fr; } }
+  .art { padding:.8rem .8rem .2rem; min-width:0; }
+  .art svg { display:block; width:100%; height:auto; }
+
+  .dials { border-left:1px solid var(--line); background:var(--sunk); padding:1rem 1.1rem;
+           display:flex; flex-direction:column; gap:.85rem; }
+  @media (max-width:800px) { .dials { border-left:0; border-top:1px solid var(--line); } }
+  .dial { display:flex; flex-direction:column; gap:.08rem; }
+  .dial .lbl { font-family:var(--serif); font-size:1.04rem; direction:rtl; color:var(--c);
+               display:flex; align-items:center; gap:.4rem; }
+  .dial .lbl i { width:.6rem; height:.6rem; border-radius:50%; background:var(--c); flex:none; }
+  .dial .en { font-size:.73rem; color:var(--faint); }
+  .dial .val { font-family:var(--mono); font-size:1.3rem; font-weight:500; color:var(--c);
+               font-variant-numeric:tabular-nums; line-height:1.25; }
+  .dial .in { font-size:.79rem; color:var(--muted); }
+  .dial.u { --c:var(--sunc); } .dial.m { --c:var(--mean); } .dial.d { --c:var(--ink); }
+  .dial.d .val { font-size:1.12rem; }
+
+  .transport { border-top:1px solid var(--line); background:var(--sunk); display:flex;
+               align-items:center; gap:.4rem; flex-wrap:wrap; padding:.7rem .9rem; }
+  .transport.second { border-top:1px solid var(--hair); padding-top:.55rem; }
+  .transport button { font:inherit; font-size:.83rem; cursor:pointer; padding:.38rem .68rem;
+    background:var(--card); border:1px solid var(--line); border-radius:7px; color:var(--muted);
+    font-variant-numeric:tabular-nums; }
+  .transport button:hover { border-color:var(--brass); color:var(--ink); }
+  .transport button.play { min-width:5.3rem; font-weight:600; color:var(--ink); border-color:var(--brass); }
+  .transport button.run { color:var(--ink); }
+  .transport button.run.on { border-color:var(--brass); background:var(--brass); color:var(--card); font-weight:600; }
+  .transport .gap { flex:1; }
+  .transport .tag { font-size:.72rem; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  .transport label { font-size:.77rem; color:var(--faint); display:inline-flex; align-items:center; gap:.35rem; }
+  .transport select, .transport input[type=number] { font:inherit; font-family:var(--mono); font-size:.79rem;
+    color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:6px; padding:.26rem .4rem; }
+  .transport input[type=number] { width:6.6rem; }
+
+  .sight { margin-top:1.1rem; background:var(--card); border:1px solid var(--line); border-radius:11px;
+           box-shadow:var(--shadow); padding:1rem 1.1rem 1.1rem; --c:var(--sunc); }
+  .sight h3 { margin:0 0 .1rem; font-family:var(--serif); font-size:1.14rem; direction:rtl; color:var(--c); }
+  .sight h3.ltr { direction:ltr; }
+  .sight .cap { font-size:.77rem; color:var(--faint); margin:0 0 .7rem; }
+  .sight svg { display:block; width:100%; height:auto; }
+
+  table.led { width:100%; border-collapse:collapse; font-size:.82rem; }
+  table.led th { text-align:right; font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--faint); font-weight:600; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  table.led th:first-child { text-align:left; }
+  table.led td { padding:.25rem 0; vertical-align:baseline; }
+  table.led td.l { color:var(--muted); padding-right:.5rem; }
+  table.led td.l small { display:block; font-size:.7rem; color:var(--faint); }
+  table.led td.a, table.led td.t { text-align:right; font-family:var(--mono);
+    font-variant-numeric:tabular-nums; white-space:nowrap; }
+  table.led td.a { color:var(--ink); padding-right:.7rem; }
+  table.led td.t { color:var(--faint); }
+  table.led tr.drop td.l { color:var(--faint); font-style:italic; }
+  table.led tr.drop td.a { color:var(--faint); }
+  table.led tr.out td { border-top:1px solid var(--line); padding-top:.4rem; }
+  table.led tr.out td.l { color:var(--ink); font-weight:600; }
+  table.led tr.out td.t { color:var(--c); font-weight:500; font-size:.95rem; }
+
+  .quotes { margin-top:1.1rem; display:flex; flex-direction:column; gap:.7rem; }
+  .q { background:var(--card); border:1px solid var(--line); border-radius:10px;
+       padding:.8rem 1rem; font-size:.92rem; color:var(--muted); }
+  .q b { color:var(--ink); font-family:var(--mono); font-size:.74rem; letter-spacing:.06em;
+         display:block; margin-bottom:.22rem; }
+  .q span { font-family:var(--serif); color:var(--ink); font-size:1rem; }
+
+  .note { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); font-size:.83rem; color:var(--faint); }
+  a { color:var(--brass); }
+  :focus-visible { outline:2px solid var(--brass); outline-offset:2px; border-radius:5px; }
+</style>
+
+<div class="page">
+
+  <header>
+    <div class="eyebrow">Rambam · Hilchos Kiddush HaChodesh 14:5–6 — one halacha, on its own</div>
+    <h1><span class="heb">אמצע הירח לשעת הראייה</span>The sun's nudge</h1>
+    <p class="lede">
+      You have the moon's mean. It was reckoned for six o'clock — but the chapter
+      wants it at sunset, and sunset is not at six. So the Rambam asks one question,
+      about the sun, and answers it with at most half a degree.
+    </p>
+    <p class="back">
+      ← Comes after <a href="https://claude.ai/code/artifact/b2317cb5-90d4-4436-a857-f4aac997f772">the two means of KH 14:1–4</a>
+    </p>
+  </header>
+
+  <h2>Where is the sun standing?</h2>
+  <p class="sub">
+    That is the whole question. The nine bands are a ring around the year — the two
+    equinoxes ask for nothing, and the further the sun is from them, the more the
+    answer moves.
+  </p>
+
+  <div class="rig">
+    <div class="stage">
+      <div class="art">
+        <svg viewBox="0 0 620 700" role="img" id="art"
+             aria-label="A wheel of the twelve mazalos with the nine bands of KH 14:5 drawn as coloured sectors; the sun sits on it at its true place, and the centre shows the time of sunset that band stands for.">
+          <defs>
+            <!--@include partials/bodies.svg-->
+              <circle r="8.5" fill="var(--sunc)"></circle>
+              <circle r="8.5" fill="none" stroke="#7a3d0d" stroke-opacity=".35" stroke-width="1"></circle>
+            </g>
+          </defs>
+
+          <g id="bands"></g>
+          <g id="ring"></g>
+
+          <!-- the equinox line: the two places where sunset really is at six -->
+          <line id="eqLine" stroke="currentColor" stroke-opacity=".35" stroke-width="1" stroke-dasharray="5 4"></line>
+          <text id="eqA" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".55"></text>
+          <text id="eqB" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".55"></text>
+          <text id="solA" font-size="10.5" text-anchor="middle" fill="var(--warm)"></text>
+          <text id="solB" font-size="10.5" text-anchor="middle" fill="var(--cool)"></text>
+
+          <line id="sunPtr" stroke="var(--sunc)" stroke-width="1.3" stroke-dasharray="5 4" stroke-opacity=".7"></line>
+          <use id="sunBody" href="#gSun" x="0" y="0"></use>
+
+          <!-- what the band is really saying: what time the sun sets -->
+          <circle id="hub" cx="310" cy="360" r="86" fill="var(--sunk)" stroke="currentColor" stroke-opacity=".14"></circle>
+          <text x="310" y="330" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".5">the sun sets at</text>
+          <text id="hubTime" x="310" y="362" font-size="27" text-anchor="middle" fill="var(--sunc)"
+                font-family="IBM Plex Mono, monospace">—</text>
+          <text id="hubDelta" x="310" y="384" font-size="11" text-anchor="middle" fill="currentColor" fill-opacity=".6">—</text>
+          <text id="hubBand" x="310" y="406" font-size="12.5" text-anchor="middle" fill="var(--brass)"
+                font-family="IBM Plex Mono, monospace">—</text>
+
+          <text x="310" y="688" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".45">
+            Sunset computed for latitude 32° — the Rambam's figure for Eretz Yisrael — in apparent solar time.
+          </text>
+        </svg>
+      </div>
+
+      <div class="dials">
+        <div class="dial d">
+          <span class="en">Days from the epoch — 3 Nisan 4938</span>
+          <span class="val" id="dDays">0</span>
+          <span class="in" id="dDate">—</span>
+        </div>
+        <div class="dial u">
+          <span class="lbl"><i></i>השמש האמיתי</span>
+          <span class="en">the true sun — worked out in chapters 12–13</span>
+          <span class="val" id="dSun">—</span>
+          <span class="in" id="dSunZ">—</span>
+        </div>
+        <div class="dial m">
+          <span class="lbl"><i></i>אמצע הירח</span>
+          <span class="en">the mean, as chapter 14 left it</span>
+          <span class="val" id="dMean">—</span>
+        </div>
+        <div class="dial u">
+          <span class="lbl"><i></i>לשעת הראייה</span>
+          <span class="en">the same mean, nudged</span>
+          <span class="val" id="dSight">—</span>
+          <span class="in" id="dFix">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button type="button" id="toEpoch">⏮ epoch</button>
+      <button type="button" id="m10">−10d</button>
+      <button type="button" id="m1">−1d</button>
+      <button type="button" class="play" id="play">▶ Turn</button>
+      <button type="button" id="p1">+1d</button>
+      <button type="button" id="p10">+10d</button>
+      <button type="button" id="toToday">today</button>
+      <span class="gap"></span>
+      <label>day <input type="number" id="dayIn" step="1"></label>
+    </div>
+    <div class="transport second">
+      <span class="tag">watch</span>
+      <button type="button" class="run" data-run="day">one day</button>
+      <button type="button" class="run" data-run="month">one month</button>
+      <button type="button" class="run" data-run="year">one year</button>
+      <span class="gap"></span>
+      <label>free speed
+        <select id="speed">
+          <option value="1">1 day/sec</option>
+          <option value="4" selected>4 days/sec</option>
+          <option value="15">15 days/sec</option>
+          <option value="60">60 days/sec</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <h2>Why these bands, and not others</h2>
+  <p class="sub">
+    The moon covers 13° 10′ 35″ in a day, which is about <b>33′ an hour</b>. So every
+    hour that sunset falls later than six, the moon has gone another 33′ past where
+    your six-o'clock figure put it. The Rambam's staircase is that curve, rounded to
+    quarter-degrees.
+  </p>
+
+  <div class="sight">
+    <h3 class="ltr">Sunset through the year, against the nine bands</h3>
+    <p class="cap">
+      The smooth line is where sunset actually falls at latitude 32°, turned into
+      moon-motion. The steps are what KH 14:5 tells you to use.
+    </p>
+    <svg viewBox="0 0 620 260" role="img" id="curve"
+         aria-label="The smooth seasonal curve of extra moon motion, with the Rambam's nine-step staircase drawn over it.">
+      <g id="cGrid"></g>
+      <path id="cCurve" fill="none" stroke="var(--sunc)" stroke-width="2"></path>
+      <path id="cSteps" fill="none" stroke="var(--brass)" stroke-width="2" stroke-dasharray="5 3"></path>
+      <g id="cAxis"></g>
+      <g id="cSun"></g>
+    </svg>
+  </div>
+
+  <h2>The fix itself</h2>
+  <p class="sub">The naive mean from chapter 14, and what happens to it.</p>
+
+  <div class="sight">
+    <h3>אמצע הירח לשעת הראייה</h3>
+    <p class="cap">KH 14:5–6</p>
+    <table class="led">
+      <thead><tr><th>step</th><th>add / take off</th><th>running total</th></tr></thead>
+      <tbody id="ledSight"></tbody>
+    </table>
+    <div style="margin-top:1rem">
+      <p class="cap" style="margin-bottom:.3rem">
+        Half a degree is far too small to see on the wheel. Here are the two
+        positions side by side, magnified about forty times:
+      </p>
+      <svg viewBox="0 0 620 96" role="img"
+           aria-label="The moon's mean before and after the fix, on a magnified scale.">
+        <line x1="30" y1="56" x2="590" y2="56" stroke="currentColor" stroke-opacity=".3"></line>
+        <g id="zoomTicks"></g>
+        <line id="zNaive" x1="200" y1="36" x2="200" y2="70" stroke="var(--mean)" stroke-width="2"></line>
+        <text id="zNaiveT" x="200" y="28" font-size="11" text-anchor="middle" fill="var(--mean)">naive</text>
+        <line id="zFix" x1="400" y1="36" x2="400" y2="70" stroke="var(--sunc)" stroke-width="2"></line>
+        <text id="zFixT" x="400" y="28" font-size="11" text-anchor="middle" fill="var(--sunc)">at sighting</text>
+        <path id="zGap" fill="none" stroke="var(--sunc)" stroke-width="1.2"></path>
+        <text id="zGapT" x="310" y="90" font-size="11.5" text-anchor="middle" fill="var(--sunc)"></text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="quotes">
+    <div class="q"><b>KH 14:5</b><span>“If the sun is located between midway in the constellation of Pisces and
+      midway in the constellation of Aries, the moon's mean should be left without emendation. If the sun is
+      located between midway in Aries and the beginning of Gemini, 15 minutes should be added…”</span></div>
+    <div class="q"><b>KH 14:6</b><span>“The figure that remains after these additions or subtractions have been
+      made, or when the mean was left without emendation, is the mean of the moon approximately 20 minutes
+      after the setting of the sun… This is referred to as the mean of the moon at the time of the
+      sighting.”</span></div>
+    <div class="q">
+      The bands are symmetric about the equinox line: 30° wide where they ask for nothing,
+      45° wide for a quarter degree, 60° wide for a half. Reflect the wheel across the
+      0°–180° axis and the pattern maps onto itself with the sign turned over — because
+      the seasons do.
+    </div>
+  </div>
+
+  <p class="note">
+    The sun's place, the moon's mean and the band are all computed on this page by the
+    project's own engine
+    (<a href="https://www.shluchimexchange.ai/kh/engine/index.json">shluchimexchange.ai/kh/engine</a>, MIT);
+    the nine bands are its <code>SEASON_CORRECTIONS</code> table verbatim. The sunset curve
+    is not the Rambam's — it is the ordinary sunrise equation at latitude 32° with a 23½°
+    obliquity, drawn here only to show what the staircase is approximating. Measured across
+    the year the two differ by 4.8′ on average and by 14.2′ at worst, right at the corner
+    where the sun enters אריה.
+    <a href="https://claude.ai/code/artifact/b2317cb5-90d4-4436-a857-f4aac997f772">Back to the two means</a> ·
+    <a href="https://claude.ai/code/artifact/539aa874-2717-407d-a419-3481c5de114b">the four galgalim</a> ·
+    <a href="https://claude.ai/code/artifact/2b5adc16-4af4-46d7-adbe-4bf900fa785a">the whole calculation</a>.
+  </p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  var F = formatDms, N = normalizeDegrees, RAD = Math.PI / 180;
+  var EPOCH_MS = Date.UTC(1178, 2, 30);
+  <!--@include partials/zodiac.js-->
+
+
+  var CX = 310, CY = 360;
+  var R_BAND_IN = 152, R_BAND_OUT = 226, R_IN = 232, R_OUT = 292, R_STAR = 270, R_NAME = 243, R_SUN = 210;
+  var EPS = 23.5, PHI = 32, MOON_HR = (13 + 10 / 60 + 35 / 3600) / 24;
+
+  var el = {};
+  ["bands","ring","eqLine","eqA","eqB","solA","solB","sunPtr","sunBody","hubTime","hubDelta","hubBand",
+   "dDays","dDate","dSun","dSunZ","dMean","dSight","dFix","ledSight","play","speed","dayIn",
+   "zNaive","zFix","zNaiveT","zFixT","zGap","zGapT","zoomTicks",
+   "cGrid","cCurve","cSteps","cAxis","cSun"].forEach(function (id) { el[id] = document.getElementById(id); });
+
+  function P(r, deg) { var t = deg * RAD; return [CX + r * Math.cos(t), CY - r * Math.sin(t)]; }
+  function put(n, x, y) { n.setAttribute("x", x.toFixed(2)); n.setAttribute("y", y.toFixed(2)); }
+  function wedge(ri, ro, a0, a1) {
+    var w0 = P(ri, a0), w1 = P(ro, a0), w2 = P(ro, a1), w3 = P(ri, a1), big = N(a1 - a0) > 180 ? 1 : 0;
+    return "M " + w0[0].toFixed(1) + " " + w0[1].toFixed(1) + " L " + w1[0].toFixed(1) + " " + w1[1].toFixed(1) +
+           " A " + ro + " " + ro + " 0 " + big + " 0 " + w2[0].toFixed(1) + " " + w2[1].toFixed(1) +
+           " L " + w3[0].toFixed(1) + " " + w3[1].toFixed(1) +
+           " A " + ri + " " + ri + " 0 " + big + " 1 " + w0[0].toFixed(1) + " " + w0[1].toFixed(1) + " Z";
+  }
+
+  // ── sunset, the thing the bands are really about ──
+  function sunsetHours(lam) {
+    var dec = Math.asin(Math.sin(EPS * RAD) * Math.sin(lam * RAD)) / RAD;
+    var c = -Math.tan(PHI * RAD) * Math.tan(dec * RAD);
+    return 12 + Math.acos(Math.max(-1, Math.min(1, c))) / RAD / 15;
+  }
+  function clock(h) {
+    var hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+    if (mm === 60) { hh++; mm = 0; }
+    return hh + ":" + (mm < 10 ? "0" : "") + mm;
+  }
+  function bandFor(lon) {
+    var B = CONSTANTS.SEASON_CORRECTIONS;
+    for (var q = 0; q < B.length; q++) if (lon >= B[q].sunFrom && lon < B[q].sunTo) return B[q];
+    return B[0];
+  }
+
+  // ── the nine bands, on a wheel ──
+  (function () {
+    var g = "";
+    var B = CONSTANTS.SEASON_CORRECTIONS;
+    for (var i = 0; i < B.length; i++) {
+      var b = B[i], to = b.sunTo === 360 ? 359.999 : b.sunTo;
+      var col = b.adjustment > 0 ? "var(--warm)" : b.adjustment < 0 ? "var(--cool)" : "currentColor";
+      var op = b.adjustment === 0 ? ".07" : Math.abs(b.adjustment) === 0.5 ? ".34" : ".19";
+      g += '<path id="bd' + i + '" d="' + wedge(R_BAND_IN, R_BAND_OUT, b.sunFrom, to) +
+           '" fill="' + col + '" fill-opacity="' + op + '" stroke="var(--card)" stroke-width="1"></path>';
+      var mid = (b.sunFrom + to) / 2, lp = P((R_BAND_IN + R_BAND_OUT) / 2, mid);
+      g += '<text x="' + lp[0].toFixed(1) + '" y="' + (lp[1] + 5).toFixed(1) + '" font-size="14" text-anchor="middle" ' +
+           'font-family="IBM Plex Mono, monospace" fill="' + (b.adjustment === 0 ? "currentColor" : col) +
+           '" fill-opacity="' + (b.adjustment === 0 ? ".55" : "1") + '">' +
+           (b.adjustment === 0 ? "0" : (b.adjustment > 0 ? "+" : "−") + Math.abs(b.adjustment * 60) + "′") + "</text>";
+    }
+    el.bands.innerHTML = g;
+  })();
+
+  // ── the mazalos ring ──
+  (function () {
+    var ring0 = function (r) {
+      return '<circle cx="' + CX + '" cy="' + CY + '" r="' + r +
+             '" fill="none" stroke="currentColor" stroke-opacity=".2"></circle>';
+    };
+    var s = [ring0(R_IN), ring0(R_OUT)];
+    for (var k = 0; k < 12; k++) {
+      var a = k * 30, i1 = P(R_IN, a), i2 = P(R_OUT, a);
+      s.push('<line x1="' + i1[0].toFixed(1) + '" y1="' + i1[1].toFixed(1) + '" x2="' + i2[0].toFixed(1) +
+             '" y2="' + i2[1].toFixed(1) + '" stroke="currentColor" stroke-opacity=".2"></line>');
+      var c = P(R_STAR, a + 15), fig = STARS[k], W = 40, H = 32, g = [];
+      var sx = function (q) { return c[0] + (q[0] - .5) * W; };
+      var sy = function (q) { return c[1] + (q[1] - .5) * H; };
+      for (var e = 0; e < fig.e.length; e++) {
+        var u = fig.p[fig.e[e][0]], v = fig.p[fig.e[e][1]];
+        g.push('<line x1="' + sx(u).toFixed(1) + '" y1="' + sy(u).toFixed(1) + '" x2="' + sx(v).toFixed(1) +
+               '" y2="' + sy(v).toFixed(1) + '" stroke="currentColor" stroke-width=".7"></line>');
+      }
+      for (var q = 0; q < fig.p.length; q++) {
+        g.push('<circle cx="' + sx(fig.p[q]).toFixed(1) + '" cy="' + sy(fig.p[q]).toFixed(1) +
+               '" r="' + (fig.b.indexOf(q) >= 0 ? 2.1 : 1.3) + '" fill="currentColor"></circle>');
+      }
+      s.push('<g id="st' + k + '" opacity=".45">' + g.join("") + "</g>");
+      var n = P(R_NAME, a + 15);
+      s.push('<text x="' + n[0].toFixed(1) + '" y="' + (n[1] + 4).toFixed(1) + '" font-size="11" text-anchor="middle" ' +
+             'fill="currentColor" fill-opacity=".45" id="nm' + k + '"><tspan font-family="' + SYMFONT +
+             '" font-size="12">' + GLYPH[k] + VS + "</tspan> " + MAZAL[k] + "</text>");
+    }
+    el.ring.innerHTML = s.join("");
+  })();
+  var stm = [], nml = [];
+  for (var k = 0; k < 12; k++) { stm.push(document.getElementById("st" + k)); nml.push(document.getElementById("nm" + k)); }
+
+  // the equinox axis and the two solstices, drawn once
+  (function () {
+    var a = P(R_BAND_OUT + 4, 0), b = P(R_BAND_OUT + 4, 180);
+    el.eqLine.setAttribute("x1", a[0].toFixed(1)); el.eqLine.setAttribute("y1", a[1].toFixed(1));
+    el.eqLine.setAttribute("x2", b[0].toFixed(1)); el.eqLine.setAttribute("y2", b[1].toFixed(1));
+    var la = P(R_BAND_IN - 16, 6), lb = P(R_BAND_IN - 16, 174);
+    put(el.eqA, la[0], la[1]); el.eqA.textContent = "sunset at six";
+    put(el.eqB, lb[0], lb[1]); el.eqB.textContent = "sunset at six";
+    var sa = P(R_BAND_IN - 18, 90), sb = P(R_BAND_IN - 18, 270);
+    put(el.solA, sa[0], sa[1] + 4); el.solA.textContent = "longest day";
+    put(el.solB, sb[0], sb[1] + 4); el.solB.textContent = "shortest day";
+  })();
+
+  // ── the curve against the staircase ──
+  (function () {
+    var X = function (d) { return 46 + (d / 360) * 540; };
+    var Y = function (m) { return 130 - (m / 40) * 86; };          // minutes of moon motion
+    var grid = "", axis = "";
+    for (var m = -30; m <= 30; m += 15) {
+      grid += '<line x1="46" y1="' + Y(m).toFixed(1) + '" x2="586" y2="' + Y(m).toFixed(1) +
+              '" stroke="currentColor" stroke-opacity="' + (m === 0 ? ".28" : ".1") + '"></line>';
+      grid += '<text x="40" y="' + (Y(m) + 4).toFixed(1) + '" font-size="10" text-anchor="end" fill="currentColor" ' +
+              'fill-opacity=".45" font-family="IBM Plex Mono, monospace">' + (m > 0 ? "+" : "") + m + "′</text>";
+    }
+    for (var k2 = 0; k2 < 12; k2++) {
+      var x = X(k2 * 30 + 15);
+      axis += '<text x="' + x.toFixed(1) + '" y="180" font-size="13" text-anchor="middle" font-family="' + SYMFONT +
+              '" fill="currentColor" fill-opacity=".5">' + GLYPH[k2] + VS + "</text>";
+      axis += '<text x="' + x.toFixed(1) + '" y="196" font-size="9.5" text-anchor="middle" fill="currentColor" ' +
+              'fill-opacity=".38">' + MAZAL[k2] + "</text>";
+      axis += '<line x1="' + X(k2 * 30).toFixed(1) + '" y1="30" x2="' + X(k2 * 30).toFixed(1) +
+              '" y2="160" stroke="currentColor" stroke-opacity=".08"></line>';
+    }
+    axis += '<text x="316" y="228" font-size="11" text-anchor="middle" fill="var(--sunc)">where the sun stands →</text>';
+    var cu = "", st = "", B = CONSTANTS.SEASON_CORRECTIONS;
+    for (var d = 0; d <= 360; d += 2) {
+      cu += (d ? " L " : "M ") + X(d).toFixed(1) + " " + Y((sunsetHours(d) - 18) * MOON_HR * 60).toFixed(1);
+    }
+    for (var i = 0; i < B.length; i++) {
+      var b = B[i], to = b.sunTo === 360 ? 360 : b.sunTo, y = Y(b.adjustment * 60);
+      st += "M " + X(b.sunFrom).toFixed(1) + " " + y.toFixed(1) + " L " + X(to).toFixed(1) + " " + y.toFixed(1) + " ";
+    }
+    el.cGrid.innerHTML = grid; el.cAxis.innerHTML = axis;
+    el.cCurve.setAttribute("d", cu); el.cSteps.setAttribute("d", st);
+  })();
+
+  // ── engine values ──
+  var cacheDay = null, cacheVals = null;
+  function atDay(n) {
+    if (cacheDay === n) return cacheVals;
+    var sMean = calculateSunMeanLongitude(n), sApo = calculateSunApogee(n);
+    var sMas = calculateSunMaslul(sMean.result, sApo.result);
+    cacheDay = n;
+    cacheVals = {
+      sun: calculateSunTrueLongitude(sMean.result, sMas.result, lookupMaslulCorrection(sMas.result).result),
+      mean: calculateMoonMeanLongitude(n)
+    };
+    return cacheVals;
+  }
+  function tween(a, b, f) { return N(a + (((b - a + 540) % 360) - 180) * f); }
+
+  function paint(tbody, rows) {
+    var h = "";
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      h += "<tr" + (r.out ? ' class="out"' : (r.drop ? ' class="drop"' : "")) + '><td class="l">' + r.l +
+           (r.s ? "<small>" + r.s + "</small>" : "") + '</td><td class="a">' + r.a +
+           '</td><td class="t">' + r.t + "</td></tr>";
+    }
+    tbody.innerHTML = h;
+  }
+
+  var day = 0, playing = false, last = 0, lastWhole = null, runTo = null, runRate = 0, runKind = null;
+
+  function drawAt(dayFloat) {
+    var n = Math.floor(dayFloat), f = dayFloat - n;
+    var a = atDay(n), b = f > 0 ? atDay(n + 1) : a;
+    var sun = f > 0 ? tween(a.sun.result, b.sun.result, f) : a.sun.result;
+    var mean = f > 0 ? tween(a.mean.result, b.mean.result, f) : a.mean.result;
+    var band = bandFor(sun), adj = band.adjustment, sight = N(mean + adj);
+
+    var sp = P(R_SUN, sun);
+    put(el.sunBody, sp[0], sp[1]);
+    var s0 = P(R_BAND_IN, sun);
+    el.sunPtr.setAttribute("x1", s0[0].toFixed(1)); el.sunPtr.setAttribute("y1", s0[1].toFixed(1));
+    el.sunPtr.setAttribute("x2", sp[0].toFixed(1)); el.sunPtr.setAttribute("y2", sp[1].toFixed(1));
+
+    var B = CONSTANTS.SEASON_CORRECTIONS;
+    for (var i = 0; i < B.length; i++) {
+      document.getElementById("bd" + i).setAttribute("stroke",
+        B[i] === band ? "var(--brass)" : "var(--card)");
+      document.getElementById("bd" + i).setAttribute("stroke-width", B[i] === band ? "2" : "1");
+    }
+    var zs = zodiacPosition(sun);
+    for (var j = 0; j < 12; j++) {
+      stm[j].setAttribute("opacity", j === zs.index ? "1" : ".45");
+      nml[j].setAttribute("fill-opacity", j === zs.index ? ".9" : ".45");
+    }
+
+    var h = sunsetHours(sun), late = (h - 18) * 60;
+    el.hubTime.textContent = clock(h);
+    el.hubDelta.textContent = (Math.abs(late) < 0.5 ? "six o'clock exactly" :
+      (late > 0 ? clock(h).length && Math.round(late) + " min later than six" : Math.round(-late) + " min earlier than six"));
+    el.hubBand.textContent = (adj === 0 ? "so: no change" :
+      "so: " + (adj > 0 ? "+" : "−") + Math.abs(adj * 60) + "′ on the mean");
+
+    el.dDays.textContent = n.toLocaleString();
+    el.dDate.textContent = new Date(EPOCH_MS + n * 86400000)
+      .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+    el.dSun.textContent = F(sun);
+    el.dSunZ.textContent = zs.ordinalDegree + "° into " + zs.hebrew + " · " + zs.english;
+    el.dMean.textContent = F(mean);
+    el.dSight.textContent = F(sight);
+    el.dFix.textContent = adj === 0 ? "this band asks for nothing"
+                                    : (adj > 0 ? "+" : "−") + Math.abs(adj * 60) + "′ on the mean";
+
+    // the sun's place on the curve
+    var CXf = function (d) { return 46 + (d / 360) * 540; };
+    var CYf = function (m) { return 130 - (m / 40) * 86; };
+    el.cSun.innerHTML = '<line x1="' + CXf(sun).toFixed(1) + '" y1="30" x2="' + CXf(sun).toFixed(1) +
+      '" y2="160" stroke="var(--sunc)" stroke-opacity=".5" stroke-width="1"></line>' +
+      '<circle cx="' + CXf(sun).toFixed(1) + '" cy="' + CYf(late).toFixed(1) +
+      '" r="4.5" fill="var(--sunc)"></circle>' +
+      '<circle cx="' + CXf(sun).toFixed(1) + '" cy="' + CYf(adj * 60).toFixed(1) +
+      '" r="4" fill="none" stroke="var(--brass)" stroke-width="2"></circle>';
+
+    // magnified before and after
+    var half = 0.62, c0 = mean + adj / 2;
+    var XX = function (d) { return 310 + ((d - c0) / half) * 280; };
+    el.zNaive.setAttribute("x1", XX(mean).toFixed(1)); el.zNaive.setAttribute("x2", XX(mean).toFixed(1));
+    el.zNaiveT.setAttribute("x", XX(mean).toFixed(1));
+    el.zFix.setAttribute("x1", XX(sight).toFixed(1)); el.zFix.setAttribute("x2", XX(sight).toFixed(1));
+    el.zFixT.setAttribute("x", XX(sight).toFixed(1));
+    el.zGap.setAttribute("d", adj === 0 ? "" : "M " + XX(mean).toFixed(1) + " 76 L " + XX(sight).toFixed(1) + " 76");
+    el.zGapT.setAttribute("x", ((XX(mean) + XX(sight)) / 2).toFixed(1));
+    el.zGapT.textContent = adj === 0 ? "the two sit on top of one another — this band asks for nothing"
+                                     : F(Math.abs(adj)) + "   ·   magnified about 40 times";
+    var t = "";
+    for (var g2 = -3; g2 <= 3; g2++) {
+      var x2 = XX(c0 + g2 * 0.25);
+      if (x2 < 30 || x2 > 590) continue;
+      t += '<line x1="' + x2.toFixed(1) + '" y1="52" x2="' + x2.toFixed(1) +
+           '" y2="60" stroke="currentColor" stroke-opacity=".3"></line>' +
+           '<text x="' + x2.toFixed(1) + '" y="70" font-size="9" text-anchor="middle" fill="currentColor" ' +
+           'fill-opacity=".4" font-family="IBM Plex Mono, monospace">' + (g2 * 15) + "′</text>";
+    }
+    el.zoomTicks.innerHTML = t;
+  }
+
+  function refresh() {
+    var v = atDay(Math.floor(day)), band = bandFor(v.sun.result), adj = band.adjustment;
+    var h = sunsetHours(v.sun.result);
+    paint(el.ledSight, [
+      { l: "אמצע הירח, naively", s: "chapter 14 as it stood — reckoned for six o'clock", a: "", t: v.mean.formatted },
+      { l: "where the true sun stands", s: "chapters 12–13 · " + zodiacPosition(v.sun.result).hebrew,
+        a: "", t: F(v.sun.result), drop: true },
+      { l: "so the sun sets at about", s: "latitude 32°, apparent solar time", a: "", t: clock(h), drop: true },
+      { l: "which band of KH 14:5 that is", s: band.sourcePhrase, a: "",
+        t: band.sunFrom + "° – " + band.sunTo + "°", drop: true },
+      { l: adj === 0 ? "so nothing is added or taken off" : "so the mean is " + (adj > 0 ? "raised" : "lowered"),
+        a: adj === 0 ? "0′" : (adj > 0 ? "+ " : "− ") + F(Math.abs(adj)), t: F(N(v.mean.result + adj)) },
+      { l: "אמצע הירח לשעת הראייה", a: "", t: F(N(v.mean.result + adj)), out: true }
+    ]);
+    if (document.activeElement !== el.dayIn) el.dayIn.value = Math.floor(day);
+  }
+
+  function frame(ts) {
+    if (!last) last = ts;
+    var dt = (ts - last) / 1000; last = ts;
+    if (runTo !== null) { day += dt * runRate; if (day >= runTo) { day = runTo; stopRun(); } }
+    else if (playing) { day += dt * Number(el.speed.value); if (day < 0) day = 0; }
+    drawAt(day);
+    var w = Math.floor(day);
+    if (w !== lastWhole) { lastWhole = w; refresh(); }
+    requestAnimationFrame(frame);
+  }
+  function setDay(n) { stopRun(); day = Math.max(0, n); lastWhole = null; drawAt(day); }
+
+  var SPANS = { day: [1, 2.5], month: [29.530594, 12], year: [365.2468, 24] };
+  var runBtns = document.querySelectorAll("button.run");
+  function stopRun() {
+    runTo = null; runKind = null;
+    for (var i = 0; i < runBtns.length; i++) runBtns[i].classList.remove("on");
+  }
+  function startRun(kind) {
+    if (runKind === kind) { stopRun(); return; }
+    stopRun();
+    playing = false; el.play.textContent = "▶ Turn";
+    day = Math.floor(day);
+    runTo = day + SPANS[kind][0]; runRate = SPANS[kind][0] / SPANS[kind][1]; runKind = kind; last = 0;
+    for (var i = 0; i < runBtns.length; i++) runBtns[i].classList.toggle("on", runBtns[i].dataset.run === kind);
+  }
+  for (var r = 0; r < runBtns.length; r++) {
+    runBtns[r].addEventListener("click", function (e) { startRun(e.currentTarget.dataset.run); });
+  }
+  el.play.addEventListener("click", function () {
+    stopRun(); playing = !playing; last = 0;
+    el.play.textContent = playing ? "❙❙ Pause" : "▶ Turn";
+  });
+  document.getElementById("m1").addEventListener("click", function () { setDay(Math.floor(day) - 1); });
+  document.getElementById("p1").addEventListener("click", function () { setDay(Math.floor(day) + 1); });
+  document.getElementById("m10").addEventListener("click", function () { setDay(Math.floor(day) - 10); });
+  document.getElementById("p10").addEventListener("click", function () { setDay(Math.floor(day) + 10); });
+  document.getElementById("toEpoch").addEventListener("click", function () { setDay(0); });
+  document.getElementById("toToday").addEventListener("click", function () {
+    var t = new Date();
+    setDay(Math.round((Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) - EPOCH_MS) / 86400000));
+  });
+  el.dayIn.addEventListener("change", function () {
+    var n = parseInt(el.dayIn.value, 10); if (!isNaN(n)) setDay(n);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+    if (e.key === "ArrowRight") setDay(Math.floor(day) + 1);
+    if (e.key === "ArrowLeft") setDay(Math.floor(day) - 1);
+    if (e.key === " ") { e.preventDefault(); el.play.click(); }
+  });
+
+  var today = new Date();
+  day = Math.round((Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) - EPOCH_MS) / 86400000);
+  drawAt(day); refresh();
+  if (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    playing = true; el.play.textContent = "❙❙ Pause";
+  }
+  requestAnimationFrame(frame);
+})();
+</script>

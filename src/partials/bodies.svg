@@ -1,0 +1,26 @@
+            <g id="gEarth">
+              <circle r="10" fill="#2f6fae"></circle>
+              <path d="M-7.5,-3 q3,-3 6,-1 q3,2 1,4 q-3,2 -7,1 z" fill="#3f8f56"></path>
+              <path d="M1,3.5 q3,-2 6,0 q1,3 -2,4 q-4,0 -4,-4 z" fill="#3f8f56"></path>
+              <path d="M-2,-8.5 q3,-1 5,1" fill="none" stroke="#3f8f56" stroke-width="2.2" stroke-linecap="round"></path>
+              <circle r="10" fill="none" stroke="#0d2b45" stroke-opacity=".55" stroke-width="1"></circle>
+            </g>
+            <g id="gSun">
+              <g stroke="var(--sunc)" stroke-width="1.6" stroke-linecap="round">
+                <line x1="0" y1="-15" x2="0" y2="-11.5"></line><line x1="0" y1="11.5" x2="0" y2="15"></line>
+                <line x1="-15" y1="0" x2="-11.5" y2="0"></line><line x1="11.5" y1="0" x2="15" y2="0"></line>
+                <line x1="-10.6" y1="-10.6" x2="-8.1" y2="-8.1"></line>
+                <line x1="8.1" y1="8.1" x2="10.6" y2="10.6"></line>
+                <line x1="8.1" y1="-8.1" x2="10.6" y2="-10.6"></line>
+                <line x1="-10.6" y1="10.6" x2="-8.1" y2="8.1"></line>
+              </g>
+              <circle r="8.5" fill="var(--sunc)"></circle>
+              <circle r="8.5" fill="none" stroke="#7a3d0d" stroke-opacity=".35" stroke-width="1"></circle>
+            </g>
+            <g id="gMoon">
+              <circle r="8" fill="#d9dde6"></circle>
+              <circle cx="-2.6" cy="-2.2" r="2.1" fill="#9aa3b2" fill-opacity=".85"></circle>
+              <circle cx="2.8" cy="1.4" r="1.5" fill="#9aa3b2" fill-opacity=".8"></circle>
+              <circle cx="-1.2" cy="3.4" r="1.1" fill="#9aa3b2" fill-opacity=".7"></circle>
+              <circle r="8" fill="none" stroke="#6f7787" stroke-opacity=".5" stroke-width=".8"></circle>
+            </g>
