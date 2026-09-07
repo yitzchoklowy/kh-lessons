@@ -24,6 +24,14 @@ fs.writeFileSync(R('build/engine-bundle.js'), engine);
 const ENGINE_BLOCK = '<script>\n' + engine + '\n' + read('src/lib/pipeline-local.js') + '\n</script>';
 const WORKING_BLOCK = '<script>\n' + read('src/lib/working.js') + '\n</script>';
 
+/* Every page is a fragment — title, style, body — so give it a real document.
+   Without the viewport meta a phone lays it out at desktop width. */
+const DOC = (body) => `<!doctype html>
+<html lang="he">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+${body}`;
+
 function include(html, depth = 0) {
   if (depth > 4) throw new Error('include nested too deep');
   return html.replace(/<!--@include\s+([\w./-]+)\s*-->/g, (_, rel) => {
@@ -48,7 +56,7 @@ for (const file of fs.readdirSync(R('src/lessons')).filter((f) => f.endsWith('.j
   const left = html.match(/<!--(?:@include|@spec|ENGINE|WORKING)[^>]*-->/);
   if (left) throw new Error(`${file}: placeholder left unfilled — ${left[0]}`);
   const out = file.replace(/\.js$/, '.html');
-  fs.writeFileSync(R('dist', out), html);
+  fs.writeFileSync(R('dist', out), DOC(html));
   console.log(String(out).padEnd(22), (html.length / 1024).toFixed(0) + ' KB');
   built++;
 }
@@ -61,7 +69,7 @@ for (const file of fs.readdirSync(R('src/pages')).filter((f) => f.endsWith('.htm
   const left = html.match(/<!--(?:@include|ENGINE|WORKING)[^>]*-->/);
   if (left) throw new Error(`${file}: placeholder left unfilled — ${left[0]}`);
 
-  fs.writeFileSync(R('dist', file), html);
+  fs.writeFileSync(R('dist', file), DOC(html));
   console.log(String(file).padEnd(22), (html.length / 1024).toFixed(0) + ' KB');
   built++;
 }

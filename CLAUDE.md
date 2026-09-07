@@ -99,7 +99,19 @@ really moving is the day count, so the other galgalim come round with it at
 their own rates — which is the thing to feel. Let go and it settles on a whole
 day, because he counts whole days.
 
-## 9. Every chart gets the same transport
+## 9. Hebrew reads right to left, everywhere
+
+His words, the terms, the legends, the page furniture — all of it RTL and
+right-aligned. Only figures, civil dates and the instrument controls stay LTR;
+mark those `dir="ltr"` rather than leaving the block LTR and hoping.
+
+## 10. Check every page on a phone before it ships
+
+`npm run phone <page>` opens it in a 390px frame. Headless Chrome clamps its own
+viewport at 512px, so `--window-size=390` proves nothing — the frame is the only
+honest check. Every page, every time.
+
+## 11. Every chart gets the same transport
 
 Step by day, and **watch one day / one month / one year**. Same control, same
 place, every page.

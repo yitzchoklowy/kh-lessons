@@ -8,7 +8,8 @@
     "build": "node build.mjs",
     "serve": "node tools/serve.mjs",
     "dev": "node build.mjs && node tools/serve.mjs",
-    "test": "node --test test/"
+    "test": "node --test test/",
+    "phone": "node tools/phone.mjs"
   },
   "license": "MIT",
   "devDependencies": {
