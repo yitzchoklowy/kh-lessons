@@ -196,7 +196,7 @@
           <path id="bandArc" class="p2" fill="none" stroke="var(--sunc)" stroke-width="40" stroke-opacity=".13"></path>
           <text id="bandLbl" class="p2" font-size="11.5" text-anchor="middle" fill="var(--sunc)"></text>
 
-          <circle cx="310" cy="372" r="160" fill="none" stroke="var(--mean)" stroke-width="1.6" stroke-opacity=".22"></circle>
+          <circle cx="310" cy="372" r="160" fill="none" stroke="var(--mean)" stroke-width="1.6" stroke-opacity=".3"></circle>
           <line x1="310" y1="372" x2="534" y2="372" stroke="currentColor" stroke-opacity=".2" stroke-width="1"></line>
           <text x="539" y="376" font-size="11" fill="currentColor" fill-opacity=".45">0°</text>
 
@@ -214,12 +214,12 @@
                 stroke-dasharray="5 3"></line>
           <line id="ptrFix" class="p2" x1="310" y1="372" x2="523" y2="372" stroke="var(--sunc)" stroke-width="2"></line>
 
-          <circle id="epi" cx="470" cy="372" r="40" fill="none" stroke="var(--mas)" stroke-width="1.8"></circle>
+          <circle id="epi" cx="470" cy="372" r="40" fill="none" stroke="var(--mas)" stroke-width="1.6" stroke-opacity=".3"></circle>
+          <path id="arcEpi" fill="none" stroke="var(--mas)" stroke-width="2.6" marker-end="url(#tipMas)"></path>
           <circle id="epiC" cx="460" cy="372" r="2.6" fill="var(--mas)"></circle>
           <line id="farLine" stroke="var(--mas)" stroke-width="1.6" stroke-opacity=".95"></line>
           <text id="farLbl" font-size="9.5" fill="var(--mas)" fill-opacity=".9" text-anchor="middle">0°</text>
-          <path id="arcMas" fill="none" stroke="var(--mas)" stroke-width="1.7" stroke-opacity=".95"
-                stroke-dasharray="4 3"></path>
+
           <line id="sightLine" x1="310" y1="372" x2="523" y2="372" stroke="var(--ink)" stroke-width="1.5"></line>
           <use id="moonBody" href="#gMoon" x="0" y="0"></use>
           <use id="sunBody" class="p2" href="#gSun" x="0" y="0"></use>
@@ -492,7 +492,7 @@
 
   var el = {};
   ["ring","bandArc","bandLbl","arcMean","arcMeanLbl","sunPtr","sunBody","ptrMean","ptrFix",
-   "epi","epiC","farLine","farLbl","arcMas","sightLine","moonBody","scaleNote","cMean","cMas","cMasLbl","corner",
+   "epi","epiC","farLine","farLbl","arcEpi","sightLine","moonBody","scaleNote","cMean","cMas","cMasLbl","corner",
    "dDays","dDate","dMean","dMeanZ","dMas","dSun","dSunZ","dSight","dFix",
    "ledMean","ledMas","ledSight","play","speed","dayIn","rig","tabs","swSpeed","speedBody",
    "gDot","gTxt","zNaive","zFix","zNaiveT","zFixT","zGap","zGapT","zoomTicks",
@@ -688,11 +688,11 @@
     put(el.moonBody, Mo[0], Mo[1]);
     var fa2 = (farA + 20) * RAD, fl = epiR + 11;
     put(el.farLbl, C[0] + fl * Math.cos(fa2), C[1] - fl * Math.sin(fa2) + 3);
-    var mr = epiR * 0.80, span = N(mas);
-    var q0 = [C[0] + mr * Math.cos(farA * RAD), C[1] - mr * Math.sin(farA * RAD)];
-    var q1 = [C[0] + mr * Math.cos(moonA * RAD), C[1] - mr * Math.sin(moonA * RAD)];
-    el.arcMas.setAttribute("d", span < 1 ? "" : "M " + q0[0].toFixed(2) + " " + q0[1].toFixed(2) +
-      " A " + mr.toFixed(2) + " " + mr.toFixed(2) + " 0 " + (span > 180 ? 1 : 0) + " 1 " +
+    var span = N(mas);
+    var q0 = [C[0] + epiR * Math.cos(farA * RAD), C[1] - epiR * Math.sin(farA * RAD)];
+    var q1 = [C[0] + epiR * Math.cos(moonA * RAD), C[1] - epiR * Math.sin(moonA * RAD)];
+    el.arcEpi.setAttribute("d", span < 1 ? "" : "M " + q0[0].toFixed(2) + " " + q0[1].toFixed(2) +
+      " A " + epiR.toFixed(2) + " " + epiR.toFixed(2) + " 0 " + (span > 180 ? 1 : 0) + " 1 " +
       q1[0].toFixed(2) + " " + q1[1].toFixed(2));
 
     var tip = P(R_PTR, mean);

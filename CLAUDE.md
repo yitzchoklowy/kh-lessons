@@ -86,7 +86,15 @@ Cut every sentence that survives its own deletion.
 
 A page that needs an earlier result links the page that derives it. One line.
 
-## 8. Every chart gets the same transport
+## 8. A circle shows how far it has come
+
+Any circle a body travels is drawn once, in one colour: **light for the whole
+round, dark for the part already swept**, with a small arrowhead at the leading
+end. Never a second circle, and never a separate dashed arc inside — the angle
+is read off the circle itself. This holds for every galgal on every page, the
+small ones as much as the large.
+
+## 9. Every chart gets the same transport
 
 Step by day, and **watch one day / one month / one year**. Same control, same
 place, every page.
