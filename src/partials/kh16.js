@@ -305,13 +305,16 @@
     [el.epi, el.epiC, el.grabEpi, el.arcEpi, el.farLine, el.farLbl, el.moonBody,
      el.sightLine, el.ptrMean, el.arcMean, el.defCircle, el.grabDef]
       .forEach(function (x) { if (x) x.classList.add("dimmed"); });
-    if (el.sunCircle) el.sunCircle.setAttribute("opacity", "1");
   }
 
   /* The instrument's own readouts say what this chapter reads off it. */
   function nodeDials() {
     var dm = document.querySelector(".dial.m"), ds = document.querySelector(".dial.s");
-    if (dm) dm.querySelector(".lbl").innerHTML = "<i></i>מקום הראש";
+    /* the ראש reads in the colour it is drawn in, not the moon's */
+    if (dm) {
+      dm.querySelector(".lbl").innerHTML = "<i></i>מקום הראש";
+      dm.style.setProperty("--c", "var(--minus)");
+    }
     if (ds) ds.querySelector(".lbl").innerHTML = "<i></i>מסלול הרוחב";
     var cl = el.corner ? el.corner.querySelectorAll("text") : [];
     var dots = el.corner ? el.corner.querySelectorAll("circle") : [];
