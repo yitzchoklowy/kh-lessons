@@ -19,8 +19,8 @@
     var H = spec.heads || ["in", "it moves", "this count"];
     var h = '<div class="rc-head"><h4>' + spec.title + '</h4><span class="rc-ref">' + spec.ref + "</span></div>" +
             (spec.note ? '<p class="rc-note">' + spec.note + "</p>" : "") +
-            "<table><thead><tr><th>" + H[0] + "</th><th>" + H[1] + "</th><th>" + H[2] +
-            "</th></tr></thead><tbody>";
+            '<div class="rc-scroll"><table><thead><tr><th>' + H[0] + "</th><th>" + H[1] +
+            "</th><th>" + H[2] + "</th></tr></thead><tbody>";
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
       h += '<tr data-row="' + (r.key || "spare" + i) + '"' + (r.key ? "" : ' class="spare"') + '>' +
@@ -29,10 +29,11 @@
            (r.sign ? '<small dir="rtl">' + r.sign + "</small>" : "") + "</td>" +
            '<td class="use">' + (r.key ? "" : "—") + "</td></tr>";
     }
-    h += '</tbody></table><div class="rc-sum" data-sum></div>';
+    h += '</tbody></table></div><div class="rc-sum" data-sum></div>';
     host.innerHTML = h;
     host.className = "rchart";
     host._rows = rows;
+    host._heb = !!spec.heb;
   }
 
   /* `inputs` is the engine step's own inputs object, so the trace can never
@@ -53,45 +54,53 @@
         if (n) { total += n * r.v; parts.push(n + " × " + r.mult.toLocaleString()); }
       }
     }
-    host.querySelector("[data-sum]").innerHTML =
-      "Start at <b>" + startLabel + "</b>, add every row above, drop the whole circles: <b>" +
-      step.formatted + "</b>" +
-      '<span class="eq">' + inputs.daysFromBase.value.toLocaleString() + " days  =  " +
-      parts.join("  +  ") + "</span>";
+    host.querySelector("[data-sum]").innerHTML = host._heb
+      ? "מתחיל ב־<b>" + startLabel + "</b>, מוסיף כל שורה, ומשליך הגלגלים השלמים: <b>" +
+        step.formatted + "</b>" +
+        '<span class="eq">' + inputs.daysFromBase.value.toLocaleString() + " = " + parts.join("  +  ") + "</span>"
+      : "Start at <b>" + startLabel + "</b>, add every row above, drop the whole circles: <b>" +
+        step.formatted + "</b>" +
+        '<span class="eq">' + inputs.daysFromBase.value.toLocaleString() + " days  =  " +
+        parts.join("  +  ") + "</span>";
   }
 
   /* The running-total ledger for any block-built figure: start, every row added,
      every whole circle explicitly thrown away, and the total that falls out.
      Recomputes independently and returns null if it disagrees with the engine. */
-  function blockLedger(step, tbl, dailyDms, startLabel) {
-    var SIZES = [["k", 10000, "10,000"], ["j", 1000, "1,000"], ["i", 100, "100"], ["h", 10, "10"]];
+  function blockLedger(step, tbl, dailyDms, startLabel, heb) {
+    var SIZES = heb
+      ? [["k", 10000, "עשרת אלפים יום"], ["j", 1000, "אלף יום"], ["i", 100, "מאה יום"], ["h", 10, "עשרה ימים"]]
+      : [["k", 10000, "10,000"], ["j", 1000, "1,000"], ["i", 100, "100"], ["h", 10, "10"]];
+    var W = heb
+      ? { at: "בעיקר", each: "לכל אחד", shed: "השלך", circles: "גלגלים שלמים", circle: "גלגל שלם", day: "יום" }
+      : { at: "Position at the epoch", each: "each", shed: "throw away", circles: "whole circles", circle: "whole circle", day: "day" };
     var I = step.inputs, T = CONSTANTS[tbl], rows = [];
     var total = I[startKey(I)].value;
     function shed() {
       while (total >= 360) {
         var n = Math.floor(total / 360); total -= n * 360;
-        rows.push({ l: "throw away " + n + " whole circle" + (n > 1 ? "s" : ""),
+        rows.push({ l: W.shed + " " + n + " " + (n > 1 ? W.circles : W.circle),
                     a: "− " + n * 360 + "°", t: formatDms(total), drop: true });
       }
     }
-    rows.push({ l: "Position at the epoch", s: startLabel, t: formatDms(total) });
+    rows.push({ l: W.at, s: startLabel, t: formatDms(total) });
     for (var b = 0; b < SIZES.length; b++) {
       var n = I[SIZES[b][0]].value; if (!n) continue;
       var one = dmsToDecimal(T["p" + SIZES[b][1]]);
       total += n * one;
-      rows.push({ l: n + " × " + SIZES[b][2] + " days", s: formatDms(one) + " each",
-                  a: "+ " + formatDms(n * one), t: formatDms(total) });
+      rows.push({ l: heb ? SIZES[b][2] + " × " + n : n + " × " + SIZES[b][2] + " days",
+                  s: formatDms(one) + " " + W.each, a: "+ " + formatDms(n * one), t: formatDms(total) });
       shed();
     }
     if (I.d.value) {
       var day1 = dmsToDecimal(dailyDms);
       total += I.d.value * day1;
-      rows.push({ l: I.d.value + " × 1 day", s: formatDms(day1) + " each",
-                  a: "+ " + formatDms(I.d.value * day1), t: formatDms(total) });
+      rows.push({ l: heb ? W.day + " × " + I.d.value : I.d.value + " × 1 day",
+                  s: formatDms(day1) + " " + W.each, a: "+ " + formatDms(I.d.value * day1), t: formatDms(total) });
       shed();
     }
     if (Math.abs(total - step.result) > 1e-9) {
-      return [{ l: "recomputation disagreed with the engine — hidden", t: "" }];
+      return [{ l: heb ? "החשבון אינו מסכים עם המנוע" : "recomputation disagreed with the engine", t: "" }];
     }
     rows.push({ l: step.hebrewName, t: step.formatted, out: true });
     return rows;

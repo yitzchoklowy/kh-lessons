@@ -30,3 +30,12 @@
   .rchart .rc-sum b { color:var(--ink); font-weight:600; font-family:var(--mono); }
   .rchart .rc-sum .eq { display:block; font-family:var(--mono); font-size:.76rem;
                         color:var(--faint); margin-top:.2rem; word-break:break-word; }
+
+  .rc-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .rc-scroll table { min-width:20rem; }
+  .book { overflow-x:auto; }
+  @media (max-width:520px) {
+    .rchart table, .book table.led { font-size:.75rem; }
+    .rchart td.in small, .rchart td.moves small { font-size:.66rem; }
+    .rchart td.use { font-size:.72rem; }
+  }

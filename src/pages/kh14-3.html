@@ -49,7 +49,7 @@
       heads: ["בכמה", "מהלך", "הפעמים"],
       labels: LABELS, signs: SIGNS,
       blocks: CONSTANTS.MOON_MASLUL_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MASLUL_MEAN_MOTION,
-      startLabel: START, step: function (d) { return calculateMoonMaslul(d); }
+      heb: true, startLabel: START, step: function (d) { return calculateMoonMaslul(d); }
     });
 
     drill(document.getElementById("drill"), {
@@ -68,7 +68,7 @@
     var v = calculateMoonMaslul(n);
     traceBlockChart(document.getElementById("chBlocks"), v.inputs, v, START);
 
-    var rows = blockLedger(v, "MOON_MASLUL_PERIOD_BLOCKS", CONSTANTS.MOON.MASLUL_MEAN_MOTION, START), h = "";
+    var rows = blockLedger(v, "MOON_MASLUL_PERIOD_BLOCKS", CONSTANTS.MOON.MASLUL_MEAN_MOTION, START, true), h = "";
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
       h += "<tr" + (r.out ? ' class="out"' : (r.drop ? ' class="drop"' : "")) +

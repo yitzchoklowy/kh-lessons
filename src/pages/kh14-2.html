@@ -58,7 +58,7 @@
     renderBlockChart(document.getElementById("chBlocks"), {
       title: "שארית מהלכו", ref: "י״ד:ב", note: "",
       blocks: CONSTANTS.MOON_MEAN_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
-      startLabel: START, step: function (d) { return calculateMoonMeanLongitude(d); }
+      heb: true, startLabel: START, step: function (d) { return calculateMoonMeanLongitude(d); }
     });
 
     var B = CONSTANTS.MOON_MEAN_PERIOD_BLOCKS;
@@ -92,7 +92,7 @@
 
     traceBlockChart(document.getElementById("chBlocks"), v.inputs, v, START);
 
-    var rows = blockLedger(v, "MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY, START), h = "";
+    var rows = blockLedger(v, "MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY, START, true), h = "";
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
       h += "<tr" + (r.out ? ' class="out"' : (r.drop ? ' class="drop"' : "")) +

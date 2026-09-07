@@ -144,6 +144,7 @@
   }
 
   // ── state ──
+  var pageIsReady = false;
   var day = 0, playing = false, last = 0, step = 1, lastWhole = null, trueScale = false;
   var runTo = null, runRate = 0, runKind = null;
 
@@ -201,7 +202,7 @@
     el.dMeanZ.textContent = z.ordinalDegree + "° " + z.hebrew;
     el.dMas.textContent = F(mas);
     if (document.activeElement !== el.dayIn) el.dayIn.value = n;
-    if (typeof onDraw === "function") onDraw(n, mean, mas);
+    if (pageIsReady && typeof onDraw === "function") onDraw(n, mean, mas);
     lightSector(z.index);
 
   }
@@ -321,8 +322,13 @@
   var today = new Date();
   day = Math.round((Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) - EPOCH_MS) / 86400000);
   setNote();
-  if (typeof pageReady === "function") pageReady();
-  drawAt(day);
+  /* Deferred: wheel.js is included above the page's own code, so its `var`s are
+     not assigned yet. Booting on the next tick lets the page finish first. */
+  setTimeout(function () {
+    if (typeof pageReady === "function") pageReady();
+    pageIsReady = true;
+    drawAt(day);
+  }, 0);
   if (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     playing = true; el.play.textContent = "❙❙ Pause";
   }
