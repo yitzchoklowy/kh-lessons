@@ -383,13 +383,27 @@
          'fill-opacity=".5" direction="rtl">דרום</text>';
     // the two circles named in the corner: the rim belongs to two points that
     // travel the whole way round it
-    var lx = TV.w - 18;
-    g += '<circle cx="' + lx + '" cy="15" r="5" fill="var(--mean)"></circle>' +
-         '<text x="' + (lx - 13) + '" y="20" font-size="14" fill="var(--mean)" fill-opacity=".95" ' +
-         'direction="rtl" text-anchor="start">עגולת הירח</text>' +
-         '<circle cx="' + lx + '" cy="38" r="5" fill="var(--sunc)"></circle>' +
-         '<text x="' + (lx - 13) + '" y="43" font-size="14" fill="var(--sunc)" fill-opacity=".95" ' +
-         'direction="rtl" text-anchor="start">עגולת השמש</text>';
+    /* and what the broken line means, since a drawing that has to be explained
+       in words is a drawing that has not said it */
+    var lx = TV.w - 18, halo = 'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" ' +
+        'stroke-linejoin="round" ';
+    function leg(y, mark, text, colour, op) {
+      return mark + '<text x="' + (lx - 15) + '" y="' + (y + 5) + '" font-size="13.5" ' + halo +
+             'fill="' + colour + '" fill-opacity="' + op + '" direction="rtl" ' +
+             'text-anchor="start">' + text + "</text>";
+    }
+    function swatch(y, colour) {
+      return '<circle cx="' + lx + '" cy="' + y + '" r="5" fill="' + colour + '"></circle>';
+    }
+    function bar(y, dash) {
+      return '<line x1="' + (lx - 10) + '" y1="' + y + '" x2="' + (lx + 6) + '" y2="' + y +
+             '" stroke="var(--mean)" stroke-width="2.4"' +
+             (dash ? ' stroke-dasharray="4 3"' : "") + "></line>";
+    }
+    g += leg(15, swatch(15, "var(--mean)"), "עגולת הירח", "var(--mean)", ".95") +
+         leg(37, swatch(37, "var(--sunc)"), "עגולת השמש", "var(--sunc)", ".95") +
+         leg(61, bar(61, false), "מעל המשטח", "currentColor", ".55") +
+         leg(81, bar(81, true), "מתחתיו", "currentColor", ".55");
     // the moon, and how far it stands off his circle
     g += '<line id="t16Drop" stroke="var(--mas)" stroke-width="1.8"></line>' +
          '<circle id="t16Foot" r="2.6" fill="var(--sunc)" fill-opacity=".85"></circle>' +
