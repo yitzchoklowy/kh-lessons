@@ -42,7 +42,11 @@
 
   var ROWS = hisAdditions();
 
-  function rowLabel(r) { return r.minElongation + "° – " + r.maxElongation + "°"; }
+  /* a range is a figure, and figures stay left to right — the cell around it
+     is Hebrew, which would otherwise print his 0°–5° back to front */
+  function rowLabel(r) {
+    return '<span dir="ltr">' + r.minElongation + "° – " + r.maxElongation + "°</span>";
+  }
   function rowGain(r) { return r.adjustment ? "+ " + r.adjustment + "°" : "לא תוסיף כלום"; }
 
   function show(n) {

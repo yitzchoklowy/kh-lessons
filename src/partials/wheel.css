@@ -87,7 +87,11 @@
   .art { padding:.8rem .8rem .2rem; min-width:0; }
   /* touch-action:none belongs only on the handles — on the whole svg it eats the
      swipe and the page cannot be scrolled past the wheel on a phone */
-  .art svg { display:block; width:100%; height:auto; }
+  /* The drawing's own coordinates run left to right, so its text must anchor
+     that way too — inside an RTL page, text-anchor="start" would otherwise put
+     the corner readout's figures outside their box. Hebrew inside a label still
+     reads right to left, as bidi does it. */
+  .art svg { display:block; width:100%; height:auto; direction:ltr; }
   .art svg .grab { cursor:grab; touch-action:none; }
   /* the galgal a page is not about stays visible, but plainly out of the way */
   .art svg .dimmed { opacity:.13; }
