@@ -51,8 +51,8 @@
 
   function show(n) {
     var v = chapter16At(n);
-    drawNode(v);
-    markTilt(v);
+    drawNode(tiltAt(day));
+    markTilt(tiltAt(day));
     var zr = zodiacPosition(v.rosh), zz = zodiacPosition(v.zanav);
     document.getElementById("say").innerHTML =
       "הראש במזל <b>" + zr.hebrew + "</b>, " + zr.ordinalDegree + " מעלות · " +

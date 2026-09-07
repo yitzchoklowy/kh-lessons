@@ -59,8 +59,8 @@
 
   function show(n) {
     var v = chapter16At(n);
-    drawNode(v);
-    markWave(v, false);
+    drawNode(tiltAt(day));
+    markWave(tiltAt(day), false);
     var zm = zodiacPosition(v.amiti), zr = zodiacPosition(v.rosh);
     paint(document.getElementById("led"), [
       { l: "מקום הירח האמיתי", s: zm.ordinalDegree + " מעלות במזל " + zm.hebrew + " · פרק ט״ו",

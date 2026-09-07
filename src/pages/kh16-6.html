@@ -62,8 +62,8 @@
   function show(n) {
     var v = chapter16At(n), d = verdict(v);
     var zr = zodiacPosition(v.rosh), zz = zodiacPosition(v.zanav), zm = zodiacPosition(v.amiti);
-    drawNode(v);
-    markWave(v, false);
+    drawNode(tiltAt(day));
+    markWave(tiltAt(day), false);
     paint(document.getElementById("led"), [
       { l: "מקום הראש", s: zr.ordinalDegree + " מעלות במזל " + zr.hebrew, a: "", t: formatDms(v.rosh) },
       { l: "מקום הזנב", s: "מזל שביעי ממנו — " + zz.hebrew, a: "+ 180°", t: formatDms(v.zanav) },

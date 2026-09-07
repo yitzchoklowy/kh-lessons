@@ -66,7 +66,7 @@
 
   function show(n) {
     var v = chapter16At(n);
-    drawNode(v);
+    drawNode(tiltAt(day));
     traceNodeChart(document.getElementById("chart"), v.node, START);
     paint(document.getElementById("led"), roshLedger(v.node));
     agree(n, v);

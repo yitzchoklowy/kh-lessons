@@ -78,8 +78,8 @@
            (v.rochav < 1 / 3600 ? "" : f.north ? "צפוני" : "דרומי") + "</span>";
 
     traceListChart(document.getElementById("chart"), hits, sum);
-    drawNode(v);
-    markWave(v, false);
+    drawNode(tiltAt(day));
+    markWave(tiltAt(day), false);
   }
 
   function onDraw(n) { show(n); }

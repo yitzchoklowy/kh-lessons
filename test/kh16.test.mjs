@@ -19,9 +19,9 @@ const K = new Function(
   bundleEngine(path.join(root, 'src/engine'))
   + '\n' + read('src/partials/kh15.js')
   + '\n' + read('src/partials/kh16.js')
-  + '\nreturn { chapter15At, chapter16At, foldMaslul, rochavBracket, hisLatRows, waveRows,'
+  + '\nreturn { chapter15At, chapter16At, tiltAt, foldMaslul, rochavBracket, hisLatRows, waveRows,'
   + ' FOLD_RULES, CONSTANTS, formatDms, normalizeDegrees, dmsToDecimal, zodiacPosition,'
-  + ' calculateNodePosition };')();
+  + ' calculateNodePosition, calculateMoonLatitude };')();
 
 const { CONSTANTS: C, formatDms: F, dmsToDecimal: D } = K;
 const dms = (d, m = 0, s = 0) => d + m / 60 + s / 3600;
@@ -142,6 +142,28 @@ test('the side view is his table, not a curve fitted to it', () => {
     // the ראש and the זנב are on the line itself; every other point has a side
     if (row.latitude > 0) assert.equal(p.lat < 0, p.d > 180, `${p.d}° on the wrong side`);
   }
+});
+
+test('the drawing moves between his days, and the engine still stands behind it', () => {
+  // on a whole day it is the day's own figure, to the second
+  for (const d of [29, 300000]) {
+    const whole = K.chapter16At(d), live = K.tiltAt(d);
+    same(live.maslul, whole.maslul, `day ${d} מסלול`);
+    same(live.rochav, whole.rochav, `day ${d} רוחב`);
+  }
+  // and in between it moves the short way round, without ever jumping a circle
+  let prev = K.tiltAt(300000);
+  for (let f = 0.05; f <= 1.0001; f += 0.05) {
+    const live = K.tiltAt(300000 + f);
+    const step = Math.abs(((live.maslul - prev.maslul + 540) % 360) - 180);
+    assert.ok(step < 2, `the moon jumped ${F(step)} in a twentieth of a day`);
+    assert.ok(live.rochav <= 5 + 1e-9, `רוחב ran past five degrees: ${F(live.rochav)}`);
+    prev = live;
+  }
+  // the in-between width is the engine's own, for the in-between places
+  const mid = K.tiltAt(300000.5);
+  const lat = K.calculateMoonLatitude(mid.amiti, mid.rosh);
+  same(mid.rochav, Math.abs(lat.result), 'the width at half a day');
 });
 
 test('no chapter-16 page or partial types a DMS figure into a chart', () => {

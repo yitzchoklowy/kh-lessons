@@ -4,8 +4,8 @@
   .halacha b.node { color:var(--minus); }
   .leg.node { --c:var(--minus); }
   .book.n { --c:var(--minus); }
-  /* the two circles stand on their own, shoulder to shoulder with his words */
-  .page.solo > .fig16 { max-width:44rem; margin-left:auto; margin-right:0; margin-top:1.4rem; }
+  /* a drawing is worth looking at, so give it the width of the page */
+  .page.solo > .fig16 { max-width:none; margin:1.4rem 0; }
   .fig16 #tilt svg { display:block; width:100%; height:auto; }
   .fig16 #tilt svg .grab16 { cursor:grab; }
   .fig16 #tilt svg:active .grab16 { cursor:grabbing; }
@@ -14,3 +14,6 @@
   /* his table and the running total, one under the other beside the wheel */
   .pair .stack { display:grid; gap:1rem; align-content:start; min-width:0; }
   .pair .stack .rchart, .pair .stack .book { margin:0; max-width:none; }
+  /* the charts here carry a drawing under the table, so give that side more */
+  .pair { grid-template-columns:minmax(22rem,31rem) minmax(0,1fr); gap:1.2rem; }
+  @media (max-width:900px) { .pair { grid-template-columns:1fr; } }

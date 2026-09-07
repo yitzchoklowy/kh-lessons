@@ -55,7 +55,7 @@
 
   function show(n) {
     var v = chapter16At(n);
-    drawNode(v);
+    drawNode(tiltAt(day));
     paint(document.getElementById("led"), rochavLedger(v));
     agree(n, v);
   }

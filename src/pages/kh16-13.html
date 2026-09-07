@@ -79,8 +79,8 @@
 
   function show(n) {
     var v = chapter16At(n), f = foldMaslul(v.maslul);
-    drawNode(v);
-    markWave(v, true);
+    drawNode(tiltAt(day));
+    markWave(tiltAt(day), true);
     var sum = "מסלול הרוחב <b>" + formatDms(v.maslul) + "</b>";
     if (f.q === 0) {
       sum += " — עד תשעים, ומנתו בטבלה כמות שהוא.";

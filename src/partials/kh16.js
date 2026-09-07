@@ -28,6 +28,39 @@
     };
   }
 
+  /* The drawings move the way the instrument moves — between whole days, and
+     not in jumps. Every in-between figure is still the engine's own: the two
+     places are carried forward and handed back to it, and the width it returns
+     is what the drawing shows. The charts and the ledgers keep to whole days,
+     the way he counts them. */
+  var C16 = {}, C16N = 0;
+  function chapter16Cached(n) {
+    if (!C16[n]) {
+      if (C16N > 16) { C16 = {}; C16N = 0; }
+      C16[n] = chapter16At(n); C16N++;
+    }
+    return C16[n];
+  }
+
+  /* the short way round between two places, the way the instrument goes */
+  function tw16(x, y, f) { return normalizeDegrees(x + (((y - x + 540) % 360) - 180) * f); }
+
+  function tiltAt(dayFloat) {
+    var n = Math.floor(dayFloat), f = dayFloat - n, a = chapter16Cached(n);
+    if (f <= 0) return a;
+    var b = chapter16Cached(n + 1);
+    var amiti = tw16(a.amiti, b.amiti, f), rosh = tw16(a.rosh, b.rosh, f);
+    var lat = calculateMoonLatitude(amiti, rosh);
+    var maslul = lat.inputs.distFromNode.value;
+    return {
+      day: dayFloat, amiti: amiti, rosh: rosh, zanav: normalizeDegrees(rosh + 180),
+      sunTrue: tw16(a.sunTrue, b.sunTrue, f),
+      maslul: maslul, eff: lat.inputs.lookupAngle.value,
+      quarter: Math.floor(normalizeDegrees(maslul) / 90),
+      north: lat.result > 0, rochav: Math.abs(lat.result), signed: lat.result, lat: lat
+    };
+  }
+
   /* The rows he lists in ט״ז:י״א — ten degrees to ninety. The engine carries a
      nought row of its own for the point itself; he begins at ten. */
   function hisLatRows() {
@@ -175,16 +208,16 @@
   /* Two circles of one size about one centre project, from anywhere, as two
      ellipses nested one inside the other and touching at the two points: true,
      and unreadable — nothing crosses anything, so nothing looks like it leans.
-     So the sun's circle is drawn lying on its own flat sheet, wider than the
-     circle itself, and the moon's circle leans through that sheet: whole where
-     it rides above it, broken where it runs beneath. It comes up through the
-     sheet at the ראש and goes down through it at the זנב, which is the halacha.
+     So the plane his circle lies in is washed in under it — no edge, since he
+     never gives it one — and the moon's circle leans through that plane: whole
+     where it rides above, broken where it runs beneath. It comes up through the
+     plane at the ראש and goes down through it at the זנב, which is the halacha.
 
-     Two liberties, both said under the drawing: the sheet is not his — he says
-     circle, not surface — and the lean is drawn four times life size, or at his
-     own five degrees the two circles would sit one upon the other. */
+     Two liberties, both said under the drawing: the plane is not his — he says
+     circle, and a circle has no surface — and the lean is drawn four times life
+     size, or at his own five degrees the two would sit one upon the other. */
   var TV = { w: 580, h: 300, cx: 290, cy: 142, r: 150,
-             view: 22, spin: 28, mag: 4, sheet: [1.34, 1.18] };
+             view: 22, spin: 28, mag: 4, plane: 1.5 };
   var RAD16 = Math.PI / 180;
   var MAG_WORD = { 2: "פי שנים", 3: "פי שלשה", 4: "פי ארבעה", 5: "פי חמישה" };
 
@@ -241,12 +274,14 @@
     var lean = leanShown(), g = "";
     g += '<marker id="tip16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" ' +
          'orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--mean)"></path></marker>';
-    // the sheet his circle lies on
-    var a = TV.r * TV.sheet[0], b = TV.r * TV.sheet[1];
-    var corners = [proj(a, b, 0), proj(a, -b, 0), proj(-a, -b, 0), proj(-a, b, 0)]
-      .map(function (q) { return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" ");
-    g += '<polygon points="' + corners + '" fill="var(--sunc)" fill-opacity=".06" ' +
-         'stroke="var(--sunc)" stroke-opacity=".3"></polygon>';
+    // the plane his circle lies in — no edge, because he never gives it one
+    var pr = TV.r * TV.plane, pe = pr * Math.sin(TV.view * RAD16);
+    g += '<radialGradient id="plane16" cx=".5" cy=".5" r=".5">' +
+         '<stop offset="0" stop-color="var(--sunc)" stop-opacity=".16"></stop>' +
+         '<stop offset=".62" stop-color="var(--sunc)" stop-opacity=".1"></stop>' +
+         '<stop offset="1" stop-color="var(--sunc)" stop-opacity="0"></stop></radialGradient>' +
+         '<ellipse cx="' + TV.cx + '" cy="' + TV.cy + '" rx="' + pr.toFixed(1) +
+         '" ry="' + pe.toFixed(1) + '" fill="url(#plane16)"></ellipse>';
     // under the sheet: the half of the moon's circle that runs south
     g += '<path d="' + tpath(180, 360, lean) + '" fill="none" stroke="var(--mean)" ' +
          'stroke-width="1.9" stroke-opacity=".4" stroke-dasharray="6 5"></path>';
@@ -284,7 +319,7 @@
          'text-anchor="middle" fill="currentColor" fill-opacity=".5" direction="rtl">דרום</text>';
     // each circle named beside itself
     var ml = tp(115, lean);
-    var sl = proj(TV.r * TV.sheet[0] * 0.62, -TV.r * TV.sheet[1] * 0.86, 0);
+    var sl = proj(TV.r * 0.86, -TV.r * 1.02, 0);
     g += '<text x="' + (ml[0] - 8).toFixed(1) + '" y="' + (ml[1] - 16).toFixed(1) + '" font-size="15" ' +
          'text-anchor="middle" fill="var(--mean)" fill-opacity=".95" direction="rtl">עגולת הירח</text>' +
          '<text x="' + sl[0].toFixed(1) + '" y="' + sl[1].toFixed(1) + '" font-size="15" ' +
@@ -300,7 +335,7 @@
          'pointer-events="stroke" style="cursor:grab;touch-action:none" d="' + tpath(0, 360, lean) + '"></path>';
     // what in the drawing is not to his measure
     g += '<text x="' + TV.cx + '" y="' + (TV.h - 8) + '" font-size="12" text-anchor="middle" ' +
-         'fill="currentColor" fill-opacity=".45" direction="rtl">לא שלו: היריעה, והנטייה מוגדלת ' +
+         'fill="currentColor" fill-opacity=".45" direction="rtl">לא שלו: המשטח, והנטייה מוגדלת ' +
          (MAG_WORD[TV.mag] || "×" + TV.mag) + " — לאמיתה " + degShort(maxRochav()) + "</text>";
     return '<svg viewBox="0 0 ' + TV.w + " " + TV.h + '" role="img" ' +
       'aria-label="A flat sheet with the sun circle drawn on it, and the moon circle leaning through the sheet: whole where it rides above, broken where it runs beneath. It crosses the sheet at two points opposite each other, the head and the tail.">' +
