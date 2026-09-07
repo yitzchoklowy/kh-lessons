@@ -1,0 +1,130 @@
+<title>ראש וזנב</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh16.css--></style>
+
+<div class="page solo">
+
+  <header>
+    <h1 class="bigtitle">ראש וזנב</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/16" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ז:א</a></div>
+    <p class="halacha lead">העגולה שסובב בה הירח תמיד היא נוטה מעל העגולה שסובבת בה השמש תמיד,<br>
+      חציה נוטה לצפון וחציה נוטה לדרום.<br>
+      ושתי נקודות יש בה זו כנגד זו שבהן פוגעות שתי העגולות זו בזו.<br>
+      לפיכך כשיהיה הירח באחת משתיהן, נמצא סובב בעגולה של שמש כנגד השמש בשוה,<br>
+      ואם יצא הירח מאחת משתי הנקודות, נמצא מהלך לצפון השמש או לדרומה:</p>
+    <p class="halacha">הנקודה שממנה יתחיל הירח לנטות לצפון השמש היא הנקראת <b class="node">ראש</b>,<br>
+      והנקודה שממנה יתחיל הירח לנטות לדרום השמש היא הנקראת <b class="node">זנב</b>.<br>
+      ומהלך שוה יש לזה הראש שאין בו לא תוספת ולא גרעון,<br>
+      והוא הולך במזלות <b class="node">אחורנית, מטלה לדגים, לדלי</b>, וכן הוא סובב תמיד:</p>
+  </header>
+
+  <div class="pair">
+    <div class="rchart" id="fig" style="--c:var(--minus)">
+      <div class="rc-head"><h4>העגולה הנוטה, מן הצד</h4><span class="rc-ref">ט״ז:א</span></div>
+      <div id="wave"></div>
+      <div class="rc-sum" id="say"></div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--minus)"></div>
+
+  <p class="note"><a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh16.js-->
+  <!--@include partials/wheel.js-->
+
+  var MAZAL = CONSTANTS.CONSTELLATIONS;
+
+  function side(v) {
+    if (v.rochav < 1 / 3600) return "על העגולה של שמש בשוה";
+    return v.north ? "לצפון השמש" : "לדרום השמש";
+  }
+
+  function show(n) {
+    var v = chapter16At(n);
+    drawNode(v);
+    markWave(v, false);
+    var zr = zodiacPosition(v.rosh), zz = zodiacPosition(v.zanav);
+    document.getElementById("say").innerHTML =
+      "הראש במזל <b>" + zr.hebrew + "</b>, " + zr.ordinalDegree + " מעלות · " +
+      "הזנב במזל <b>" + zz.hebrew + "</b>, " + zz.ordinalDegree + " מעלות." +
+      "<br>והירח " + side(v) + '.<span class="eq">' + formatDms(v.maslul) + " מן הראש</span>";
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    dimGalgalim();
+    nodeDials();
+    document.getElementById("wave").innerHTML = waveFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "ט״ז:א",
+      note: "שתי נקודות, וצד אחד לכל חצי.",
+      newCase: function () { return chapter16At(280000 + Math.floor(Math.random() * 60000)); },
+      caseLine: function (c) {
+        var z = zodiacPosition(c.rosh);
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מקום הראש <b>" + formatDms(c.rosh) + "</b> — במזל " + z.hebrew +
+          ", " + z.ordinalDegree + " מעלות.";
+      },
+      steps: [
+        { ask: function () { return "לאיזה צד הולך הראש במזלות?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "אחורנית — מטלה לדגים", value: "back" },
+                    { label: "כסדרן — מטלה לשור", value: "fwd" }];
+          },
+          answer: function () { return "back"; },
+          hint: function () { return "כסדר המזלות, או כנגדם?"; },
+          after: function () { return "ומהלך שוה יש לו, שאין בו לא תוספת ולא גרעון."; } },
+
+        { ask: function (c) { return "הראש עומד במזל <b>" + zodiacPosition(c.rosh).hebrew +
+            "</b>. לאיזה מזל ייכנס?"; },
+          type: "pick",
+          choices: function (c) {
+            var i = zodiacPosition(c.rosh).index;
+            return [{ label: MAZAL[(i + 11) % 12], value: (i + 11) % 12 },
+                    { label: MAZAL[(i + 1) % 12], value: (i + 1) % 12 }];
+          },
+          answer: function (c) { return (zodiacPosition(c.rosh).index + 11) % 12; },
+          hint: function () { return "מטלה לדגים, לדלי — לאחור."; },
+          after: function () { return "ובכל יום שלשה חלקים ואחת עשרה שניות, וכן הוא סובב תמיד."; } },
+
+        { ask: function () { return "הירח עומד על הראש עצמו. לאן הוא נוטה?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "אינו נוטה כלל", value: "none" },
+                    { label: "לצפון השמש", value: "north" },
+                    { label: "לדרום השמש", value: "south" }];
+          },
+          answer: function () { return "none"; },
+          hint: function () { return "שם פוגעות שתי העגולות זו בזו."; },
+          after: function () { return "נמצא סובב בעגולה של שמש כנגד השמש בשוה."; } },
+
+        { ask: function () { return "יצא מן הראש והולך כנגד הזנב. לאן הוא נוטה?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "לצפון השמש", value: "north" },
+                    { label: "לדרום השמש", value: "south" }];
+          },
+          answer: function () { return "north"; },
+          hint: function () { return "הנקודה שממנה יתחיל הירח לנטות לצפון היא הנקראת ראש."; },
+          after: function () { return "ומן הזנב ואילך — לדרומה."; } }
+      ]
+    });
+  }
+})();
+</script>
