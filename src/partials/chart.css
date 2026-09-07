@@ -18,6 +18,8 @@
   .rchart td.moves, .rchart td.use { text-align:right; font-family:var(--mono);
                                      font-variant-numeric:tabular-nums; white-space:nowrap; }
   .rchart td.moves { color:var(--ink); padding-right:.7rem; }
+  .rchart td.moves small { display:block; font-size:.7rem; color:var(--faint);
+                           font-family:var(--serif); margin-top:.1rem; }
   .rchart td.use { color:var(--faint); font-size:.78rem; }
   .rchart tr.on td { background:color-mix(in srgb, var(--c) 8%, transparent); }
   .rchart tr.on td.in { color:var(--ink); }

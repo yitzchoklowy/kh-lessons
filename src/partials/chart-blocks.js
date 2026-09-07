@@ -4,23 +4,29 @@
      The values come from the engine's constants, never from a copy here. */
   function renderBlockChart(host, spec) {
     var B = spec.blocks;
+    var L = spec.labels || ["1 day", "10 days", "100 days", "1,000 days", "10,000 days",
+                            "29 days", "a regular year"];
+    var G = spec.signs || [];
     var rows = [
-      { key: "d", label: "1 day",         mult: 1,     v: dmsToDecimal(spec.daily) },
-      { key: "h", label: "10 days",       mult: 10,    v: dmsToDecimal(B.p10) },
-      { key: "i", label: "100 days",      mult: 100,   v: dmsToDecimal(B.p100) },
-      { key: "j", label: "1,000 days",    mult: 1000,  v: dmsToDecimal(B.p1000) },
-      { key: "k", label: "10,000 days",   mult: 10000, v: dmsToDecimal(B.p10000) },
-      { key: null, label: "29 days",      note: "a whole month at a step", v: dmsToDecimal(B.p29) },
-      { key: null, label: "a regular year", note: "354 days at a step",    v: dmsToDecimal(B.p354) }
+      { key: "d", label: L[0], mult: 1,     v: dmsToDecimal(spec.daily), sign: G[0] },
+      { key: "h", label: L[1], mult: 10,    v: dmsToDecimal(B.p10),      sign: G[1] },
+      { key: "i", label: L[2], mult: 100,   v: dmsToDecimal(B.p100),     sign: G[2] },
+      { key: "j", label: L[3], mult: 1000,  v: dmsToDecimal(B.p1000),    sign: G[3] },
+      { key: "k", label: L[4], mult: 10000, v: dmsToDecimal(B.p10000),   sign: G[4] },
+      { key: null, label: L[5], v: dmsToDecimal(B.p29),  sign: G[5], note: spec.labels ? "" : "a whole month at a step" },
+      { key: null, label: L[6], v: dmsToDecimal(B.p354), sign: G[6], note: spec.labels ? "" : "354 days at a step" }
     ];
+    var H = spec.heads || ["in", "it moves", "this count"];
     var h = '<div class="rc-head"><h4>' + spec.title + '</h4><span class="rc-ref">' + spec.ref + "</span></div>" +
-            '<p class="rc-note">' + spec.note + "</p>" +
-            "<table><thead><tr><th>in</th><th>it moves</th><th>this count</th></tr></thead><tbody>";
+            (spec.note ? '<p class="rc-note">' + spec.note + "</p>" : "") +
+            "<table><thead><tr><th>" + H[0] + "</th><th>" + H[1] + "</th><th>" + H[2] +
+            "</th></tr></thead><tbody>";
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
       h += '<tr data-row="' + (r.key || "spare" + i) + '"' + (r.key ? "" : ' class="spare"') + '>' +
            '<td class="in">' + r.label + (r.note ? "<small>" + r.note + "</small>" : "") + "</td>" +
-           '<td class="moves">' + formatDms(r.v) + "</td>" +
+           '<td class="moves">' + formatDms(r.v) +
+           (r.sign ? '<small dir="rtl">' + r.sign + "</small>" : "") + "</td>" +
            '<td class="use">' + (r.key ? "" : "—") + "</td></tr>";
     }
     h += '</tbody></table><div class="rc-sum" data-sum></div>';

@@ -111,6 +111,10 @@ mark those `dir="ltr"` rather than leaving the block LTR and hoping.
 viewport at 512px, so `--window-size=390` proves nothing — the frame is the only
 honest check. Every page, every time.
 
+And looking is not enough: **touch it.** `touch-action: none` on a whole diagram
+swallows the swipe and the page can no longer be scrolled past it. Put it on the
+handles alone.
+
 ## 11. Every chart gets the same transport
 
 Step by day, and **watch one day / one month / one year**. Same control, same

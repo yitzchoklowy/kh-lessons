@@ -81,6 +81,7 @@ const pages = [
   ['kh14-1.html', 'י"ד:א · שני מהלכים אמצעיים', 'שני הגלגלים, ושני האמצעים.'],
   ['kh14-2.html', 'י"ד:א–ב · מהלך אמצע הירח', 'ביום אחד, בעשרה ובמאה ובאלף, ובשנה סדורה.'],
   ['kh14-sun.html', 'KH 14:5–6 · The sun’s nudge', 'The nine bands as a ring of the year, and why they are what they are.'],
+  ['kh14-3.html', 'י"ד:ג–ד · מהלך אמצע המסלול', 'ביום אחד עד שנה סדורה.'],
   ['galgalim.html', 'KH 14–16 · The four galgalim', 'The moon model built up one chapter at a time.'],
   ['calculator.html', 'KH 11–17 · The whole calculation', 'All 26 steps for ליל ל׳ of any month.'],
 ];

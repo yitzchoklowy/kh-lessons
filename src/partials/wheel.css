@@ -84,8 +84,10 @@
   .stage { display:grid; grid-template-columns:minmax(0,1fr) 17.5rem; }
   @media (max-width:800px) { .stage { grid-template-columns:1fr; } }
   .art { padding:.8rem .8rem .2rem; min-width:0; }
-  .art svg { display:block; width:100%; height:auto; touch-action:none; }
-  .art svg .grab { cursor:grab; }
+  /* touch-action:none belongs only on the handles — on the whole svg it eats the
+     swipe and the page cannot be scrolled past the wheel on a phone */
+  .art svg { display:block; width:100%; height:auto; }
+  .art svg .grab { cursor:grab; touch-action:none; }
   .art svg.dragging, .art svg.dragging .grab { cursor:grabbing; }
 
   .dials { border-left:1px solid var(--line); background:var(--sunk); padding:1rem 1.1rem;
