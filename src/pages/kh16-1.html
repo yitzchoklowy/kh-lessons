@@ -12,24 +12,24 @@
       ושתי נקודות יש בה זו כנגד זו שבהן פוגעות שתי העגולות זו בזו.<br>
       לפיכך כשיהיה הירח באחת משתיהן, נמצא סובב בעגולה של שמש כנגד השמש בשוה,<br>
       ואם יצא הירח מאחת משתי הנקודות, נמצא מהלך לצפון השמש או לדרומה:</p>
-    <p class="halacha">הנקודה שממנה יתחיל הירח לנטות לצפון השמש היא הנקראת <b class="node">ראש</b>,<br>
-      והנקודה שממנה יתחיל הירח לנטות לדרום השמש היא הנקראת <b class="node">זנב</b>.<br>
-      ומהלך שוה יש לזה הראש שאין בו לא תוספת ולא גרעון,<br>
-      והוא הולך במזלות <b class="node">אחורנית, מטלה לדגים, לדלי</b>, וכן הוא סובב תמיד:</p>
   </header>
 
-  <div class="pair">
-    <div class="rchart" id="fig" style="--c:var(--minus)">
-      <div class="rc-head"><h4>העגולה הנוטה, מן הצד</h4><span class="rc-ref">ט״ז:א</span></div>
-      <div id="wave"></div>
-      <div class="rc-sum" id="say"></div>
-    </div>
-    <!--@include partials/wheel.html-->
+  <div class="rchart fig16" id="fig" style="--c:var(--minus)">
+    <div class="rc-head"><h4>שתי העגולות, ושתי הנקודות</h4><span class="rc-ref">ט״ז:א</span></div>
+    <div id="tilt"></div>
+    <div class="rc-sum" id="say"></div>
   </div>
+
+  <p class="halacha">הנקודה שממנה יתחיל הירח לנטות לצפון השמש היא הנקראת <b class="node">ראש</b>,<br>
+    והנקודה שממנה יתחיל הירח לנטות לדרום השמש היא הנקראת <b class="node">זנב</b>.<br>
+    ומהלך שוה יש לזה הראש שאין בו לא תוספת ולא גרעון,<br>
+    והוא הולך במזלות <b class="node">אחורנית, מטלה לדגים, לדלי</b>, וכן הוא סובב תמיד:</p>
+
+  <!--@include partials/wheel.html-->
 
   <div class="drill" id="drill" style="--c:var(--minus)"></div>
 
-  <p class="note"><a href="index.html">כל השיעורים</a></p>
+  <p class="note"><a href="kh16-2.html">מהלך הראש</a> · <a href="index.html">כל השיעורים</a></p>
 </div>
 
 <!--ENGINE-->
@@ -45,14 +45,14 @@
   var MAZAL = CONSTANTS.CONSTELLATIONS;
 
   function side(v) {
-    if (v.rochav < 1 / 3600) return "על העגולה של שמש בשוה";
-    return v.north ? "לצפון השמש" : "לדרום השמש";
+    if (v.rochav < 1 / 3600) return "באחת משתי הנקודות — סובב בעגולה של שמש כנגד השמש בשוה";
+    return v.north ? "מהלך לצפון השמש" : "מהלך לדרום השמש";
   }
 
   function show(n) {
     var v = chapter16At(n);
     drawNode(v);
-    markWave(v, false);
+    markTilt(v);
     var zr = zodiacPosition(v.rosh), zz = zodiacPosition(v.zanav);
     document.getElementById("say").innerHTML =
       "הראש במזל <b>" + zr.hebrew + "</b>, " + zr.ordinalDegree + " מעלות · " +
@@ -67,7 +67,8 @@
     if (el.play) el.play.textContent = "▶ Turn";
     dimGalgalim();
     nodeDials();
-    document.getElementById("wave").innerHTML = waveFigure();
+    document.getElementById("tilt").innerHTML = tiltFigure();
+    grabTilt();
     setDay(29);
 
     drill(document.getElementById("drill"), {

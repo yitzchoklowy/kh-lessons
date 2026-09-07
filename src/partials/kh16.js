@@ -13,6 +13,7 @@
     return {
       day: n,
       amiti: v.amiti,
+      sunTrue: v.sunTrue,
       emtza: node.inputs.emtzaRosh.value,
       rosh: node.result,
       zanav: normalizeDegrees(node.result + 180),
@@ -168,6 +169,176 @@
     rows.push({ l: "מקום הראש", s: zodiacPosition(step.result).ordinalDegree + " מעלות במזל " +
                 zodiacPosition(step.result).hebrew, a: "", t: step.formatted, out: true });
     return rows;
+  }
+
+  // ═══ the two circles, and the two points they meet at ════════════════
+  /* ט״ז:א drawn as he states it: the circle the sun goes round and the circle
+     the moon goes round, seen from a little above the sun's own. Two circles
+     that share a diameter project, from any one place, as two ellipses of the
+     same width and different heights — so they cross at the ends of that
+     diameter, and nowhere else. Those two crossings are the ראש and the זנב.
+     The far half of each is drawn lighter, so the near rim reads as near.
+
+     The lean is drawn four times life size: at his own five degrees the two
+     ellipses would sit almost one on the other. The drawing says so under it. */
+  var TV = { w: 520, h: 350, cx: 260, cy: 175, r: 205, view: 18, mag: 4 };
+  var RAD16 = Math.PI / 180;
+  var MAG_WORD = { 2: "פי שנים", 3: "פי שלשה", 4: "פי ארבעה", 5: "פי חמישה" };
+
+  function maxRochav() {
+    var T = CONSTANTS.MOON_LATITUDE_TABLE;
+    return T[T.length - 1].latitude;         // his five degrees, read and not typed
+  }
+  function leanShown() { return maxRochav() * TV.mag; }
+
+  /* whole degrees where the figure is whole degrees — the drawing's own labels */
+  function degShort(x) {
+    var d = Math.floor(x + 1e-9), m = Math.round((x - d) * 60);
+    if (m === 60) { d++; m = 0; }
+    return m ? d + "° " + m + "′" : d + "°";
+  }
+
+  /* u is measured from the ראש, the way he counts מסלול הרוחב */
+  function tp(u, lean) {
+    var i = (lean || 0) * RAD16, e = TV.view * RAD16, t = u * RAD16;
+    var X = TV.r * Math.cos(t), Y = TV.r * Math.sin(t) * Math.cos(i),
+        Z = TV.r * Math.sin(t) * Math.sin(i);
+    return [TV.cx + X, TV.cy - (Y * Math.sin(e) + Z * Math.cos(e))];
+  }
+  function tfoot(u) {                        // straight down onto the sun's circle
+    var i = leanShown() * RAD16, e = TV.view * RAD16, t = u * RAD16;
+    var X = TV.r * Math.cos(t), Y = TV.r * Math.sin(t) * Math.cos(i);
+    return [TV.cx + X, TV.cy - Y * Math.sin(e)];
+  }
+  function tpath(from, to, lean) {
+    var step = to > from ? 2 : -2, d = "", u = from;
+    for (; step > 0 ? u < to : u > to; u += step) {
+      var p = tp(u, lean);
+      d += (d ? " L " : "M ") + p[0].toFixed(1) + " " + p[1].toFixed(1);
+    }
+    var q = tp(to, lean);
+    return d + (d ? " L " : "M ") + q[0].toFixed(1) + " " + q[1].toFixed(1);
+  }
+  function lune(a, b) {                      // between the two circles, one half
+    return tpath(a, b, leanShown()) + " " + tpath(b, a, 0).replace(/^M/, "L") + " Z";
+  }
+
+  function tiltFigure() {
+    var lean = leanShown(), g = "";
+    g += '<marker id="tip16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" ' +
+         'orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--mean)"></path></marker>';
+    // the two halves he names, each between the circles
+    g += '<path d="' + lune(0, 180) + '" fill="var(--mean)" fill-opacity=".08"></path>' +
+         '<path d="' + lune(180, 360) + '" fill="var(--minus)" fill-opacity=".08"></path>';
+    // the sun's circle: the far rim, then the near
+    g += '<path d="' + tpath(0, 180, 0) + '" fill="none" stroke="var(--sunc)" stroke-width="1.6" stroke-opacity=".3"></path>' +
+         '<path d="' + tpath(180, 360, 0) + '" fill="none" stroke="var(--sunc)" stroke-width="2" stroke-opacity=".8"></path>';
+    // the moon's circle, leaning off it
+    g += '<path d="' + tpath(0, 180, lean) + '" fill="none" stroke="var(--mean)" stroke-width="1.6" stroke-opacity=".16"></path>' +
+         '<path d="' + tpath(180, 360, lean) + '" fill="none" stroke="var(--mean)" stroke-width="2" stroke-opacity=".28"></path>';
+    // "שתי נקודות יש בה זו כנגד זו" — and the line that makes it plain
+    var a = tp(0, 0), b = tp(180, 0);
+    g += '<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) +
+         '" y2="' + b[1].toFixed(1) + '" stroke="var(--minus)" stroke-opacity=".35" stroke-dasharray="5 4"></line>';
+    g += '<path id="t16Sweep" fill="none" stroke="var(--mean)" stroke-width="3" marker-end="url(#tip16)"></path>';
+    g += '<circle cx="' + TV.cx + '" cy="' + TV.cy + '" r="3.6" fill="currentColor" fill-opacity=".6"></circle>' +
+         '<text x="' + TV.cx + '" y="' + (TV.cy + 17) + '" font-size="12" text-anchor="middle" ' +
+         'fill="currentColor" fill-opacity=".5" direction="rtl">הארץ</text>';
+    // the two points themselves
+    g += '<circle cx="' + a[0].toFixed(1) + '" cy="' + a[1].toFixed(1) + '" r="5.5" fill="var(--minus)"></circle>' +
+         '<text x="' + a[0].toFixed(1) + '" y="' + (a[1] - 13).toFixed(1) + '" font-size="15" text-anchor="middle" ' +
+         'fill="var(--minus)" direction="rtl">ראש</text>' +
+         '<circle cx="' + b[0].toFixed(1) + '" cy="' + b[1].toFixed(1) + '" r="5.5" fill="none" ' +
+         'stroke="var(--minus)" stroke-width="2.2"></circle>' +
+         '<text x="' + b[0].toFixed(1) + '" y="' + (b[1] - 13).toFixed(1) + '" font-size="15" text-anchor="middle" ' +
+         'fill="var(--minus)" direction="rtl">זנב</text>';
+    // חציה נוטה לצפון וחציה נוטה לדרום
+    var top = tp(90, lean), bot = tp(270, lean);
+    g += '<text x="' + TV.cx + '" y="' + (top[1] - 9).toFixed(1) + '" font-size="13" text-anchor="middle" ' +
+         'fill="currentColor" fill-opacity=".5" direction="rtl">צפון</text>' +
+         '<text x="' + TV.cx + '" y="' + (bot[1] + 18).toFixed(1) + '" font-size="13" text-anchor="middle" ' +
+         'fill="currentColor" fill-opacity=".5" direction="rtl">דרום</text>';
+    // each circle named beside itself, on the rim nearest the reader
+    var ml = tp(125, lean), sl = tp(305, 0);
+    g += '<text x="' + ml[0].toFixed(1) + '" y="' + (ml[1] - 14).toFixed(1) + '" font-size="13" ' +
+         'text-anchor="middle" fill="var(--mean)" fill-opacity=".9" direction="rtl">עגולת הירח</text>' +
+         '<text x="' + sl[0].toFixed(1) + '" y="' + (sl[1] + 18).toFixed(1) + '" font-size="13" ' +
+         'text-anchor="middle" fill="var(--sunc)" fill-opacity=".9" direction="rtl">עגולת השמש</text>';
+    // the moon itself, and how far it stands off the sun's circle
+    g += '<line id="t16Drop" stroke="var(--mas)" stroke-width="1.6"></line>' +
+         '<circle id="t16Foot" r="2.6" fill="var(--sunc)" fill-opacity=".8"></circle>' +
+         '<circle id="t16Sun" r="6" fill="var(--sunc)"></circle>' +
+         '<circle id="t16Moon" r="6" fill="var(--mean)"></circle>' +
+         '<text id="t16Val" font-size="12" text-anchor="middle" fill="var(--mas)" ' +
+         'font-family="IBM Plex Mono, monospace">—</text>';
+    g += '<path id="t16Grab" class="grab16" fill="none" stroke="transparent" stroke-width="26" ' +
+         'pointer-events="stroke" style="cursor:grab;touch-action:none" d="' +
+         tpath(0, 360, lean) + '"></path>';
+    // the one thing in the drawing that is not to his measure
+    g += '<text x="' + TV.cx + '" y="' + (TV.h - 8) + '" font-size="11" text-anchor="middle" ' +
+         'fill="currentColor" fill-opacity=".45" direction="rtl">לא כמידתה: הנטייה מוגדלת ' +
+         (MAG_WORD[TV.mag] || "×" + TV.mag) + ", ולאמיתה " + degShort(maxRochav()) + "</text>";
+    return '<svg viewBox="0 0 ' + TV.w + " " + TV.h + '" role="img" ' +
+      'aria-label="Two circles about the earth, one leaning off the other, crossing at two points opposite each other: the head and the tail. Half of the leaning circle stands north of the flat one, half south.">' +
+      g + "</svg>";
+  }
+
+  function markTilt(v) {
+    var moon = document.getElementById("t16Moon");
+    if (!moon) return;
+    var lean = leanShown(), u = normalizeDegrees(v.maslul);
+    var m = tp(u, lean), f = tfoot(u), s = tp(normalizeDegrees(v.sunTrue - v.rosh), 0);
+    moon.setAttribute("cx", m[0].toFixed(1)); moon.setAttribute("cy", m[1].toFixed(1));
+    var foot = document.getElementById("t16Foot");
+    foot.setAttribute("cx", f[0].toFixed(1)); foot.setAttribute("cy", f[1].toFixed(1));
+    var drop = document.getElementById("t16Drop");
+    drop.setAttribute("x1", m[0].toFixed(1)); drop.setAttribute("y1", m[1].toFixed(1));
+    drop.setAttribute("x2", f[0].toFixed(1)); drop.setAttribute("y2", f[1].toFixed(1));
+    var sun = document.getElementById("t16Sun");
+    sun.setAttribute("cx", s[0].toFixed(1)); sun.setAttribute("cy", s[1].toFixed(1));
+    document.getElementById("t16Sweep").setAttribute("d", u < 1 ? "" : tpath(0, u, lean));
+    var val = document.getElementById("t16Val");
+    val.setAttribute("x", ((m[0] + f[0]) / 2 + 26).toFixed(1));
+    val.setAttribute("y", ((m[1] + f[1]) / 2 + 4).toFixed(1));
+    val.textContent = v.rochav < 1 / 3600 ? "—" : degShort(v.rochav);
+  }
+
+  /* Rule eight again: this circle turns too. Dragging the moon round it moves
+     the day count, so the ראש creeps the other way while it goes. */
+  function grabTilt() {
+    var handle = document.getElementById("t16Grab");
+    if (!handle) return;
+    var svg = handle.ownerSVGElement, holding = false;
+    var RATE = dmsToDecimal(CONSTANTS.MOON.MEAN_MOTION_PER_DAY) +
+               dmsToDecimal(CONSTANTS.NODE.DAILY_MOTION);   // the מסלול grows by both
+    function at(e) {
+      var b = svg.getBoundingClientRect();
+      return [(e.clientX - b.left) * TV.w / b.width, (e.clientY - b.top) * TV.h / b.height];
+    }
+    function nearest(p) {                    // the u whose point on the circle is closest
+      var best = 0, bd = Infinity, lean = leanShown();
+      for (var u = 0; u < 360; u += 1) {
+        var q = tp(u, lean), d = (q[0] - p[0]) * (q[0] - p[0]) + (q[1] - p[1]) * (q[1] - p[1]);
+        if (d < bd) { bd = d; best = u; }
+      }
+      return best;
+    }
+    function shortest(a) { return ((a + 540) % 360) - 180; }
+    handle.addEventListener("pointerdown", function (e) {
+      holding = true;
+      playing = false; el.play.textContent = "▶ Turn"; stopRun();
+      handle.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    handle.addEventListener("pointermove", function (e) {
+      if (!holding) return;
+      var want = nearest(at(e)), now = normalizeDegrees(chapter16At(Math.round(day)).maslul);
+      day = Math.max(0, Math.round(day + shortest(want - now) / RATE));
+      drawAt(day);
+    });
+    function drop() { if (!holding) return; holding = false; setDay(day); }
+    handle.addEventListener("pointerup", drop);
+    handle.addEventListener("pointercancel", drop);
   }
 
   // ═══ the side view ═══════════════════════════════════════════════════

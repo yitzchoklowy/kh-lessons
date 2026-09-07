@@ -4,6 +4,11 @@
   .halacha b.node { color:var(--minus); }
   .leg.node { --c:var(--minus); }
   .book.n { --c:var(--minus); }
+  /* the two circles stand on their own, shoulder to shoulder with his words */
+  .page.solo > .fig16 { max-width:44rem; margin-left:auto; margin-right:0; margin-top:1.4rem; }
+  .fig16 #tilt svg { display:block; width:100%; height:auto; }
+  .fig16 #tilt svg .grab16 { cursor:grab; }
+  .fig16 #tilt svg:active .grab16 { cursor:grabbing; }
   /* the side view sits in a chart box with no table of its own */
   .rchart #wave .curve { margin-top:.2rem; padding-top:0; border-top:0; }
   /* his table and the running total, one under the other beside the wheel */
