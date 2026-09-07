@@ -70,7 +70,7 @@ for (const file of fs.readdirSync(R('src/pages')).filter((f) => f.endsWith('.htm
 const pages = [
   ['kh12-sun-mean.html', 'KH 12:1 · The sun’s mean motion', 'One rate, one table of blocks.'],
   ['kh12-govah.html', 'KH 12:2 · The sun’s far point', 'The govah, and how slowly it drifts.'],
-  ['kh14-means.html', 'KH 14:1–4 · The two means', 'Two circles turning, and every degree accounted for.'],
+  ['kh14-1.html', 'KH 14:1 · שני מהלכים אמצעיים', 'The two circles, and the two means.'],
   ['kh14-sun.html', 'KH 14:5–6 · The sun’s nudge', 'The nine bands as a ring of the year, and why they are what they are.'],
   ['galgalim.html', 'KH 14–16 · The four galgalim', 'The moon model built up one chapter at a time.'],
   ['calculator.html', 'KH 11–17 · The whole calculation', 'All 26 steps for ליל ל׳ of any month.'],

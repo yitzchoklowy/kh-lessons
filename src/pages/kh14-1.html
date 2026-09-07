@@ -1,4 +1,4 @@
-<title>Chapter 14, Turning</title>
+<title>שני מהלכים אמצעיים</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap">
@@ -41,7 +41,17 @@
   .eyebrow { font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); font-weight:600; }
   h1 { font-family:var(--serif); font-weight:700; font-size:2rem; line-height:1.15; margin:.3rem 0 .4rem; }
   h1 .heb { display:block; font-size:1.4rem; color:var(--muted); direction:rtl; text-align:left; font-weight:500; }
-  .lede { margin:0; color:var(--muted); max-width:40rem; }
+  .halacha { font-family:var(--serif); direction:rtl; text-align:right; font-size:1.32rem;
+             line-height:1.85; color:var(--ink); margin:.6rem 0 0; }
+  .legend { display:grid; grid-template-columns:repeat(auto-fit,minmax(17rem,1fr)); gap:.9rem;
+            margin-top:1.1rem; }
+  .leg { background:var(--card); border:1px solid var(--line); border-radius:11px;
+         box-shadow:var(--shadow); padding:.9rem 1.05rem; }
+  .leg .t { display:flex; align-items:center; gap:.5rem; font-family:var(--serif);
+            font-size:1.18rem; direction:rtl; color:var(--c); }
+  .leg .t i { width:.72rem; height:.72rem; border-radius:50%; background:var(--c); flex:none; }
+  .leg .d { margin:.25rem 0 0; font-family:var(--serif); direction:rtl; text-align:right;
+            font-size:1rem; color:var(--muted); }
 
   h2 { font-family:var(--serif); font-size:1.28rem; font-weight:700; margin:2.2rem 0 .2rem; }
   .sub { margin:0 0 1rem; color:var(--muted); max-width:42rem; }
@@ -167,17 +177,12 @@
 <div class="page">
 
   <header>
-    <div class="eyebrow">Rambam · Hilchos Kiddush HaChodesh 14:1–4</div>
-    <h1><span class="heb">אמצע הירח ואמצע המסלול</span>Chapter fourteen, turning</h1>
-    <p class="lede">שני אמצעים — the two means, from his tables.</p>
+    <div class="eyebrow">רמב"ם · הלכות קידוש החודש י"ד:א</div>
+    <p class="halacha">הַיָּרֵחַ שְׁנֵי מַהֲלָכִים אְמְצָעיּים יֵשׁ לוֹ. הַיָּרֵחַ עַצְמוֹ מְסַבֵּב בְּגַלְגַּל קָטָן שֶׁאֵינוֹ מַקִּיף אֶת הָעוֹלָם כֻּלּוֹ. וּמַהֲלָכוֹ הָאֶמְצָעִי בְּאוֹתוֹ הַגַּלְגַּל הַקָּטָן נִקְרָא אֶמְצָעִי הַמַּסְלוּל. וְהַגַּלְגַּל הַקָּטָן עַצְמוֹ מְסַבֵּב בְּגַלְגַּל גָּדוֹל הַמַּקִּיף אֶת הָעוֹלָם. וּבְמַהֲלַךְ אֶמְצָעִי זֶה שֶׁל גַּלְגַּל הַקָּטָן בְּאוֹתוֹ הַגַּלְגַּל הַגָּדוֹל הַמַּקִּיף אֶת הָעוֹלָם הוּא הַנִּקְרָא אֶמְצַע הַיָּרֵחַ. מַהֲלַךְ אֶמְצַע הַיָּרֵחַ בְּיוֹם אֶחָד י"ג מַעֲלוֹת וְי' חֲלָקִים וְל"ה שְׁנִיּוֹת. סִימָנָם י"ג יל"ה:</p>
   </header>
 
   <div class="rig" id="rig" data-step="1">
-    <div class="hdr">KH 14:1–4 · the two means</div>
-    <div class="tabs" id="tabs">
-      <button type="button" data-s="1" class="on"><span class="ch">KH 14:1–4</span><span class="nm">The two means</span></button>
-      <button type="button" data-s="2"><span class="ch">KH 14:5–6</span><span class="nm">The fix for the sun</span></button>
-    </div>
+    <div class="hdr">י"ד:א</div>
 
     <div class="stage">
       <div class="art">
@@ -195,8 +200,6 @@
           </defs>
 
           <g id="ring"></g>
-          <path id="bandArc" class="p2" fill="none" stroke="var(--sunc)" stroke-width="40" stroke-opacity=".13"></path>
-          <text id="bandLbl" class="p2" font-size="11.5" text-anchor="middle" fill="var(--sunc)"></text>
 
           <circle cx="310" cy="372" r="160" fill="none" stroke="var(--mean)" stroke-width="1.6" stroke-opacity=".3"></circle>
           <circle id="grabDef" class="grab" cx="310" cy="372" r="160" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"></circle>
@@ -206,16 +209,9 @@
           <path id="arcMean" fill="none" stroke="var(--mean)" stroke-width="2.6"
                 marker-end="url(#tipMean)"></path>
 
-          <g class="p2">
-            <circle cx="310" cy="372" r="210" fill="none" stroke="var(--sunc)" stroke-width="1.2"
-                    stroke-opacity=".28" stroke-dasharray="2 4"></circle>
-            <line id="sunPtr" x1="310" y1="372" x2="506" y2="372" stroke="var(--sunc)"
-                  stroke-width="1.2" stroke-opacity=".5" stroke-dasharray="5 4"></line>
-          </g>
 
           <line id="ptrMean" x1="310" y1="372" x2="523" y2="372" stroke="var(--mean)" stroke-width="1.5"
                 stroke-dasharray="5 3"></line>
-          <line id="ptrFix" class="p2" x1="310" y1="372" x2="523" y2="372" stroke="var(--sunc)" stroke-width="2"></line>
 
           <circle id="epi" cx="470" cy="372" r="40" fill="none" stroke="var(--mas)" stroke-width="1.6" stroke-opacity=".3"></circle>
           <circle id="grabEpi" class="grab" cx="470" cy="372" r="40" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"></circle>
@@ -226,7 +222,6 @@
 
           <line id="sightLine" x1="310" y1="372" x2="523" y2="372" stroke="var(--ink)" stroke-width="1.5"></line>
           <use id="moonBody" href="#gMoon" x="0" y="0"></use>
-          <use id="sunBody" class="p2" href="#gSun" x="0" y="0"></use>
 
           <use href="#gEarth" x="310" y="372"></use>
           <text x="310" y="398" font-size="12" text-anchor="middle" fill="currentColor">הארץ</text>
@@ -253,32 +248,18 @@
 
       <div class="dials">
         <div class="dial d">
-          <span class="en">Days from the epoch — 3 Nisan 4938</span>
+          <span class="en">ימים מן העיקר</span>
           <span class="val" id="dDays">0</span>
           <span class="in" id="dDate">—</span>
         </div>
         <div class="dial m">
           <span class="lbl"><i></i>אמצע הירח</span>
-          <span class="en">where the big circle has carried it</span>
           <span class="val" id="dMean">—</span>
           <span class="in" id="dMeanZ">—</span>
         </div>
-        <div class="dial s p1">
+        <div class="dial s">
           <span class="lbl"><i></i>אמצע המסלול</span>
-          <span class="en">round the small circle, from its far point, the other way</span>
           <span class="val" id="dMas">—</span>
-        </div>
-        <div class="dial u p2">
-          <span class="lbl"><i></i>השמש האמיתי</span>
-          <span class="en">the true sun — brought in from chapters 12–13</span>
-          <span class="val" id="dSun">—</span>
-          <span class="in" id="dSunZ">—</span>
-        </div>
-        <div class="dial u p2">
-          <span class="lbl"><i></i>לשעת הראייה</span>
-          <span class="en">the mean, nudged for the time of year</span>
-          <span class="val" id="dSight">—</span>
-          <span class="in" id="dFix">—</span>
         </div>
       </div>
     </div>
@@ -311,170 +292,18 @@
     </div>
   </div>
 
-  <!-- ══════════ STEP 1 ══════════ -->
-  <div class="panel p1">
-    <h2>Step one — the two means, and nothing else</h2>
-    <p class="sub">Two numbers, two tables.</p>
-
-    <div class="books">
-      <div class="book m">
-        <h3><i></i>אמצע הירח</h3>
-        <p class="cap">KH 14:1–2, 14:4 · 13° 10′ 35″ a day, west → east through the mazalos</p>
-        <table class="led">
-          <thead><tr><th>step</th><th>add / take off</th><th>running total</th></tr></thead>
-          <tbody id="ledMean"></tbody>
-        </table>
-      </div>
-      <div class="book s">
-        <h3><i></i>אמצע המסלול</h3>
-        <p class="cap">KH 14:3–4 · 13° 3′ 54″ a day, east → west, against the sphere</p>
-        <table class="led">
-          <thead><tr><th>step</th><th>add / take off</th><th>running total</th></tr></thead>
-          <tbody id="ledMas"></tbody>
-        </table>
-      </div>
+  <div class="legend">
+    <div class="leg" style="--c:var(--mas)">
+      <div class="t"><i></i>אמצע המסלול</div>
+      <p class="d">מהלכו של הירח עצמו בגלגל הקטן</p>
     </div>
-
-    <h2>The tables he actually gives you</h2>
-    <p class="sub">Add the rows you need. The ones in use are lit.</p>
-    <div class="rcharts">
-      <div id="chartMean" class="rchart" style="--c:var(--mean)"></div>
-      <div id="chartMas" class="rchart" style="--c:var(--mas)"></div>
-    </div>
-
-    <h2>Now work one yourself</h2>
-    <p class="sub">Read the rows off the tables above.</p>
-    <div id="drillMean" class="drill" style="--c:var(--mean)"></div>
-
-    <div class="extra">
-      <label class="sw"><input type="checkbox" id="swSpeed">
-        Show why the moon runs fast on some days and slow on others</label>
-      <div class="body" id="speedBody" hidden>
-        <p>The small circle is at its true proportion — radius 5° of the big one —
-        and the line runs through the moon.</p>
-        <div class="gauge"><svg viewBox="0 0 620 74" role="img" aria-label="Today's apparent motion against the slowest and fastest days.">
-            <line x1="40" y1="42" x2="580" y2="42" stroke="currentColor" stroke-opacity=".25"></line>
-            <line x1="40" y1="34" x2="40" y2="50" stroke="currentColor" stroke-opacity=".35"></line>
-            <line x1="580" y1="34" x2="580" y2="50" stroke="currentColor" stroke-opacity=".35"></line>
-            <line x1="316" y1="30" x2="316" y2="54" stroke="var(--mean)" stroke-width="1.5" stroke-dasharray="3 2"></line>
-            <text x="40" y="66" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".5">12° 7′ 51″</text>
-            <text x="580" y="66" font-size="10.5" text-anchor="middle" fill="currentColor" fill-opacity=".5">14° 25′ 13″</text>
-            <text x="316" y="22" font-size="10.5" text-anchor="middle" fill="var(--mean)">mean 13° 10′ 35″</text>
-            <circle id="gDot" cx="316" cy="42" r="6" fill="var(--ink)"></circle>
-            <text id="gTxt" x="316" y="66" font-size="12" text-anchor="middle" fill="var(--ink)"
-                  font-family="IBM Plex Mono, monospace"></text>
-          </svg></div>
-        <p>Both circles turn evenly. The angle from the earth does not:
-        <b>12° 7′ 51″</b> to <b>14° 25′ 13″</b> in a day, never more than
-        <b>5°</b> from the mean. <em>not his — geometry of these two circles;
-        his table is KH 15:6, which parts from it by up to 1° 23′.</em></p>
-      </div>
-        <p>
-          Both circles turn perfectly evenly. What is <em>not</em> even is the angle
-          you see them at from the earth: near the far point of the small circle the
-          moon's own travel adds to the carry, and half a turn later it works against
-          it. Over four hundred days this geometry runs between <b>12° 7′ 51″</b> and
-          <b>14° 25′ 13″</b> in a day, and the sight line never leaves the mean by more
-          than <b>5°</b> — exactly the small circle's radius, and the size of the
-          correction table the Rambam hands you in chapter 15. He does not compute it
-          here; the picture is only showing why the next chapter needs a table at all.
-          (Chapter 15's answer also folds in the sun's pull and the off-centre, so it
-          parts company with this bare geometry by up to 1° 23′.)
-        </p>
-      </div>
-    </div>
-
-    <p style="margin-top:1.4rem">
-      <a href="https://claude.ai/code/artifact/1fca4103-1eec-4ef3-8290-1d82fbf1a2eb" style="font-weight:600;text-decoration:none;border-bottom:1px solid currentColor">
-        Next: KH 14:5–6, where the sun nudges this mean →</a>
-    </p>
-
-    <div class="quotes">
-      <div class="q"><b>KH 14:1</b><span>“There are two mean rates of progress with regard to the moon, for the
-        moon revolves in a small orbit that does not encompass the earth… The small orbit itself rotates in a
-        larger orbit that encompasses the earth.”</span></div>
-      <div class="q"><b>KH 14:3</b><span>“The distance travelled by the mean within its path in a single day is
-        13 degrees, 3 minutes and 54 seconds”</span> — and reckoned east to west, against the movement of the
-        sphere. That is why the moon runs round the small circle the opposite way to the way the big circle
-        carries it.</div>
-      <div class="q"><b>KH 14:4</b><span>“The position of the moon's mean on Wednesday night, the third of Nisan
-        4938… was 1° 14′ 43″ in the constellation of Taurus. The mean within its path at this date was
-        84° 28′ 42″.”</span></div>
+    <div class="leg" style="--c:var(--mean)">
+      <div class="t"><i></i>אמצע הירח</div>
+      <p class="d">מהלכו של הגלגל הקטן בגלגל הגדול המקיף את העולם</p>
     </div>
   </div>
-
-  <!-- ══════════ STEP 2 ══════════ -->
-  <div class="panel p2">
-    <h2>Step two — now the sun walks in</h2>
-    <p class="sub">
-      Step one was reckoned for six o'clock. But the chapter wants the moon's mean at
-      <em>sunset</em>, and sunset moves through the year. So the Rambam asks one
-      question — where is the sun? — and answers it with a nudge of at most half a degree.
-    </p>
-
-    <div class="sight">
-      <h3>אמצע הירח לשעת הראייה</h3>
-      <p class="cap">KH 14:5–6 · the naive mean from step one, then the fix</p>
-      <table class="led">
-        <thead><tr><th>step</th><th>add / take off</th><th>running total</th></tr></thead>
-        <tbody id="ledSight"></tbody>
-      </table>
-
-      <div style="margin-top:1rem">
-        <p class="cap" style="margin-bottom:.3rem">
-          The nudge is far too small to see on the wheel above. Here are the two
-          positions side by side, magnified:
-        </p>
-        <svg viewBox="0 0 620 96" role="img"
-             aria-label="The moon's mean before and after the fix, on a magnified scale.">
-          <line x1="30" y1="56" x2="590" y2="56" stroke="currentColor" stroke-opacity=".3"></line>
-          <g id="zoomTicks"></g>
-          <line id="zNaive" x1="200" y1="36" x2="200" y2="70" stroke="var(--mean)" stroke-width="2"></line>
-          <text id="zNaiveT" x="200" y="28" font-size="11" text-anchor="middle" fill="var(--mean)">naive</text>
-          <line id="zFix" x1="400" y1="36" x2="400" y2="70" stroke="var(--sunc)" stroke-width="2"></line>
-          <text id="zFixT" x="400" y="28" font-size="11" text-anchor="middle" fill="var(--sunc)">at sighting</text>
-          <path id="zGap" fill="none" stroke="var(--sunc)" stroke-width="1.2"></path>
-          <text id="zGapT" x="310" y="90" font-size="11.5" text-anchor="middle" fill="var(--sunc)"></text>
-        </svg>
-      </div>
-    </div>
-
-    <div class="sight">
-      <h3 style="direction:ltr">The nine bands of KH 14:5</h3>
-      <p class="cap">
-        Which one you are in depends only on where the sun stands. The marker is the
-        sun's true place today, and the band it falls in is the one lit on the wheel above.
-      </p>
-      <svg viewBox="0 0 620 128" role="img"
-           aria-label="The nine bands of KH 14:5 across the zodiac, with the sun's current position marked.">
-        <g id="bandCells"></g>
-        <g id="bandAxis"></g>
-        <g id="bandSun"></g>
-      </svg>
-    </div>
-
-    <div class="quotes">
-      <div class="q"><b>KH 14:5</b><span>“If the sun is located between midway in the constellation of Pisces and
-        midway in the constellation of Aries, the moon's mean should be left without emendation. If the sun is
-        located between midway in Aries and the beginning of Gemini, 15 minutes should be added…”</span></div>
-      <div class="q"><b>KH 14:6</b><span>“The figure that remains after these additions or subtractions have been
-        made, or when the mean was left without emendation, is the mean of the moon approximately 20 minutes
-        after the setting of the sun… This is referred to as the mean of the moon at the time of the sighting.”</span></div>
-      <div class="q">The sun's own position is worked out in chapters 12–13, which is why it could not appear in
-        step one. Everything else on this page is chapter 14's own.</div>
-    </div>
-  </div>
-
   <p class="note">
-    Every figure here is computed on this page by the project's own engine
-    (<a href="https://www.shluchimexchange.ai/kh/engine/index.json">shluchimexchange.ai/kh/engine</a>, MIT);
-    each ledger re-derives its own running total and refuses to display if it ever disagrees with
-    the engine. The angles on the wheel are drawn from those same numbers — nothing is animated
-    independently. Chapter 14 stops here: this moon is where the tables say, not yet where anyone
-    can see it.
-    <a href="https://claude.ai/code/artifact/1fca4103-1eec-4ef3-8290-1d82fbf1a2eb">The sun's nudge, KH 14:5–6</a> ·
-    <a href="https://claude.ai/code/artifact/539aa874-2717-407d-a419-3481c5de114b">the four galgalim</a> ·
-    <a href="https://claude.ai/code/artifact/2b5adc16-4af4-46d7-adbe-4bf900fa785a">the whole calculation, step by step</a>.
+    <a href="kh14-sun.html">י"ד:ה</a> · <a href="index.html">כל השיעורים</a>
   </p>
 </div>
 
@@ -495,12 +324,11 @@
   var EPI_BIG = 40, EPI_TRUE = R_DEF * RATIO;
 
   var el = {};
-  ["ring","bandArc","bandLbl","arcMean","arcMeanLbl","sunPtr","sunBody","ptrMean","ptrFix",
+  ["ring","arcMean","ptrMean",
    "epi","epiC","grabEpi","grabDef","farLine","farLbl","arcEpi","sightLine","moonBody","scaleNote","cMean","cMas","cMasLbl","corner",
-   "dDays","dDate","dMean","dMeanZ","dMas","dSun","dSunZ","dSight","dFix",
-   "ledMean","ledMas","ledSight","play","speed","dayIn","rig","tabs","swSpeed","speedBody",
-   "gDot","gTxt","zNaive","zFix","zNaiveT","zFixT","zGap","zGapT","zoomTicks",
-   "bandCells","bandAxis","bandSun","chartMean","chartMas","drillMean"].forEach(function (id) { el[id] = document.getElementById(id); });
+   "dDays","dDate","dMean","dMeanZ","dMas",
+   "play","speed","dayIn","rig","tabs",
+   "scaleNote"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   function P(r, deg) { var t = deg * RAD; return [CX + r * Math.cos(t), CY - r * Math.sin(t)]; }
   function put(node, x, y) { node.setAttribute("x", x.toFixed(2)); node.setAttribute("y", y.toFixed(2)); }
@@ -570,11 +398,8 @@
   var cacheDay = null, cacheVals = null;
   function atDay(n) {
     if (cacheDay === n) return cacheVals;
-    var sMean = calculateSunMeanLongitude(n), sApo = calculateSunApogee(n);
-    var sMas = calculateSunMaslul(sMean.result, sApo.result);
-    var sun = calculateSunTrueLongitude(sMean.result, sMas.result, lookupMaslulCorrection(sMas.result).result);
     cacheDay = n;
-    cacheVals = { mean: calculateMoonMeanLongitude(n), mas: calculateMoonMaslul(n), sun: sun };
+    cacheVals = { mean: calculateMoonMeanLongitude(n), mas: calculateMoonMaslul(n) };
     return cacheVals;
   }
   function tween(a, b, f) { return N(a + (((b - a + 540) % 360) - 180) * f); }
@@ -588,10 +413,6 @@
     for (var q = 0; q < B.length; q++) if (lon >= B[q].sunFrom && lon < B[q].sunTo) return B[q];
     return B[0];
   }
-
-  <!--@include partials/chart-blocks.js-->
-
-  <!--@include partials/practice.js-->
 
   // ── the running-total ledger, the Rambam's way ──
   var BLOCKS = [["k",10000,"10,000"],["j",1000,"1,000"],["i",100,"100"],["h",10,"10"]];
@@ -636,33 +457,6 @@
     tbody.innerHTML = h;
   }
 
-  // ── the nine bands, drawn once ──
-  (function () {
-    var X = function (d) { return 30 + (d / 360) * 560; }, cells = "", axis = "";
-    var B = CONSTANTS.SEASON_CORRECTIONS;
-    for (var i = 0; i < B.length; i++) {
-      var b = B[i], col = b.adjustment > 0 ? "var(--plus)" : b.adjustment < 0 ? "var(--minus)" : "currentColor";
-      var op = b.adjustment === 0 ? ".09" : Math.abs(b.adjustment) === 0.5 ? ".42" : ".24";
-      cells += '<rect x="' + X(b.sunFrom).toFixed(1) + '" y="34" width="' + (X(b.sunTo) - X(b.sunFrom)).toFixed(1) +
-               '" height="34" fill="' + col + '" fill-opacity="' + op + '"></rect>';
-      cells += '<text x="' + X((b.sunFrom + b.sunTo) / 2).toFixed(1) + '" y="56" font-size="11" text-anchor="middle" ' +
-               'fill="currentColor" fill-opacity=".85" font-family="IBM Plex Mono, monospace">' +
-               (b.adjustment === 0 ? "0" : (b.adjustment > 0 ? "+" : "−") + Math.abs(b.adjustment * 60) + "′") + "</text>";
-    }
-    for (var m = 0; m < 12; m++) {
-      var x = X(m * 30 + 15);
-      axis += '<text x="' + x.toFixed(1) + '" y="88" font-size="13" text-anchor="middle" font-family="' + SYMFONT +
-              '" fill="currentColor" fill-opacity=".55">' + GLYPH[m] + VS + "</text>";
-      axis += '<text x="' + x.toFixed(1) + '" y="104" font-size="9.5" text-anchor="middle" fill="currentColor" ' +
-              'fill-opacity=".4">' + MAZAL[m] + "</text>";
-      axis += '<line x1="' + X(m * 30).toFixed(1) + '" y1="34" x2="' + X(m * 30).toFixed(1) +
-              '" y2="72" stroke="currentColor" stroke-opacity=".12"></line>';
-    }
-    axis += '<text x="30" y="26" font-size="10" fill="currentColor" fill-opacity=".45">0°</text>' +
-            '<text x="590" y="26" font-size="10" text-anchor="end" fill="currentColor" fill-opacity=".45">360°</text>';
-    el.bandCells.innerHTML = cells; el.bandAxis.innerHTML = axis;
-  })();
-
   // ── state ──
   var day = 0, playing = false, last = 0, step = 1, lastWhole = null, trueScale = false;
   var runTo = null, runRate = 0, runKind = null;
@@ -672,8 +466,6 @@
     var a = atDay(n), b = f > 0 ? atDay(n + 1) : a;
     var mean = f > 0 ? tween(a.mean.result, b.mean.result, f) : a.mean.result;
     var mas  = f > 0 ? tween(a.mas.result,  b.mas.result,  f) : a.mas.result;
-    var sun  = f > 0 ? tween(a.sun.result,  b.sun.result,  f) : a.sun.result;
-    var band = bandFor(sun), adj = band.adjustment, sight = N(mean + adj);
     var epiR = trueScale ? EPI_TRUE : EPI_BIG;
 
     var C = P(R_DEF, mean);
@@ -707,151 +499,26 @@
     // held just inside the epicycle so the arrowhead never lands under it
     el.arcMean.setAttribute("d", arcPath(R_DEF, 0, mean, true));
     el.cMean.textContent = F(mean);
-    el.cMas.textContent = step === 2 ? F(sun) : F(mas);
-    el.cMasLbl.textContent = step === 2 ? "השמש האמיתי" : "אמצע המסלול";
-    el.cMas.setAttribute("fill", step === 2 ? "var(--sunc)" : "var(--mas)");
-    el.corner.querySelectorAll("circle")[1].setAttribute("fill", step === 2 ? "var(--sunc)" : "var(--mas)");
+    el.cMas.textContent = F(mas);
 
-    var sp = P(R_SUN, sun);
-    put(el.sunBody, sp[0], sp[1]);
-    el.sunPtr.setAttribute("x2", sp[0].toFixed(2)); el.sunPtr.setAttribute("y2", sp[1].toFixed(2));
-    el.bandArc.setAttribute("d", arcPath((R_IN + R_OUT) / 2, band.sunFrom, band.sunTo, true));
-    var bl = P(R_OUT + 15, (band.sunFrom + band.sunTo) / 2);
-    put(el.bandLbl, bl[0], bl[1] + 4);
-    el.bandLbl.textContent = adj === 0 ? "no change" : (adj > 0 ? "+" : "−") + Math.abs(adj * 60) + "′";
-    var ft = P(R_PTR, sight);
-    el.ptrFix.setAttribute("x2", ft[0].toFixed(2)); el.ptrFix.setAttribute("y2", ft[1].toFixed(2));
+
 
     var moonDir = Math.atan2(CY - Mo[1], Mo[0] - CX) / RAD;
     var lp = P(R_PTR, moonDir);
     el.sightLine.setAttribute("x2", lp[0].toFixed(2)); el.sightLine.setAttribute("y2", lp[1].toFixed(2));
 
-    if (trueScale) {
-      var rate = ((sightAngle(b.mean.result, b.mas.result) - sightAngle(a.mean.result, a.mas.result) + 540) % 360) - 180;
-      var lo = 12 + 7 / 60 + 51 / 3600, hi = 14 + 25 / 60 + 13 / 3600;
-      var x = 40 + Math.max(0, Math.min(1, (rate - lo) / (hi - lo))) * 540;
-      el.gDot.setAttribute("cx", x.toFixed(1));
-      el.gTxt.setAttribute("x", Math.max(96, Math.min(524, x)).toFixed(1));
-      el.gTxt.textContent = F(rate) + " today";
-    }
-
-    var z = zodiacPosition(mean), zs = zodiacPosition(sun);
+    var z = zodiacPosition(mean);
     el.dDays.textContent = n.toLocaleString();
     el.dDate.textContent = new Date(EPOCH_MS + n * 86400000)
       .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
     el.dMean.textContent = F(mean);
-    el.dMeanZ.textContent = z.ordinalDegree + "° into " + z.hebrew + " · " + z.english;
+    el.dMeanZ.textContent = z.ordinalDegree + "° into " + z.hebrew;
     el.dMas.textContent = F(mas);
-    el.dSun.textContent = F(sun);
-    el.dSunZ.textContent = zs.ordinalDegree + "° into " + zs.hebrew + " · " + zs.english;
-    el.dSight.textContent = F(sight);
-    el.dFix.textContent = adj === 0 ? "this band asks for nothing"
-                                    : (adj > 0 ? "+" : "−") + Math.abs(adj * 60) + "′ on the mean";
-    lightSector(step === 2 ? zs.index : z.index);
+    if (document.activeElement !== el.dayIn) el.dayIn.value = n;
+    lightSector(z.index);
 
-    if (step === 2) {
-      var half = 0.62, c0 = mean + adj / 2;
-      var XX = function (d) { return 310 + ((d - c0) / half) * 280; };
-      el.zNaive.setAttribute("x1", XX(mean).toFixed(1)); el.zNaive.setAttribute("x2", XX(mean).toFixed(1));
-      el.zNaiveT.setAttribute("x", XX(mean).toFixed(1));
-      el.zFix.setAttribute("x1", XX(sight).toFixed(1)); el.zFix.setAttribute("x2", XX(sight).toFixed(1));
-      el.zFixT.setAttribute("x", XX(sight).toFixed(1));
-      el.zGap.setAttribute("d", adj === 0 ? "" : "M " + XX(mean).toFixed(1) + " 76 L " + XX(sight).toFixed(1) + " 76");
-      el.zGapT.setAttribute("x", ((XX(mean) + XX(sight)) / 2).toFixed(1));
-      el.zGapT.textContent = adj === 0 ? "the two sit on top of one another — this band asks for nothing"
-                                       : F(Math.abs(adj)) + "   ·   magnified about 40 times";
-      var t = "";
-      for (var g = -3; g <= 3; g++) {
-        var x2 = XX(c0 + g * 0.25);
-        if (x2 < 30 || x2 > 590) continue;
-        t += '<line x1="' + x2.toFixed(1) + '" y1="52" x2="' + x2.toFixed(1) +
-             '" y2="60" stroke="currentColor" stroke-opacity=".3"></line>' +
-             '<text x="' + x2.toFixed(1) + '" y="70" font-size="9" text-anchor="middle" fill="currentColor" ' +
-             'fill-opacity=".4" font-family="IBM Plex Mono, monospace">' + (g * 15) + "′</text>";
-      }
-      el.zoomTicks.innerHTML = t;
-      var SX = 30 + (sun / 360) * 560;
-      el.bandSun.innerHTML = '<line x1="' + SX.toFixed(1) + '" y1="30" x2="' + SX.toFixed(1) +
-        '" y2="74" stroke="var(--sunc)" stroke-width="1.5"></line>' +
-        '<use href="#gSun" x="' + SX.toFixed(1) + '" y="18"></use>';
-    }
   }
 
-  renderBlockChart(el.chartMean, {
-    title: "מהלך אמצע הירח", ref: "KH 14:1–2",
-    note: "How far the mean moves in each block of days.",
-    blocks: CONSTANTS.MOON_MEAN_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY
-  });
-  renderBlockChart(el.chartMas, {
-    title: "מהלך אמצע המסלול", ref: "KH 14:3",
-    note: "The same, for the course round the small circle.",
-    blocks: CONSTANTS.MOON_MASLUL_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MASLUL_MEAN_MOTION
-  });
-
-  // ── practice: decompose a day count and finish the mean ──
-  var BLOCK_SIZES = [["k", 10000, "10,000"], ["j", 1000, "1,000"], ["i", 100, "100"], ["h", 10, "10"]];
-  drill(el.drillMean, {
-    title: "Work out אמצע הירח", ref: "KH 14:1–2, 14:4",
-    note: "Six pieces. The Rambam's table is right above — read the rows off it.",
-    newCase: function () {
-      var d = 280000 + Math.floor(Math.random() * 60000);
-      return { day: d, step: calculateMoonMeanLongitude(d) };
-    },
-    caseLine: function (c) {
-      return "Days from the epoch: <b>" + c.day.toLocaleString() + "</b>  ·  that is " +
-        new Date(EPOCH_MS + c.day * 86400000)
-          .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) +
-        ". You start at <b>1° 14′ 43″</b> in שור.";
-    },
-    steps: BLOCK_SIZES.map(function (b, n) {
-      return {
-        ask: function (c) { return "How many whole blocks of <b>" + b[2] + " days</b> are in it" +
-          (n ? ", after the bigger blocks are taken out" : "") + "?"; },
-        type: "int",
-        answer: function (c) { return c.step.inputs[b[0]].value; },
-        hint: function () { return "Divide, and keep only the whole number — the remainder goes to the next row down."; },
-        after: function (c) {
-          var one = dmsToDecimal(CONSTANTS.MOON_MEAN_PERIOD_BLOCKS["p" + b[1]]);
-          return "That row is " + formatDms(one) + " each, so it brings " +
-            formatDms(normalizeDegrees(c.step.inputs[b[0]].value * one)) + ".";
-        }
-      };
-    }).concat([
-      { ask: function () { return "And how many single days are left over?"; },
-        type: "int",
-        answer: function (c) { return c.step.inputs.d.value; },
-        after: function (c) { return "At 13° 10′ 35″ a day, those bring " +
-          formatDms(normalizeDegrees(c.step.inputs.d.value * dmsToDecimal(CONSTANTS.MOON.MEAN_MOTION_PER_DAY))) + "."; } },
-      { ask: function () { return "Add the starting place and all five rows, drop the whole circles. What is <span dir=\"rtl\">אמצע הירח</span>?"; },
-        type: "dms",
-        answer: function (c) { return c.step.result; },
-        hint: function () { return "Start at 1° 14′ 43″ in שור — that is 31° 14′ 43″ from the beginning of טלה — then add each row above."; },
-        after: function (c) { return "Which puts it " + zodiacPosition(c.step.result).ordinalDegree +
-          "° into " + zodiacPosition(c.step.result).hebrew + "."; } }
-    ])
-  });
-
-  function refreshBooks() {
-    var v = atDay(Math.floor(day));
-    paint(el.ledMean, ledger(v.mean, "MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
-      "1° 14′ 43″ in שור — KH 14:4"));
-    paint(el.ledMas, ledger(v.mas, "MOON_MASLUL_PERIOD_BLOCKS", CONSTANTS.MOON.MASLUL_MEAN_MOTION,
-      "84° 28′ 42″ — KH 14:4"));
-    var band = bandFor(v.sun.result), adj = band.adjustment;
-    paint(el.ledSight, [
-      { l: "אמצע הירח, naively", s: "step one, before the sun is consulted at all", a: "", t: v.mean.formatted },
-      { l: "where the true sun stands", s: "chapters 12–13 · " + zodiacPosition(v.sun.result).hebrew,
-        a: "", t: F(v.sun.result), drop: true },
-      { l: "which band of KH 14:5 that is", s: band.sourcePhrase, a: "",
-        t: band.sunFrom + "° – " + band.sunTo + "°", drop: true },
-      { l: adj === 0 ? "so nothing is added or taken off" : "so the mean is " + (adj > 0 ? "raised" : "lowered"),
-        a: adj === 0 ? "0′" : (adj > 0 ? "+ " : "− ") + F(Math.abs(adj)), t: F(N(v.mean.result + adj)) },
-      { l: "אמצע הירח לשעת הראייה", a: "", t: F(N(v.mean.result + adj)), out: true }
-    ]);
-    traceBlockChart(el.chartMean, v.mean.inputs, v.mean, "1° 14′ 43″ in שור");
-    traceBlockChart(el.chartMas, v.mas.inputs, v.mas, "84° 28′ 42″");
-    if (document.activeElement !== el.dayIn) el.dayIn.value = Math.floor(day);
-  }
 
   function frame(ts) {
     if (!last) last = ts;
@@ -865,7 +532,6 @@
     }
     drawAt(day);
     var w = Math.floor(day);
-    if (w !== lastWhole) { lastWhole = w; refreshBooks(); }
     requestAnimationFrame(frame);
   }
   function setDay(n) { stopRun(); day = Math.max(0, n); lastWhole = null; drawAt(day); }
@@ -895,23 +561,6 @@
       ? "True proportion: the small circle's radius is " + KATAN_DEG + "° of the big one."
       : "Small circle drawn larger than life.";
   }
-  function setStep(s) {
-    step = s;
-    el.rig.setAttribute("data-step", String(s));
-    document.body.setAttribute("data-step", String(s));
-    var btns = el.tabs.querySelectorAll("button");
-    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("on", Number(btns[i].dataset.s) === s);
-    if (s === 2 && trueScale) { el.swSpeed.checked = false; trueScale = false; el.speedBody.hidden = true; setNote(); }
-    lastWhole = null;
-    try { history.replaceState(null, "", "#step" + s); } catch (e) {}
-  }
-
-  el.tabs.addEventListener("click", function (e) {
-    var b = e.target.closest("button[data-s]"); if (b) setStep(Number(b.dataset.s));
-  });
-  el.swSpeed.addEventListener("change", function () {
-    trueScale = el.swSpeed.checked; el.speedBody.hidden = !trueScale; setNote();
-  });
   el.play.addEventListener("click", function () {
     stopRun(); playing = !playing; last = 0;
     el.play.textContent = playing ? "❙❙ Pause" : "▶ Turn";
@@ -968,7 +617,7 @@
         var angC = Math.atan2(C[1] - p[1], p[0] - C[0]) / RAD;
         day += shortest(N(mean - angC) - mas) / RATE_MAS;
       }
-      if (day < 0) day = 0;
+      day = Math.max(0, Math.round(day));   // he counts whole days; the drag detents on them
       lastWhole = null;
       drawAt(day);
     });
@@ -976,7 +625,7 @@
       if (!holding) return;
       holding = null;
       art.classList.remove("dragging");
-      setDay(Math.round(day));          // he counts whole days
+      setDay(day);
     }
     art.addEventListener("pointerup", drop);
     art.addEventListener("pointercancel", drop);
@@ -984,11 +633,8 @@
 
   var today = new Date();
   day = Math.round((Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) - EPOCH_MS) / 86400000);
-  var h = location.hash.match(/^#step([12])$/);
-  setStep(h ? Number(h[1]) : 1);
   setNote();
   drawAt(day);
-  refreshBooks();
   if (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     playing = true; el.play.textContent = "❙❙ Pause";
   }
