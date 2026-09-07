@@ -7,24 +7,16 @@
     <h1 class="bigtitle">מהלך אמצע המסלול</h1>
     <div class="eyebrow">רמב״ם · הלכות קידוש החודש י״ד:ג–ד</div>
     <p class="halacha lead">ומהלך אמצע המסלול ביום אחד <b class="mas">שלש עשרה מעלות ושלשה חלקים וארבע וחמישים שניות</b>, סימנם <b class="mas">י״ג גנ״ד</b>.</p>
-  </header>
-
-
-  <div class="part">
     <p class="halacha">נמצא מהלכו בעשרה ימים <b class="mas">מאה ושלשים מעלות ותשעה ושלשים חלקים בלא שניות</b>, סימנם ק״ל ל״ט.<br>ונמצא שאר מהלכו במאה יום <b class="mas">מאתים ושש ועשרים מעלות ותשעה ועשרים חלקים ושלש וחמישים שניות</b>, סימנם רכ״ו כ״ט נ״ג.<br>ונמצא שארית מהלכו באלף יום <b class="mas">מאה וארבע מעלות ושמונה וחמישים חלקים וחמישים שניות</b>, סימנם ק״ד נח״נ.<br>ונמצא שארית מהלכו בעשרת אלפים יום <b class="mas">שלש מאות ותשע ועשרים מעלות ושמונה וארבעים חלקים ועשרים שניות</b>, סימנם שכ״ט מח״כ.<br>ונמצא שארית מהלכו בתשעה ועשרים יום <b class="mas">שמונה עשרה מעלות ושלשה וחמישים חלקים וארבע שניות</b>, סימנם י״ח נג״ד.</p>
     <p class="halacha">ונמצא שארית מהלכו בשנה סדורה <b class="mas">שלש מאות וחמש מעלות ושלש עשרה שניות בלא חלקים</b>, סימנם ש״ה י״ג.</p>
-  </div>
+  </header>
+
 
   <div class="pair">
   <div class="rchart" id="chBlocks" style="--c:var(--mas)"></div>
   <!--@include partials/wheel.html-->
   </div>
 
-  <div class="book" style="--c:var(--mas)">
-    <h3>אמצע המסלול</h3>
-    <table class="led"><thead><tr><th>מהלך</th><th>מוסיף</th><th>הכל</th></tr></thead>
-    <tbody id="ledger"></tbody></table>
-  </div>
 
   <div class="drill" id="drill" style="--c:var(--mas)"></div>
 
@@ -51,7 +43,7 @@
     var r0 = document.querySelector("tr[data-days]");
     if (r0) r0.classList.add("on");
     renderBlockChart(document.getElementById("chBlocks"), {
-      title: "מהלך אמצע המסלול", ref: "י״ד:ג–ד", note: "",
+      title: "מהלך המסלול", ref: "י״ד:ג–ד", note: "",
       heads: ["בכמה", "מהלך"], plain: true, pick: true,
       sections: { 0: "מהלכו ביום אחד", 1: "מהלכו לימים רבים", 5: "לחודש ולשנה" },
       remainderFrom: 2,
@@ -75,14 +67,6 @@
   function onDraw(n) {
     var v = calculateMoonMaslul(n);
 
-    var rows = blockLedger(v, "MOON_MASLUL_PERIOD_BLOCKS", CONSTANTS.MOON.MASLUL_MEAN_MOTION, START, true), h = "";
-    for (var i = 0; i < rows.length; i++) {
-      var r = rows[i];
-      h += "<tr" + (r.out ? ' class="out"' : (r.drop ? ' class="drop"' : "")) +
-           '><td class="l">' + r.l + (r.s ? "<small>" + r.s + "</small>" : "") +
-           '</td><td class="a">' + (r.a || "") + '</td><td class="t">' + r.t + "</td></tr>";
-    }
-    document.getElementById("ledger").innerHTML = h;
   }
 })();
 </script>
