@@ -4,7 +4,7 @@ Chapters 1–5 (the court, the witnesses, the procedure) are out of scope.
 What follows is one page per *thing the Rambam does*, not per numbered halacha.
 Each page names the halachos it covers and follows [CLAUDE.md](CLAUDE.md).
 
-**Done: 4 of 50.** Table lessons are now generated from a spec in `src/lessons/`
+**Done: 10 of 50.** Table lessons are now generated from a spec in `src/lessons/`
 through `src/shell.html` + `src/lib/lesson.js`, so a page is a description of
 which halachos, which table and which drill — not a bespoke file.
 
@@ -64,10 +64,10 @@ Write it, and pin it to hebcal in the tests.
 |---|---|---|---|---|
 | 26 | The two means | 14:1–4 | two block tables | **done** |
 | 27 | The sun's nudge | 14:5–6 | the nine bands | **done** |
-| 28 | מרחק כפול — the double distance | 15:1–2 | — | ▸ |
-| 29 | The adjustment, and המסלול הנכון | 15:3 | `DOUBLE_ELONGATION_ADJUSTMENTS` | ▸ |
-| 30 | The moon's correction table | 15:4–6 | `MOON_MASLUL_CORRECTIONS` | ▸ |
-| 31 | His worked example | 15:7–9 | — | ▸ |
+| 28 | מרחק כפול — the double distance | 15:1–2 | — | **done** |
+| 29 | The adjustment, and המסלול הנכון | 15:3 | `DOUBLE_ELONGATION_ADJUSTMENTS` | **done** |
+| 30 | The moon's correction table, and מקום הירח האמיתי | 15:4–7 | `MOON_MASLUL_CORRECTIONS` | **done** |
+| 31 | His worked example | 15:8–9 | — | **done** |
 | 32 | The tilted path: ראש and זנב | 16:1 | — | ▸ |
 | 33 | The rosh's motion, and 360 − the mean | 16:2–5 | `NODE_PERIOD_BLOCKS` | ▸ |
 | 34 | The zanav opposite, and distance from the rosh | 16:6–8 | — | ▸ |

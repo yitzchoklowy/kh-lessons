@@ -1,0 +1,163 @@
+<title>מנת המסלול</title>
+<!--@include partials/lesson-head.html-->
+
+<div class="page solo" data-emph="mas">
+
+  <header>
+    <h1 class="bigtitle">מנת המסלול</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/15" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ו:ד–ז</a></div>
+    <p class="halacha lead">ואחר כך תראה כמה מעלות הוא המסלול הנכון,<br>
+      אם היה <b class="mas">פחות ממאה ושמונים מעלות, תגרע</b> מנת המסלול הזה הנכון מאמצע הירח לשעת הראייה,<br>
+      ואם היה המסלול הנכון <b class="mas">יתר על מאה ושמונים מעלות עד שלש מאות ושישים, תוסיף</b> מנת זה המסלול הנכון על אמצע הירח לשעת הראייה.<br>
+      ומה שיהיה האמצע אחר שתוסיף עליו או תגרע ממנו הוא <b class="mean">מקום הירח האמיתי</b> לשעת הראייה:</p>
+    <p class="halacha">ודע, שאם יהיה המסלול הנכון מאה ושמונים בשוה, או שלש מאות ושישים בשוה, אין לו מנה, אלא יהיה מקום הירח האמצעי לשעת הראייה הוא מקומו האמיתי:</p>
+    <p class="halacha">ואם יהיה המסלול הנכון יתר על מאה ושמונים מעלות, <b class="mas">תגרע אותו משלש מאות ושישים</b> ותדע מנתו, כדרך שעשיתה במסלול השמש.<br>
+      וכן, אם יהיו במנין המסלול אחדים עם העשרות, <b class="mas">תקח מן היתר שבין שתי המנות כפי האחדים</b>. כדרך שביארנו במסלול השמש במנות שלו, כך תעשה במסלול הנכון במנות שלו:</p>
+  </header>
+
+  <div class="pair">
+    <div class="rchart" id="chart" style="--c:var(--mas)"></div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh15-3.html">מהיכן בא המסלול הנכון</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/wheel.js-->
+
+  var T = CONSTANTS.MOON_MASLUL_CORRECTIONS;
+  var HIS = T.slice(1);                    // he begins his list at ten, not at nought
+  var LAST = HIS.length - 1;               // and closes it at a hundred and eighty
+
+  /* His eighteen מנות drawn as one line, so the crest — which does not sit at
+     ninety, the way the sun's does — can be seen where the table only lists it. */
+  var CW = 460, CH = 156, CX0 = 30, CX1 = 436, CY0 = 130, CY1 = 22;
+  var TOP = T.reduce(function (m, r) { return Math.max(m, r.correction); }, 0);
+  function cx(m) { return CX0 + (m / 180) * (CX1 - CX0); }
+  function cy(v) { return CY0 - (v / TOP) * (CY0 - CY1); }
+
+  function curve() {
+    var pts = T.map(function (r) { return cx(r.maslul).toFixed(1) + "," + cy(r.correction).toFixed(1); });
+    var g = '<line x1="' + CX0 + '" y1="' + CY0 + '" x2="' + CX1 + '" y2="' + CY0 +
+            '" stroke="currentColor" stroke-opacity=".25"></line>';
+    for (var m = 0; m <= 180; m += 30) {
+      g += '<line x1="' + cx(m).toFixed(1) + '" y1="' + CY0 + '" x2="' + cx(m).toFixed(1) +
+           '" y2="' + (CY0 + 5) + '" stroke="currentColor" stroke-opacity=".25"></line>' +
+           '<text x="' + cx(m).toFixed(1) + '" y="' + (CY0 + 18) + '" font-size="9.5" text-anchor="middle" ' +
+           'fill="currentColor" fill-opacity=".45" font-family="IBM Plex Mono, monospace">' + m + '°</text>';
+    }
+    g += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="var(--mas)" stroke-width="2"></polyline>';
+    for (var i = 0; i < T.length; i++) {
+      g += '<circle cx="' + cx(T[i].maslul).toFixed(1) + '" cy="' + cy(T[i].correction).toFixed(1) +
+           '" r="2" fill="var(--mas)" fill-opacity=".7"></circle>';
+    }
+    g += '<circle id="cvDot" cx="-9" cy="-9" r="4" fill="var(--mas)"></circle>' +
+         '<text id="cvVal" x="-9" y="-9" font-size="10.5" text-anchor="middle" fill="var(--mas)" ' +
+         'font-family="IBM Plex Mono, monospace">—</text>';
+    return '<div class="curve"><svg viewBox="0 0 ' + CW + " " + CH + '" role="img" ' +
+      'aria-label="The angle of the course against the course itself: it climbs to its crest near a hundred degrees and falls back to nothing at a hundred and eighty.">' +
+      g + '</svg></div>';
+  }
+
+  function markCurve(eff, mnat) {
+    var d = document.getElementById("cvDot"), v = document.getElementById("cvVal");
+    if (!d) return;
+    d.setAttribute("cx", cx(eff).toFixed(1)); d.setAttribute("cy", cy(mnat).toFixed(1));
+    v.setAttribute("x", cx(eff).toFixed(1));
+    v.setAttribute("y", (cy(mnat) - 9).toFixed(1));
+    v.textContent = formatDms(mnat);
+  }
+
+  function show(n) {
+    var v = chapter15At(n), b = mnatBracket(v.asked);
+    var hits = [];
+    if (b.lo > 0) hits.push({ i: b.lo - 1, tag: "מכאן" });
+    hits.push({ i: b.hi - 1, tag: "עד כאן" });
+
+    var sum = "המסלול הנכון <b>" + formatDms(v.nachon) + "</b>";
+    if (v.nachon > 180) sum += " — יתר על ק״פ, תגרע משלש מאות ושישים: <b>" + formatDms(v.course) + "</b>";
+    sum += ", ותבקש ב<b>" + v.asked + "°</b>." +
+           " בין שורת <b>" + T[b.lo].maslul + "°</b> לשורת <b>" + T[b.hi].maslul + "°</b>, " +
+           "<b>" + Math.round(b.part * 100) + "%</b> מן היתר שביניהן." +
+           '<span class="eq">' + formatDms(v.moonSight) + "   " +
+           (v.dir === "subtract" ? "−" : "+") + "   " + formatDms(v.mnat) + "   →   " +
+           formatDms(v.amiti) + "</span>";
+
+    traceListChart(document.getElementById("chart"), hits, sum);
+    markCurve(v.asked, v.mnat);
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "מנת המסלול של הירח", ref: "ט״ו:ו",
+      heads: ["המסלול הנכון", "מנתו"],
+      rows: HIS.map(function (r, i) {
+        return { in: r.maslul + "°",
+                 sub: i === LAST ? "אין לו מנה" : "",
+                 out: degMin(r.correction) };
+      })
+    });
+    document.getElementById("chart").insertAdjacentHTML("beforeend", curve());
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "ט״ו:ד–ז",
+      note: "קרא את המנה מן הטבלה, ודע לאיזה צד.",
+      newCase: function () { return chapter15At(280000 + Math.floor(Math.random() * 60000)); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>המסלול הנכון <b>" + formatDms(c.nachon) + "</b>" +
+          "<br>אמצע הירח לשעת הראייה <b>" + formatDms(c.moonSight) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "באיזה מנין תבקש בטבלה?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return c.asked; },
+          hint: function () { return "יתר על ק״פ — תגרע משלש מאות ושישים. ואין מקפידין על החלקים."; },
+          after: function (c) { return c.nachon > 180
+            ? "שהמסלול הנכון יתר על מאה ושמונים." : "שהמסלול הנכון פחות ממאה ושמונים."; } },
+
+        { ask: function () { return "כמה היא <b>מנת המסלול</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.mnat; },
+          hint: function (c) { var b = mnatBracket(c.asked);
+            return "בין " + degMin(T[b.lo].correction) + " לבין " + degMin(T[b.hi].correction) +
+                   " — קח כפי האחדים."; },
+          after: function () { return "תקח מן היתר שבין שתי המנות כפי האחדים."; } },
+
+        { ask: function () { return "תגרע אותה מאמצע הירח, או תוסיף עליו?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "תגרע", value: "subtract" }, { label: "תוסיף", value: "add" }];
+          },
+          answer: function (c) { return c.dir; },
+          hint: function () { return "פחות ממאה ושמונים — תגרע; יתר — תוסיף."; },
+          after: function (c) { return "המסלול הנכון " + formatDms(c.nachon) + "."; } },
+
+        { ask: function () { return "ובכן, היכן <b>מקום הירח האמיתי</b> לשעת הראייה?"; },
+          type: "dms",
+          answer: function (c) { return c.amiti; },
+          hint: function (c) { return formatDms(c.moonSight) +
+            (c.dir === "subtract" ? " פחות " : " ועוד ") + formatDms(c.mnat) + "."; },
+          after: function (c) { var z = zodiacPosition(c.amiti);
+            return "במזל " + z.hebrew + ", " + z.ordinalDegree + " מעלות."; } }
+      ]
+    });
+  }
+})();
+</script>

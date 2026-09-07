@@ -1,0 +1,153 @@
+<title>כיצד — ליל ערב שבת</title>
+<!--@include partials/lesson-head.html-->
+
+<div class="page">
+
+  <header>
+    <h1 class="bigtitle">כיצד — ליל ערב שבת</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/15" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ו:ח–ט</a></div>
+    <p class="halacha lead">כיצד, הרי שרצינו לידע מקום הירח האמיתי בתחילת ליל ערב שבת שיומו שני לחודש אייר משנה זו שהיא שנת העיקר,<br>
+      ומנין הימים הגמורים מתחילת ליל העיקר עד תחילת ליל זה שאנו רוצים לידע מקום הירח האמיתי בו <b>תשעה ועשרים יום</b>:</p>
+    <p class="halacha">תוציא אמצע השמש תחילה לליל זה, יצא לך אמצעה <b class="sun">ל״ה ל״ח ל״ג</b>:<br>
+      ותוציא אמצע הירח לשעת הראייה לעת זו, יצא לך אמצעו <b class="mean">נ״ג ל״ו ל״ט</b>:<br>
+      ותוציא אמצע המסלול לעת זו, יצא לך אמצעו <b class="mas">ק״ג כ״א מ״ו</b>.<br>
+      תגרע אמצע השמש מאמצע הירח, יישאר שבע עשרה מעלות ושמונה וחמישים חלקים ושש שניות, וזה הוא המרחק.<br>
+      תכפול אותו, יצא לך המרחק הכפול <b class="mas">ל״ה נ״ו י״ב</b>:<br>
+      לפיכך תוסיף על אמצע המסלול חמש מעלות, כמו שהודענו, ויצא לך המסלול הנכון מאה ושמונה מעלות ואחד ועשרים חלקים.<br>
+      <b class="mas">ואין מקפידין על החלקים במסלול</b>, כדרך שביארנו בשמש:</p>
+    <p class="halacha">ובאנו לחקור על מנת זה המסלול הנכון שהוא מאה ושמונה, נמצאת מנה שלו <b class="mas">חמש מעלות וחלק אחד</b>:<br>
+      ולפי שהמסלול הנכון היה פחות ממאה ושמונים, תגרע המנה מן אמצע הירח, יישאר שמונה וארבעים מעלות וחמישה ושלשים חלקים ותשע ושלשים שניות.<br>
+      תעשה השניות חלק, ותוסיף על החלקים, ונמצא <b class="mean">מקום הירח האמיתי</b> בשעה זו במזל שור בשמונה עשרה מעלות ושישה ושלשים חלקים ממעלת תשע עשרה, סימנו <b class="mean">מ״ח ל״ו</b>:</p>
+  </header>
+
+  <!--@include partials/wheel.html-->
+
+  <div class="book m" id="work">
+    <h3><i></i>כל החשבון, ליום זה</h3>
+    <p class="cap">ט״ו:א–ט</p>
+    <table class="led"><tbody id="led"></tbody></table>
+    <div class="agree" id="agree"></div>
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mean)"></div>
+
+  <p class="note"><a href="kh15-6.html">מנת המסלול</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/wheel.js-->
+
+  var HIS_DAY = 29;
+
+  /* His own six figures for this night, as he writes them in ט״ו:ח–ט. They are
+     quoted, not looked up — the whole point of the page is to set them beside
+     what the machinery gives and see the two meet. */
+  var HIS = [
+    { k: "sunMean",   sign: "ל״ה ל״ח ל״ג", d: 35,  m: 38, s: 33 },
+    { k: "moonSight", sign: "נ״ג ל״ו ל״ט", d: 53,  m: 36, s: 39 },
+    { k: "maslul",    sign: "ק״ג כ״א מ״ו", d: 103, m: 21, s: 46 },
+    { k: "merchak",   sign: "י״ז נ״ח ו׳",  d: 17,  m: 58, s: 6 },
+    { k: "kaful",     sign: "ל״ה נ״ו י״ב", d: 35,  m: 56, s: 12 },
+    { k: "amiti",     sign: "מ״ח ל״ו",     d: 48,  m: 35, s: 39 }
+  ];
+  var NAME = { sunMean: "אמצע השמש", moonSight: "אמצע הירח לשעת הראייה",
+               maslul: "אמצע המסלול", merchak: "המרחק", kaful: "מרחק הכפול",
+               amiti: "מקום הירח האמיתי" };
+
+  function show(n) {
+    var v = chapter15At(n);
+    paint(document.getElementById("led"), [
+      { l: "אמצע השמש", s: "פרק י״ב", a: "", t: formatDms(v.sunMean) },
+      { l: "אמצע הירח לשעת הראייה", s: "פרק י״ד", a: "", t: formatDms(v.moonSight) },
+      { l: "אמצע המסלול", s: "פרק י״ד", a: "", t: formatDms(v.maslul) },
+      { l: "תגרע אמצע השמש מאמצע הירח", a: "− " + formatDms(v.sunMean), t: formatDms(v.merchak) },
+      { l: "והנשאר תכפול אותו", a: "× 2", t: formatDms(v.kaful) },
+      { l: "תוסיף על אמצע המסלול", s: "ט״ו:ג", a: "+ " + v.add + "°", t: formatDms(v.nachon) },
+      { l: "מנת המסלול", s: "ט״ו:ו", a: (v.dir === "subtract" ? "− " : "+ ") + formatDms(v.mnat),
+        t: formatDms(v.amiti) },
+      { l: "מקום הירח האמיתי", s: zodiacPosition(v.amiti).ordinalDegree + " מעלות במזל " +
+        zodiacPosition(v.amiti).hebrew, a: "", t: formatDms(v.amiti), out: true }
+    ]);
+    agree(n, v);
+  }
+
+  function agree(n, v) {
+    var host = document.getElementById("agree");
+    if (n !== HIS_DAY) {
+      host.innerHTML = '<p class="cap">חשבונו שלו הוא לתשעה ועשרים יום מן העיקר.</p>';
+      return;
+    }
+    var h = '<h4>אצלו · וכאן</h4><table class="cmp"><tbody>';
+    for (var i = 0; i < HIS.length; i++) {
+      var r = HIS[i], want = r.d + r.m / 60 + r.s / 3600, got = v[r.k];
+      var off = Math.abs(normalizeDegrees(got - want + 180) - 180);
+      h += "<tr><td class=\"l\">" + NAME[r.k] + "</td>" +
+           '<td class="a">' + r.sign + "</td>" +
+           '<td class="t">' + formatDms(got) + "</td>" +
+           '<td class="o">' + (Math.round(off * 3600) === 0 ? "—" : Math.round(off * 3600) + "″") + "</td></tr>";
+    }
+    h += "</tbody></table>";
+    host.innerHTML = h;
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    setDay(HIS_DAY);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה, לליל אחר", ref: "ט״ו:א–ט",
+      note: "אותו סדר עצמו, מן האמצעים עד המקום.",
+      newCase: function () {
+        for (var t = 0; t < 400; t++) {
+          var d = 280000 + Math.floor(Math.random() * 60000);
+          if (additionRow(chapter15At(d).kaful) >= 0) return chapter15At(d);
+        }
+        return chapter15At(HIS_DAY);
+      },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>אמצע הירח לשעת הראייה <b>" + formatDms(c.moonSight) + "</b>" +
+          "<br>אמצע השמש <b>" + formatDms(c.sunMean) + "</b>" +
+          "<br>אמצע המסלול <b>" + formatDms(c.maslul) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "מרחק הכפול?"; },
+          type: "dms",
+          answer: function (c) { return c.kaful; },
+          hint: function () { return "תגרע אמצע השמש מאמצע הירח, והנשאר תכפול."; },
+          after: function () { return "ט״ו:א."; } },
+
+        { ask: function () { return "המסלול הנכון?"; },
+          type: "dms",
+          answer: function (c) { return c.nachon; },
+          hint: function (c) { return "בטבלת ט״ו:ג, " +
+            Math.round(c.kaful <= 180 ? c.kaful : 360 - c.kaful) + "° מוסיף מעלות על אמצע המסלול."; },
+          after: function (c) { return "תוספת של " + c.add + " מעלות."; } },
+
+        { ask: function () { return "מנת המסלול?"; },
+          type: "dms",
+          answer: function (c) { return c.mnat; },
+          hint: function () { return "ואין מקפידין על החלקים במסלול — בקש בטבלת ט״ו:ו."; },
+          after: function (c) { return c.dir === "subtract" ? "ותגרע אותה." : "ותוסיף אותה."; } },
+
+        { ask: function () { return "ובכן, <b>מקום הירח האמיתי</b> לשעת הראייה?"; },
+          type: "dms",
+          answer: function (c) { return c.amiti; },
+          hint: function (c) { return "מן " + formatDms(c.moonSight) +
+            (c.dir === "subtract" ? " תגרע " : " תוסיף ") + formatDms(c.mnat) + "."; },
+          after: function (c) { var z = zodiacPosition(c.amiti);
+            return "במזל " + z.hebrew + ", " + z.ordinalDegree + " מעלות."; } }
+      ]
+    });
+  }
+})();
+</script>

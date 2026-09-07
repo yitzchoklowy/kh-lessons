@@ -23,15 +23,26 @@
           <line x1="310" y1="372" x2="534" y2="372" stroke="currentColor" stroke-opacity=".2" stroke-width="1"></line>
           <text x="539" y="376" font-size="11" fill="currentColor" fill-opacity=".45">0°</text>
 
-          <circle id="sunCircle" cx="310" cy="372" r="196" fill="none" stroke="var(--sun)"
+          <circle id="sunCircle" cx="310" cy="372" r="196" fill="none" stroke="var(--sunc)"
                   stroke-width="1.6" stroke-opacity=".3" opacity="0"></circle>
-          <path id="arcSun" fill="none" stroke="var(--sun)" stroke-width="2.6"
+          <path id="arcSun" fill="none" stroke="var(--sunc)" stroke-width="2.6"
                 marker-end="url(#tipMean)" opacity="0"></path>
-          <line id="sunFrom" stroke="var(--sun)" stroke-width="2" opacity="0"></line>
+          <line id="sunFrom" stroke="var(--sunc)" stroke-width="2" opacity="0"></line>
           <use id="sunBody2" href="#gSun" x="0" y="0" opacity="0"></use>
           <line id="fromTick" stroke="var(--mean)" stroke-width="2" opacity="0"></line>
           <path id="arcMean" fill="none" stroke="var(--mean)" stroke-width="2.6"
                 marker-end="url(#tipMean)"></path>
+
+          <!-- KH 15:1 — the distance from the sun's mean to the moon's, and that distance doubled -->
+          <circle id="gapRing" cx="310" cy="372" r="180" fill="none" stroke="currentColor"
+                  stroke-opacity=".16" stroke-width="1" opacity="0"></circle>
+          <path id="arcGap" fill="none" stroke="var(--sunc)" stroke-width="3.6"
+                stroke-linecap="round" opacity="0"></path>
+          <circle id="kafRing" cx="310" cy="372" r="142" fill="none" stroke="currentColor"
+                  stroke-opacity=".16" stroke-width="1" opacity="0"></circle>
+          <path id="arcKaf" fill="none" stroke="var(--mas)" stroke-width="3.6"
+                stroke-linecap="round" opacity="0"></path>
+          <line id="gapFrom" stroke="currentColor" stroke-opacity=".35" stroke-width="1.4" opacity="0"></line>
 
 
           <line id="ptrMean" x1="310" y1="372" x2="523" y2="372" stroke="var(--mean)" stroke-width="1.5"

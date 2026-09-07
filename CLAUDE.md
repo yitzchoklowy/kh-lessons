@@ -105,14 +105,29 @@ Quote the Rambam from **Shilat's edition on alhatorah.org**, never from Sefaria.
 Where a page shows a halacha, its chapter mark links to the source so a reader
 can check it against the edition it came from.
 
-alhatorah is a JavaScript application and does not serve the text over a plain
-request, so it cannot simply be fetched — take the text from a local copy of
-alhatorah if one is available, or have it pasted in. **Do not fall back to
-Sefaria to fill a gap**; leave the page unwritten and say the text is missing.
+alhatorah's reading pages are a JavaScript shell and serve no text, but its data
+server does, and the whole Mishneh Torah is mirrored locally by `pdf-library`:
+
+```
+https://dbserver.alhatorah.org/read/mg/v1/json/Rambam/Zemanim/Kiddush HaChodesh/{chapter}
+I:\PDF Library\_managed\alhatorah\Rambam\Zemanim\Kiddush HaChodesh\{chapter}.json
+```
+
+The Hebrew is `v[i].mainText`; strip the icon bar, the `<tn>`/`<cn>` apparatus
+notes and the `verse-translation` block, and what is left is the halacha.
+**Do not fall back to Sefaria to fill a gap**; leave the page unwritten and say
+the text is missing.
+
+One thing to settle: what comes back is alhatorah's own base text, and the site
+carries **דפוס הרב שילת** only as a scanned print witness (`Rambam Mishneh Torah
+Printing Rav Sheilat`, `branch:false`) — not as a text stream the data server
+will hand over. Its layers there are דפוסים, הרב קאפח, כתבי יד תימניים,
+ר׳ דוד ב״ר עובדיה and יד פשוטה. So the chapter-15 pages carry alhatorah's base
+text, pulled 2026-09-07.
 
 Pages still carrying Sefaria's text, to be replaced: `kh12-sun-mean`,
 `kh12-govah`, `kh14-2`, `kh14-sun`, `galgalim`. The text on `kh14-1` and
-`kh14-3` was supplied directly and is not Sefaria's.
+`kh14-3` was supplied directly and is not Sefaria's; chapter 15 is alhatorah's.
 
 ## 10. Hebrew reads right to left, everywhere
 

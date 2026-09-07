@@ -3,7 +3,8 @@
   <!--@include partials/zodiac.js-->
 
   var CX = 310, CY = 372, R_DEF = 160, R_PTR = 214, R_ARC = 76,
-      R_IN = 218, R_OUT = 276, R_STAR = 252, R_NAME = 228, R_SUN = 210;
+      R_IN = 218, R_OUT = 276, R_STAR = 252, R_NAME = 228, R_SUN = 210,
+      R_GAP = 180, R_KAF = 142;
 
   var KATAN_DEG = CONSTANTS.MOON.GALGALIM.GALGAL_KATAN.RADIUS_DEGREES;   // 5°, the model's own figure
   var RATIO = Math.sin(KATAN_DEG * RAD);
@@ -12,6 +13,7 @@
   var el = {};
   ["ring","arcMean","ptrMean",
    "epi","epiC","grabEpi","grabDef","farLine","farLbl","arcEpi","sightLine","moonBody","defCircle","fromTick","sunCircle","arcSun","sunFrom","sunBody2","scaleNote","cMean","cMas","cMasLbl","corner",
+   "gapRing","arcGap","kafRing","arcKaf","gapFrom",
    "dDays","dDate","dMean","dMeanZ","dMas",
    "play","speed","dayIn","rig","tabs",
    "scaleNote"].forEach(function (id) { el[id] = document.getElementById(id); });
@@ -177,6 +179,26 @@
       if (lbl) lbl.textContent = "מהלכו";
       return;
     }
+    if (EMPH === "gap") {
+      /* KH 15:1 works with the two אמצעים and nothing else: the sun's, and the
+         moon's. The small circle waits for the next halacha, so it is dimmed. */
+      var appear = [el.sunCircle, el.sunBody2, el.gapRing, el.arcGap, el.kafRing, el.arcKaf, el.gapFrom];
+      for (var p = 0; p < appear.length; p++) if (appear[p]) appear[p].setAttribute("opacity", "1");
+      /* the small circle waits for the next halacha — but the corner is where
+         this page's own two figures are read, so it stays bright */
+      for (var q = 0; q < mas.length; q++) {
+        if (mas[q] && mas[q] !== el.cMas && mas[q] !== el.cMasLbl &&
+            mas[q] !== corner[3] && mas[q] !== corner[5]) mas[q].classList.add("dimmed");
+      }
+      if (el.sightLine) el.sightLine.classList.add("dimmed");
+      var dm2 = document.querySelector(".dial.m"), ds2 = document.querySelector(".dial.s");
+      if (dm2) { dm2.classList.remove("dimmed"); dm2.querySelector(".lbl").innerHTML = "<i></i>אמצע הירח לשעת הראייה"; }
+      if (ds2) { ds2.classList.remove("dimmed"); ds2.querySelector(".lbl").innerHTML = "<i></i>אמצע השמש"; }
+      var cl = el.corner ? el.corner.querySelectorAll("text") : [];
+      if (cl[0]) cl[0].textContent = "מרחק";
+      if (el.cMasLbl) el.cMasLbl.textContent = "מרחק הכפול";
+      return;
+    }
     var on = EMPH === "mean" ? mean : mas;
     for (var j = 0; j < on.length; j++) if (on[j]) on[j].classList.add("lit");
   }
@@ -240,6 +262,7 @@
     var lp = P(R_PTR, moonDir);
     el.sightLine.setAttribute("x2", lp[0].toFixed(2)); el.sightLine.setAttribute("y2", lp[1].toFixed(2));
 
+    var dialsSet = false, sectorLon = mean;
     if (EMPH === "sun" && typeof SUN_AT === "function") {
       var sv = SUN_AT(n), R_S = 196;
       var sp2 = P(R_S, sv);
@@ -256,14 +279,38 @@
       el.dMas.textContent = F(sv);
       var zs2 = zodiacPosition(sv);
       el.dMeanZ.textContent = zs2.ordinalDegree + "° " + zs2.hebrew;
+      dialsSet = true; sectorLon = sv;
     }
-    var z = zodiacPosition(mean);
+    /* KH 15:1 — the page hands over the two אמצעים and their difference, since
+       which mean, and corrected how, is the halacha, not the geometry. */
+    if (EMPH === "gap" && typeof GAP_AT === "function") {
+      var g = GAP_AT(n), R_S2 = 196;
+      var gp = P(R_S2, g.sun);
+      put(el.sunBody2, gp[0], gp[1]);
+      el.arcGap.setAttribute("d", arcPath(R_GAP, g.sun, g.moon, true));
+      el.arcKaf.setAttribute("d", arcPath(R_KAF, g.sun, N(g.sun + g.kaful), true));
+      var gf0 = P(R_KAF - 10, g.sun), gf1 = P(R_S2 + 10, g.sun);
+      el.gapFrom.setAttribute("x1", gf0[0].toFixed(1)); el.gapFrom.setAttribute("y1", gf0[1].toFixed(1));
+      el.gapFrom.setAttribute("x2", gf1[0].toFixed(1)); el.gapFrom.setAttribute("y2", gf1[1].toFixed(1));
+      el.cMean.textContent = F(g.merchak);
+      el.cMas.textContent = F(g.kaful);
+      el.dMean.textContent = F(g.moon);
+      el.dMas.textContent = F(g.sun);
+      var zg = zodiacPosition(g.moon);
+      el.dMeanZ.textContent = zg.ordinalDegree + "° " + zg.hebrew;
+      dialsSet = true;
+    }
+    var z = zodiacPosition(sectorLon);
     el.dDays.textContent = n.toLocaleString();
     el.dDate.textContent = new Date(EPOCH_MS + n * 86400000)
       .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
-    el.dMean.textContent = F(mean);
-    el.dMeanZ.textContent = z.ordinalDegree + "° " + z.hebrew;
-    el.dMas.textContent = F(mas);
+    /* A sun page and a chapter-15 page have already said what their dials hold;
+       writing the moon's figures over them is how they used to disagree. */
+    if (!dialsSet) {
+      el.dMean.textContent = F(mean);
+      el.dMeanZ.textContent = z.ordinalDegree + "° " + z.hebrew;
+      el.dMas.textContent = F(mas);
+    }
     if (document.activeElement !== el.dayIn) el.dayIn.value = n;
     if (pageIsReady && typeof onDraw === "function") onDraw(n, mean, mas);
     lightSector(z.index);

@@ -1,0 +1,120 @@
+<title>המסלול הנכון</title>
+<!--@include partials/lesson-head.html-->
+
+<div class="page solo" data-emph="mas">
+
+  <header>
+    <h1 class="bigtitle">המסלול הנכון</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/15" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ו:ג</a></div>
+    <p class="halacha lead">והואיל והדבר כן, התבונן במרחק זה הכפול,<br>
+      אם יהיה המרחק הכפול חמש מעלות או קרוב לחמש, אין חוששין לתוספת, ולא תוסיף כלום:</p>
+    <p class="halacha">ואם יהיה המרחק הכפול משש מעלות עד אחת עשרה מעלות, תוסיף על אמצע המסלול <b class="mas">מעלה אחת</b>:<br>
+      ואם יהיה המרחק הכפול משתים עשרה מעלות עד שמונה עשרה מעלות, תוסיף על אמצע המסלול <b class="mas">שתי מעלות</b>:<br>
+      ואם יהיה המרחק הכפול מתשע עשרה מעלות עד ארבע ועשרים מעלות, תוסיף על אמצע המסלול <b class="mas">שלש מעלות</b>:<br>
+      ואם יהיה המרחק הכפול מחמש ועשרים מעלות עד אחת ושלשים מעלות, תוסיף על אמצע המסלול <b class="mas">ארבע מעלות</b>:<br>
+      ואם יהיה המרחק הכפול משתים ושלשים מעלות עד שמונה ושלשים מעלות, תוסיף על אמצע המסלול <b class="mas">חמש מעלות</b>:<br>
+      ואם יהיה המרחק הכפול מתשע ושלושים מעלות עד חמש וארבעים מעלות, תוסיף על אמצע המסלול <b class="mas">שש מעלות</b>:<br>
+      ואם יהיה המרחק הכפול משש וארבעים מעלות עד אחת וחמישים מעלות, תוסיף על אמצע המסלול <b class="mas">שבע מעלות</b>:<br>
+      ואם יהיה המרחק הכפול משתים וחמישים מעלות עד תשע וחמישים מעלות, תוסיף על אמצע המסלול <b class="mas">שמונה מעלות</b>:<br>
+      ואם יהיה המרחק הכפול משישים מעלות עד שלש ושישים מעלות, תוסיף על אמצע המסלול <b class="mas">תשע מעלות</b>.</p>
+    <p class="halacha">ומה שיהיה אמצע המסלול אחר שתוסיף עליו מעלות אלו, הוא הנקרא <b class="mas">המסלול הנכון</b>:</p>
+  </header>
+
+  <div class="pair">
+    <div class="rchart" id="chart" style="--c:var(--mas)"></div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh15-1.html">מהיכן בא המרחק הכפול</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/wheel.js-->
+
+  var ROWS = hisAdditions();
+
+  function rowLabel(r) { return r.minElongation + "° – " + r.maxElongation + "°"; }
+  function rowGain(r) { return r.adjustment ? "+ " + r.adjustment + "°" : "לא תוסיף כלום"; }
+
+  function show(n) {
+    var v = chapter15At(n), i = additionRow(v.kaful);
+    var sum = "המרחק הכפול <b>" + formatDms(v.kaful) + "</b>";
+    if (i < 0) {
+      sum += " — מעבר לטבלה שלו, ולא בליל ראייה." +
+             '<span class="eq">' + formatDms(v.maslul) + "   →   —</span>";
+    } else {
+      sum += " · " + (ROWS[i].adjustment ? "תוסיף <b>" + ROWS[i].adjustment + " מעלות</b>"
+                                         : "<b>אין תוספת</b>") +
+             '<span class="eq">' + formatDms(v.maslul) + "   +   " + v.add + "°   →   " +
+             formatDms(v.nachon) + "</span>";
+    }
+    traceListChart(document.getElementById("chart"),
+      i < 0 ? [] : [{ i: i, tag: "← כאן" }], sum);
+  }
+
+  function onDraw(n) { show(n); }
+
+  function sightingDay() {
+    for (var t = 0; t < 400; t++) {
+      var d = 280000 + Math.floor(Math.random() * 60000);
+      if (additionRow(chapter15At(d).kaful) >= 0) return d;
+    }
+    return 29;
+  }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "תוספת על אמצע המסלול", ref: "ט״ו:ג",
+      heads: ["מרחק הכפול", "תוסיף"],
+      rows: ROWS.map(function (r) { return { in: rowLabel(r), out: rowGain(r) }; })
+    });
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "ט״ו:ג",
+      note: "מצא את השורה, קרא מה היא מבקשת, ועשה.",
+      newCase: function () { return chapter15At(sightingDay()); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>המרחק הכפול <b>" + formatDms(c.kaful) + "</b>" +
+          "<br>אמצע המסלול <b>" + formatDms(c.maslul) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "באיזו שורה משורותיו נופל המרחק הכפול?"; },
+          type: "pick",
+          choices: function () {
+            return ROWS.map(function (r) { return { label: rowLabel(r), value: r.minElongation }; });
+          },
+          answer: function (c) { return ROWS[additionRow(c.kaful)].minElongation; },
+          hint: function (c) { return "עגל למעלה השלמה: " +
+            Math.round(c.kaful <= 180 ? c.kaful : 360 - c.kaful) + "°."; },
+          after: function (c) { return "ובה " + rowGain(ROWS[additionRow(c.kaful)]) + "."; } },
+
+        { ask: function () { return "כמה מעלות תוסיף על אמצע המסלול?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return c.add; },
+          hint: function () { return "קרא את הטור השמאלי של אותה שורה."; },
+          after: function () { return "מעלות שלמות בלבד — אין בטבלה זו חלקים."; } },
+
+        { ask: function () { return "עשה. כמה הוא <b>המסלול הנכון</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.nachon; },
+          hint: function (c) { return formatDms(c.maslul) + " ועוד " + c.add + "°."; },
+          after: function () { return "וממנו תבקש את מנת המסלול."; } }
+      ]
+    });
+  }
+})();
+</script>

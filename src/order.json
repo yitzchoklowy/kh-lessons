@@ -5,6 +5,10 @@
   { "file": "kh14-2.html",        "mark": "י״ד:א–ב",  "name": "מהלך אמצע הירח" },
   { "file": "kh14-3.html",        "mark": "י״ד:ג–ד",  "name": "מהלך אמצע המסלול" },
   { "file": "kh14-sun.html",      "mark": "י״ד:ה–ו",  "name": "אמצע הירח לשעת הראייה" },
+  { "file": "kh15-1.html",        "mark": "ט״ו:א–ב",  "name": "מרחק הכפול" },
+  { "file": "kh15-3.html",        "mark": "ט״ו:ג",    "name": "המסלול הנכון" },
+  { "file": "kh15-6.html",        "mark": "ט״ו:ד–ז",  "name": "מנת המסלול" },
+  { "file": "kh15-8.html",        "mark": "ט״ו:ח–ט",  "name": "כיצד — ליל ערב שבת" },
   { "file": "galgalim.html",      "mark": "י״ד–ט״ז",  "name": "ארבעת גלגלי הירח" },
   { "file": "calculator.html",    "mark": "י״א–י״ז",  "name": "כל החשבון" }
 ]

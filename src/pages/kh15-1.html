@@ -1,0 +1,149 @@
+<title>מרחק הכפול</title>
+<!--@include partials/lesson-head.html-->
+
+<div class="page" data-emph="gap">
+
+  <header>
+    <h1 class="bigtitle">מרחק הכפול</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/15" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ו:א–ב</a></div>
+    <p class="halacha lead">אם תרצה לידע מקום הירח האמיתי בכל יום שתרצה,<br>
+      תוציא תחילה <b class="mean">אמצע הירח לשעת הראייה</b> לאותו הלילה שתרצה,<br>
+      וכן תוציא <b>אמצע המסלול</b> ו<b class="sun">אמצע השמש</b> לאותו העת,<br>
+      ותגרע אמצע השמש מאמצע הירח, והנשאר תכפול אותו,<br>
+      וזה הוא הנקרא <b class="mas">מרחק הכפול</b>:</p>
+    <p class="halacha">וכבר הודענו שלא באנו בכל אלו החשבונות שעשינו בפרקים אלו אלא לדעת ראיית הירח.<br>
+      ולעולם אי אפשר שיהיה מרחק זה הכפול בליל הראייה שייראה בה הירח אלא <b class="mas">מחמש מעלות עד שתים ושישים מעלות</b>, ואי אפשר שיוסיף על זה ולא יגרע ממנו:</p>
+  </header>
+
+  <!--@include partials/wheel.html-->
+
+  <div class="book s" id="work">
+    <h3><i></i>מן העיקר עד המרחק הכפול</h3>
+    <p class="cap">ט״ו:א</p>
+    <table class="led"><tbody id="led"></tbody></table>
+    <div class="strip" id="strip"></div>
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/wheel.js-->
+
+  var STRIP_W = 460, STRIP_H = 88, X0 = 26, X1 = 434, TOP = 90;   // the strip spans 0°–90°
+
+  /* KH 15:2 drawn: the whole run a doubled distance could take, and the stretch
+     inside it that a sighting night ever falls in. Both ends of the window come
+     from his own table of KH 15:3 — its first row and its last. */
+  function stripWindow() {
+    var rows = hisAdditions();
+    return [rows[0].maxElongation, rows[rows.length - 1].maxElongation];
+  }
+  function sx(deg) { return X0 + (deg / TOP) * (X1 - X0); }
+
+  function buildStrip() {
+    var w = stripWindow(), g = "";
+    g += '<rect x="' + sx(w[0]).toFixed(1) + '" y="20" width="' + (sx(w[1]) - sx(w[0])).toFixed(1) +
+         '" height="22" rx="4" fill="var(--mas)" fill-opacity=".16"></rect>';
+    g += '<line x1="' + X0 + '" y1="42" x2="' + X1 + '" y2="42" stroke="currentColor" stroke-opacity=".25"></line>';
+    for (var d = 0; d <= TOP; d += 15) {
+      g += '<line x1="' + sx(d).toFixed(1) + '" y1="42" x2="' + sx(d).toFixed(1) +
+           '" y2="48" stroke="currentColor" stroke-opacity=".25"></line>' +
+           '<text x="' + sx(d).toFixed(1) + '" y="61" font-size="9.5" text-anchor="middle" ' +
+           'fill="currentColor" fill-opacity=".45" font-family="IBM Plex Mono, monospace">' + d + '°</text>';
+    }
+    g += '<text x="' + sx((w[0] + w[1]) / 2).toFixed(1) + '" y="14" font-size="10.5" text-anchor="middle" ' +
+         'fill="var(--mas)" direction="rtl">ליל הראייה</text>';
+    g += '<line id="stMark" y1="18" y2="46" stroke="var(--mas)" stroke-width="2"></line>' +
+         '<text id="stVal" y="78" font-size="10.5" text-anchor="middle" fill="var(--mas)" ' +
+         'font-family="IBM Plex Mono, monospace">—</text>';
+    document.getElementById("strip").innerHTML =
+      '<svg viewBox="0 0 ' + STRIP_W + ' ' + STRIP_H + '" role="img" ' +
+      'aria-label="A scale of nought to ninety degrees, with the stretch a sighting night falls in marked out.">' +
+      g + '</svg>';
+  }
+
+  function markStrip(kaful) {
+    var m = document.getElementById("stMark"), v = document.getElementById("stVal");
+    var x = sx(Math.min(TOP, kaful <= 180 ? kaful : 360 - kaful));
+    m.setAttribute("x1", x.toFixed(1)); m.setAttribute("x2", x.toFixed(1));
+    v.setAttribute("x", x.toFixed(1));
+    v.textContent = formatDms(kaful);
+  }
+
+  /* what the wheel draws — the halacha decides which means, not the geometry */
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function show(n) {
+    var v = chapter15At(n);
+    paint(document.getElementById("led"), [
+      { l: "אמצע הירח לשעת הראייה", s: "פרק י״ד", a: "", t: formatDms(v.moonSight) },
+      { l: "אמצע המסלול", s: "פרק י״ד — לחשבון הבא", a: "", t: formatDms(v.maslul), drop: true },
+      { l: "אמצע השמש", s: "פרק י״ב", a: "", t: formatDms(v.sunMean) },
+      { l: "ותגרע אמצע השמש מאמצע הירח", a: "− " + formatDms(v.sunMean), t: formatDms(v.merchak) },
+      { l: "והנשאר תכפול אותו", a: "× 2", t: formatDms(v.kaful) },
+      { l: "מרחק הכפול", a: "", t: formatDms(v.kaful), out: true }
+    ]);
+    markStrip(v.kaful);
+  }
+
+  function onDraw(n) { show(n); }
+
+  /* a night the Rambam would be looking at: one his own table of KH 15:3 covers */
+  function sightingDay() {
+    for (var t = 0; t < 400; t++) {
+      var d = 280000 + Math.floor(Math.random() * 60000);
+      if (additionRow(chapter15At(d).kaful) >= 0) return d;
+    }
+    return 29;
+  }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    buildStrip();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "ט״ו:א",
+      note: "שני אמצעים ביד, וממנו המרחק.",
+      newCase: function () { return chapter15At(sightingDay()); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>אמצע הירח לשעת הראייה <b>" + formatDms(c.moonSight) + "</b>" +
+          "<br>אמצע השמש <b>" + formatDms(c.sunMean) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "תגרע אמצע השמש מאמצע הירח. כמה נשאר?"; },
+          type: "dms",
+          answer: function (c) { return c.merchak; },
+          hint: function () { return "חיסור פשוט, ואם יצא פחות מכלום — הוסף מעגל שלם."; },
+          after: function () { return "זהו המרחק."; } },
+
+        { ask: function () { return "והנשאר תכפול אותו. כמה הוא <b>מרחק הכפול</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.kaful; },
+          hint: function (c) { return "פעמיים " + formatDms(c.merchak) + "."; },
+          after: function () { return "ולעולם בליל הראייה הוא בין חמש מעלות לשתים ושישים."; } },
+
+        { ask: function () { return "בכמה מעלות שלמות תבקש אותו בטבלה שבהלכה ג?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return Math.round(c.kaful <= 180 ? c.kaful : 360 - c.kaful); },
+          hint: function () { return "״או קרוב לחמש״ — למעלה השלמה הקרובה."; },
+          after: function () { return "ובה תיכנס לטבלת התוספת."; } }
+      ]
+    });
+  }
+})();
+</script>
