@@ -213,13 +213,23 @@
      where it rides above, broken where it runs beneath. It comes up through the
      plane at the ראש and goes down through it at the זנב, which is the halacha.
 
+     The drawing stands in the mazalos, not on the ראש: the twelve are ticked
+     round the plane and stay where they are, and the leaning circle turns with
+     the ראש — backwards, מטלה לדגים, at his own three חלקים and eleven שניות a
+     day. So the two points are not furniture. Watch a year and they visibly
+     give ground; the whole round takes them the better part of nineteen years.
+
      Two liberties, both said under the drawing: the plane is not his — he says
      circle, and a circle has no surface — and the lean is drawn four times life
      size, or at his own five degrees the two would sit one upon the other. */
-  var TV = { w: 580, h: 300, cx: 290, cy: 142, r: 150,
-             view: 22, spin: 28, mag: 4, plane: 1.5 };
+  /* The eye is put well above his plane on purpose. Sit it low and there comes
+     a turn of the ראש where the leaning circle is seen almost edge on — true,
+     and a sliver on the page; from here it is never worse than squat. */
+  var TV = { w: 580, h: 320, cx: 290, cy: 150, r: 150,
+             view: 32, spin: -150, mag: 4, plane: 1.5 };
   var RAD16 = Math.PI / 180;
   var MAG_WORD = { 2: "פי שנים", 3: "פי שלשה", 4: "פי ארבעה", 5: "פי חמישה" };
+  var NODE_LON = 0;                          // where the ראש stands, this moment
 
   function maxRochav() {
     var T = CONSTANTS.MOON_LATITUDE_TABLE;
@@ -234,10 +244,11 @@
     return m ? d + "° " + m + "′" : d + "°";
   }
 
-  /* Seen from a little above the sun's plane, and a little off the line of the
-     two points — enough for the sheet to read as a sheet. */
-  function proj(X0, Y0, Z) {
-    var f = TV.spin * RAD16, e = TV.view * RAD16;
+  /* Seen from a little above his plane. `rot` turns the world under the eye:
+     the mazalos keep the camera's own angle and never move, and anything the
+     ראש carries is turned by the ראש on top of it. */
+  function proj(X0, Y0, Z, rot) {
+    var f = (rot === undefined ? TV.spin : rot) * RAD16, e = TV.view * RAD16;
     var X = X0 * Math.cos(f) - Y0 * Math.sin(f);
     var Y = X0 * Math.sin(f) + Y0 * Math.cos(f);
     return [TV.cx + X, TV.cy - (Y * Math.sin(e) + Z * Math.cos(e))];
@@ -246,14 +257,18 @@
   function tp(u, lean) {
     var i = (lean || 0) * RAD16, t = u * RAD16;
     return proj(TV.r * Math.cos(t), TV.r * Math.sin(t) * Math.cos(i),
-                TV.r * Math.sin(t) * Math.sin(i));
+                TV.r * Math.sin(t) * Math.sin(i), TV.spin + NODE_LON);
   }
-  function tfoot(u) {                        // the same place, down on his sheet
+  function tfoot(u) {                        // the same place, down on his plane
     var i = leanShown() * RAD16, t = u * RAD16;
-    return proj(TV.r * Math.cos(t), TV.r * Math.sin(t) * Math.cos(i), 0);
+    return proj(TV.r * Math.cos(t), TV.r * Math.sin(t) * Math.cos(i), 0, TV.spin + NODE_LON);
+  }
+  function ecl(lon, radius) {                // a place in the mazalos, on his plane
+    var t = lon * RAD16, r = radius === undefined ? TV.r : radius;
+    return proj(r * Math.cos(t), r * Math.sin(t), 0);
   }
   function tpath(from, to, lean) {
-    var step = to > from ? 2 : -2, d = "", u = from;
+    var step = to > from ? 3 : -3, d = "", u = from;
     for (; step > 0 ? u < to : u > to; u += step) {
       var q = tp(u, lean);
       d += (d ? " L " : "M ") + q[0].toFixed(1) + " " + q[1].toFixed(1);
@@ -261,17 +276,38 @@
     var last = tp(to, lean);
     return d + (d ? " L " : "M ") + last[0].toFixed(1) + " " + last[1].toFixed(1);
   }
+  function eclPath(from, to) {
+    var d = "";
+    for (var lon = from; lon < to; lon += 3) {
+      var q = ecl(lon);
+      d += (d ? " L " : "M ") + q[0].toFixed(1) + " " + q[1].toFixed(1);
+    }
+    var last = ecl(to);
+    return d + " L " + last[0].toFixed(1) + " " + last[1].toFixed(1);
+  }
   function tEdge(up) {                       // the highest or the lowest place on it
     var lean = leanShown(), best = tp(0, lean);
-    for (var u = 0; u < 360; u += 2) {
+    for (var u = 0; u < 360; u += 3) {
       var q = tp(u, lean);
       if (up ? q[1] < best[1] : q[1] > best[1]) best = q;
     }
     return best;
   }
 
-  function tiltFigure() {
-    var lean = leanShown(), g = "";
+  /* his own round, from his own daily motion: 360° at three חלקים and eleven
+     שניות a day */
+  function roshRoundDays() {
+    return Math.round(360 / dmsToDecimal(CONSTANTS.NODE.DAILY_MOTION));
+  }
+
+  function epochRoshLon() {
+    return normalizeDegrees(360 - dmsToDecimal(CONSTANTS.NODE.START_POSITION));
+  }
+
+  /* `opts.epoch` adds what ט״ז:ב is about: the place the ראש stood at the עיקר,
+     and the stretch of his circle it has given ground over since. */
+  function tiltFigure(opts) {
+    var g = "", wantEpoch = !!(opts && opts.epoch);
     g += '<marker id="tip16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" ' +
          'orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--mean)"></path></marker>';
     // the plane his circle lies in — no edge, because he never gives it one
@@ -282,71 +318,113 @@
          '<stop offset="1" stop-color="var(--sunc)" stop-opacity="0"></stop></radialGradient>' +
          '<ellipse cx="' + TV.cx + '" cy="' + TV.cy + '" rx="' + pr.toFixed(1) +
          '" ry="' + pe.toFixed(1) + '" fill="url(#plane16)"></ellipse>';
-    // under the sheet: the half of the moon's circle that runs south
-    g += '<path d="' + tpath(180, 360, lean) + '" fill="none" stroke="var(--mean)" ' +
-         'stroke-width="1.9" stroke-opacity=".4" stroke-dasharray="6 5"></path>';
-    // his own circle, lying on the sheet — the far rim lighter than the near
-    g += '<path d="' + tpath(-TV.spin, 180 - TV.spin, 0) + '" fill="none" stroke="var(--sunc)" ' +
+    // the twelve, ticked round his plane: these do not move, and the ראש does
+    var MZ = CONSTANTS.CONSTELLATIONS;
+    for (var k = 0; k < 12; k++) {
+      var lon = k * 30, i1 = ecl(lon, TV.r * 1.06), i2 = ecl(lon, TV.r * 1.15);
+      g += '<line x1="' + i1[0].toFixed(1) + '" y1="' + i1[1].toFixed(1) + '" x2="' + i2[0].toFixed(1) +
+           '" y2="' + i2[1].toFixed(1) + '" stroke="currentColor" stroke-opacity=".25"></line>';
+      if (k % 3 === 0) {
+        var nm = ecl(lon + 2, TV.r * 1.36);
+        g += '<text x="' + nm[0].toFixed(1) + '" y="' + (nm[1] + 4).toFixed(1) + '" font-size="11.5" ' +
+             'text-anchor="middle" fill="currentColor" fill-opacity=".38" direction="rtl">' + MZ[k] + '</text>';
+      }
+    }
+    // under the plane: the half of the moon's circle that runs south
+    g += '<path id="t16Base2" fill="none" stroke="var(--mean)" stroke-width="1.9" ' +
+         'stroke-opacity=".4" stroke-dasharray="6 5"></path>';
+    // his own circle, lying on the plane — the far rim lighter than the near
+    g += '<path d="' + eclPath(-TV.spin, 180 - TV.spin) + '" fill="none" stroke="var(--sunc)" ' +
          'stroke-width="1.7" stroke-opacity=".45"></path>' +
-         '<path d="' + tpath(180 - TV.spin, 360 - TV.spin, 0) + '" fill="none" stroke="var(--sunc)" ' +
+         '<path d="' + eclPath(180 - TV.spin, 360 - TV.spin) + '" fill="none" stroke="var(--sunc)" ' +
          'stroke-width="2.2" stroke-opacity=".9"></path>';
-    // the line of the two points, drawn on the sheet
-    var A = tp(0, 0), B = tp(180, 0);
-    g += '<line x1="' + A[0].toFixed(1) + '" y1="' + A[1].toFixed(1) + '" x2="' + B[0].toFixed(1) +
-         '" y2="' + B[1].toFixed(1) + '" stroke="var(--minus)" stroke-opacity=".4" stroke-dasharray="5 4"></line>';
-    // above the sheet: the half that runs north
-    g += '<path d="' + tpath(0, 180, lean) + '" fill="none" stroke="var(--mean)" ' +
-         'stroke-width="2" stroke-opacity=".4"></path>';
-    // how far it has come from the ראש — whole above the sheet, broken below it
+    if (wantEpoch) {
+      var e0 = ecl(epochRoshLon());
+      g += '<path id="t16Round" fill="none" stroke="var(--minus)" stroke-width="2.6" ' +
+           'stroke-opacity=".55"></path>' +
+           '<circle cx="' + e0[0].toFixed(1) + '" cy="' + e0[1].toFixed(1) + '" r="4" fill="none" ' +
+           'stroke="var(--minus)" stroke-width="1.6" stroke-opacity=".55"></circle>' +
+           '<text x="' + e0[0].toFixed(1) + '" y="' + (e0[1] + 18).toFixed(1) + '" font-size="12" ' +
+           'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" ' +
+           'text-anchor="middle" fill="var(--minus)" fill-opacity=".65" direction="rtl">בעיקר</text>';
+    }
+    // the line of the two points, and the half that rides above the plane
+    g += '<line id="t16Line" stroke="var(--minus)" stroke-opacity=".4" stroke-dasharray="5 4"></line>' +
+         '<path id="t16Base1" fill="none" stroke="var(--mean)" stroke-width="2" stroke-opacity=".4"></path>';
+    // how far it has come from the ראש — whole above the plane, broken below it
     g += '<path id="t16North" fill="none" stroke="var(--mean)" stroke-width="2.8"></path>' +
          '<path id="t16South" fill="none" stroke="var(--mean)" stroke-width="2.8" stroke-dasharray="7 5"></path>';
-    // the earth, and the two points themselves
+    // the earth
     g += '<circle cx="' + TV.cx + '" cy="' + TV.cy + '" r="3.6" fill="currentColor" fill-opacity=".6"></circle>' +
          '<text x="' + (TV.cx + 4) + '" y="' + (TV.cy + 19) + '" font-size="13" text-anchor="middle" ' +
          'fill="currentColor" fill-opacity=".5" direction="rtl">הארץ</text>';
-    g += '<circle cx="' + A[0].toFixed(1) + '" cy="' + A[1].toFixed(1) + '" r="5.5" fill="var(--minus)"></circle>' +
-         '<text x="' + (A[0] + 4).toFixed(1) + '" y="' + (A[1] - 14).toFixed(1) + '" font-size="17" ' +
-         'text-anchor="middle" fill="var(--minus)" direction="rtl">ראש</text>' +
-         '<circle cx="' + B[0].toFixed(1) + '" cy="' + B[1].toFixed(1) + '" r="5.5" fill="none" ' +
-         'stroke="var(--minus)" stroke-width="2.2"></circle>' +
-         '<text x="' + (B[0] - 4).toFixed(1) + '" y="' + (B[1] + 22).toFixed(1) + '" font-size="17" ' +
-         'text-anchor="middle" fill="var(--minus)" direction="rtl">זנב</text>';
-    // חציה נוטה לצפון וחציה נוטה לדרום
-    var hi = tEdge(true), lo = tEdge(false);
-    g += '<text x="' + (hi[0] + 30).toFixed(1) + '" y="' + (hi[1] - 8).toFixed(1) + '" font-size="15" ' +
-         'text-anchor="middle" fill="currentColor" fill-opacity=".5" direction="rtl">צפון</text>' +
-         '<text x="' + (lo[0] + 30).toFixed(1) + '" y="' + (lo[1] + 19).toFixed(1) + '" font-size="15" ' +
-         'text-anchor="middle" fill="currentColor" fill-opacity=".5" direction="rtl">דרום</text>';
-    // each circle named beside itself
-    var ml = tp(115, lean);
-    var sl = proj(TV.r * 0.86, -TV.r * 1.02, 0);
-    g += '<text x="' + (ml[0] - 8).toFixed(1) + '" y="' + (ml[1] - 16).toFixed(1) + '" font-size="15" ' +
-         'text-anchor="middle" fill="var(--mean)" fill-opacity=".95" direction="rtl">עגולת הירח</text>' +
-         '<text x="' + sl[0].toFixed(1) + '" y="' + sl[1].toFixed(1) + '" font-size="15" ' +
-         'text-anchor="middle" fill="var(--sunc)" fill-opacity=".95" direction="rtl">עגולת השמש</text>';
+    // the two points themselves, which travel
+    g += '<circle id="t16Rosh" r="5.5" fill="var(--minus)"></circle>' +
+         '<text id="t16RoshL" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" font-size="17" text-anchor="middle" fill="var(--minus)" direction="rtl">ראש</text>' +
+         '<circle id="t16Zanav" r="5.5" fill="none" stroke="var(--minus)" stroke-width="2.2"></circle>' +
+         '<text id="t16ZanavL" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" font-size="17" text-anchor="middle" fill="var(--minus)" direction="rtl">זנב</text>';
+    // חציה נוטה לצפון וחציה נוטה לדרום, and the circle named beside itself
+    g += '<text id="t16North1" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" font-size="15" text-anchor="middle" fill="currentColor" ' +
+         'fill-opacity=".5" direction="rtl">צפון</text>' +
+         '<text id="t16South1" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" font-size="15" text-anchor="middle" fill="currentColor" ' +
+         'fill-opacity=".5" direction="rtl">דרום</text>';
+    // the two circles named in the corner: the rim belongs to two points that
+    // travel the whole way round it
+    var lx = TV.w - 18;
+    g += '<circle cx="' + lx + '" cy="15" r="5" fill="var(--mean)"></circle>' +
+         '<text x="' + (lx - 13) + '" y="20" font-size="14" fill="var(--mean)" fill-opacity=".95" ' +
+         'direction="rtl" text-anchor="start">עגולת הירח</text>' +
+         '<circle cx="' + lx + '" cy="38" r="5" fill="var(--sunc)"></circle>' +
+         '<text x="' + (lx - 13) + '" y="43" font-size="14" fill="var(--sunc)" fill-opacity=".95" ' +
+         'direction="rtl" text-anchor="start">עגולת השמש</text>';
     // the moon, and how far it stands off his circle
     g += '<line id="t16Drop" stroke="var(--mas)" stroke-width="1.8"></line>' +
          '<circle id="t16Foot" r="2.6" fill="var(--sunc)" fill-opacity=".85"></circle>' +
          '<circle id="t16Sun" r="6" fill="var(--sunc)"></circle>' +
          '<circle id="t16Moon" r="6.5" fill="var(--mean)" stroke="var(--card)" stroke-width="1.5"></circle>' +
-         '<text id="t16Val" font-size="13" text-anchor="middle" fill="var(--mas)" ' +
+         '<text id="t16Val" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" font-size="13" text-anchor="middle" fill="var(--mas)" ' +
          'font-family="IBM Plex Mono, monospace">—</text>';
     g += '<path id="t16Grab" class="grab16" fill="none" stroke="transparent" stroke-width="26" ' +
-         'pointer-events="stroke" style="cursor:grab;touch-action:none" d="' + tpath(0, 360, lean) + '"></path>';
+         'pointer-events="stroke" style="cursor:grab;touch-action:none"></path>';
     // what in the drawing is not to his measure
     g += '<text x="' + TV.cx + '" y="' + (TV.h - 8) + '" font-size="12" text-anchor="middle" ' +
          'fill="currentColor" fill-opacity=".45" direction="rtl">לא שלו: המשטח, והנטייה מוגדלת ' +
          (MAG_WORD[TV.mag] || "×" + TV.mag) + " — לאמיתה " + degShort(maxRochav()) + "</text>";
     return '<svg viewBox="0 0 ' + TV.w + " " + TV.h + '" role="img" ' +
-      'aria-label="A flat sheet with the sun circle drawn on it, and the moon circle leaning through the sheet: whole where it rides above, broken where it runs beneath. It crosses the sheet at two points opposite each other, the head and the tail.">' +
+      'aria-label="The plane of the sun circle, ticked round with the twelve mazalos, and the moon circle leaning through it: whole where it rides above, broken where it runs beneath. It crosses at two points opposite each other, the head and the tail, and those two creep backwards through the mazalos as the days run.">' +
       g + "</svg>";
   }
 
   function markTilt(v) {
     var moon = document.getElementById("t16Moon");
     if (!moon) return;
+    NODE_LON = v.rosh;                       // the whole leaning circle turns with it
     var lean = leanShown(), u = normalizeDegrees(v.maslul);
-    var m = tp(u, lean), f = tfoot(u), s = tp(normalizeDegrees(v.sunTrue - v.rosh), 0);
+
+    document.getElementById("t16Base1").setAttribute("d", tpath(0, 180, lean));
+    document.getElementById("t16Base2").setAttribute("d", tpath(180, 360, lean));
+    document.getElementById("t16Grab").setAttribute("d", tpath(0, 360, lean));
+
+    var round = document.getElementById("t16Round");
+    if (round) {
+      var from = normalizeDegrees(v.rosh), to = epochRoshLon();
+      if (to <= from) to += 360;
+      round.setAttribute("d", to - from > 359.5 ? eclPath(0, 360) : eclPath(from, to));
+    }
+    var A = tp(0, 0), B = tp(180, 0), line = document.getElementById("t16Line");
+    line.setAttribute("x1", A[0].toFixed(1)); line.setAttribute("y1", A[1].toFixed(1));
+    line.setAttribute("x2", B[0].toFixed(1)); line.setAttribute("y2", B[1].toFixed(1));
+    var rosh = document.getElementById("t16Rosh"), zanav = document.getElementById("t16Zanav");
+    rosh.setAttribute("cx", A[0].toFixed(1)); rosh.setAttribute("cy", A[1].toFixed(1));
+    zanav.setAttribute("cx", B[0].toFixed(1)); zanav.setAttribute("cy", B[1].toFixed(1));
+    place("t16RoshL", A[0] + (TV.cx - A[0]) * 0.2, A[1] + (TV.cy - A[1]) * 0.2 - 4);
+    place("t16ZanavL", B[0] + (TV.cx - B[0]) * 0.2, B[1] + (TV.cy - B[1]) * 0.2 - 4);
+
+    var hi = tEdge(true), lo = tEdge(false);
+    place("t16North1", hi[0] + 30, hi[1] - 8);
+    place("t16South1", lo[0] + 30, lo[1] + 19);
+
+    var m = tp(u, lean), f = tfoot(u), s = ecl(v.sunTrue);
     moon.setAttribute("cx", m[0].toFixed(1)); moon.setAttribute("cy", m[1].toFixed(1));
     var foot = document.getElementById("t16Foot");
     foot.setAttribute("cx", f[0].toFixed(1)); foot.setAttribute("cy", f[1].toFixed(1));
@@ -356,15 +434,23 @@
     drop.setAttribute("stroke-dasharray", v.north ? "none" : "4 3");
     var sun = document.getElementById("t16Sun");
     sun.setAttribute("cx", s[0].toFixed(1)); sun.setAttribute("cy", s[1].toFixed(1));
+
     var north = document.getElementById("t16North"), south = document.getElementById("t16South");
     north.setAttribute("d", u < 1 ? "" : tpath(0, Math.min(u, 180), lean));
     south.setAttribute("d", u > 181 ? tpath(180, u, lean) : "");
     north.setAttribute("marker-end", u <= 180 ? "url(#tip16)" : "none");
     south.setAttribute("marker-end", u > 180 ? "url(#tip16)" : "none");
+
     var val = document.getElementById("t16Val");
     val.setAttribute("x", ((m[0] + f[0]) / 2 + 26).toFixed(1));
     val.setAttribute("y", ((m[1] + f[1]) / 2 + 4).toFixed(1));
     val.textContent = v.rochav < 1 / 3600 ? "—" : degShort(v.rochav);
+  }
+
+  function place(id, x, y) {
+    var t = document.getElementById(id);
+    if (!t) return;
+    t.setAttribute("x", x.toFixed(1)); t.setAttribute("y", y.toFixed(1));
   }
 
   /* Rule eight again: this circle turns too. Dragging the moon round it moves

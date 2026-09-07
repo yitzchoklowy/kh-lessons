@@ -21,7 +21,7 @@ const K = new Function(
   + '\n' + read('src/partials/kh16.js')
   + '\nreturn { chapter15At, chapter16At, tiltAt, foldMaslul, rochavBracket, hisLatRows, waveRows,'
   + ' FOLD_RULES, CONSTANTS, formatDms, normalizeDegrees, dmsToDecimal, zodiacPosition,'
-  + ' calculateNodePosition, calculateMoonLatitude };')();
+  + ' calculateNodePosition, calculateMoonLatitude, epochRoshLon, roshRoundDays };')();
 
 const { CONSTANTS: C, formatDms: F, dmsToDecimal: D } = K;
 const dms = (d, m = 0, s = 0) => d + m / 60 + s / 3600;
@@ -164,6 +164,21 @@ test('the drawing moves between his days, and the engine still stands behind it'
   const mid = K.tiltAt(300000.5);
   const lat = K.calculateMoonLatitude(mid.amiti, mid.rosh);
   same(mid.rochav, Math.abs(lat.result), 'the width at half a day');
+});
+
+test('the two points travel, and their round comes out of his own daily motion', () => {
+  // ט״ז:ג — the place at the epoch is 360 less the אמצע he gives in ט״ז:ב
+  same(K.epochRoshLon(), K.normalizeDegrees(360 - D(C.NODE.START_POSITION)), 'the ראש at the עיקר');
+  // and it gives ground, backwards, at his three חלקים and eleven שניות a day
+  const start = K.chapter16At(0).rosh, later = K.chapter16At(100).rosh;
+  near(K.normalizeDegrees(start - later), 100 * D(C.NODE.DAILY_MOTION), 1 / 60,
+    'a hundred days of backing away');
+  const round = K.roshRoundDays();
+  assert.equal(round, Math.round(360 / D(C.NODE.DAILY_MOTION)), 'the whole round, by his own rate');
+  assert.ok(round > 6700 && round < 6900, `a round of ${round} days is not eighteen and a half years`);
+  // half a round later the two points have changed places
+  const half = K.chapter16At(Math.round(round / 2));
+  near(K.normalizeDegrees(half.rosh - K.chapter16At(0).zanav), 0, 1, 'the ראש stands where the זנב stood');
 });
 
 test('no chapter-16 page or partial types a DMS figure into a chart', () => {

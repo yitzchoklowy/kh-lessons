@@ -20,6 +20,12 @@
       וכנגדו לעולם יהיה מקום הזנב:</p>
   </header>
 
+  <div class="rchart fig16" id="fig" style="--c:var(--minus)">
+    <div class="rc-head"><h4>הראש הולך אחורנית</h4><span class="rc-ref">ט״ז:ב–ג</span></div>
+    <div id="tilt"></div>
+    <div class="rc-sum" id="say"></div>
+  </div>
+
   <div class="pair">
     <div class="stack">
       <div class="rchart" id="chart" style="--c:var(--minus)"></div>
@@ -65,11 +71,27 @@
   ];
 
   function show(n) {
-    var v = chapter16At(n);
-    drawNode(tiltAt(day));
+    var v = chapter16At(n), live = tiltAt(day);
+    drawNode(live);
+    markTilt(live);
     traceNodeChart(document.getElementById("chart"), v.node, START);
     paint(document.getElementById("led"), roshLedger(v.node));
+    say(live);
     agree(n, v);
+  }
+
+  /* what the drawing is showing, in his own terms: where the two points stand
+     now, and how far the ראש has given ground since the עיקר */
+  function say(v) {
+    var zr = zodiacPosition(v.rosh), zz = zodiacPosition(v.zanav);
+    var perDay = dmsToDecimal(CONSTANTS.NODE.DAILY_MOTION);
+    var gone = normalizeDegrees(epochRoshLon() - v.rosh);
+    document.getElementById("say").innerHTML =
+      "הראש במזל <b>" + zr.hebrew + "</b>, " + zr.ordinalDegree + " מעלות · " +
+      "הזנב במזל <b>" + zz.hebrew + "</b>, " + zz.ordinalDegree + " מעלות." +
+      "<br>מן העיקר נסוג <b>" + formatDms(gone) + "</b>, אחורנית." +
+      '<span class="eq">360° ÷ ' + formatDms(perDay) + " = " +
+      roshRoundDays().toLocaleString() + " ימים למחזור</span>";
   }
 
   function agree(n, v) {
@@ -97,6 +119,8 @@
     if (el.play) el.play.textContent = "▶ Turn";
     dimGalgalim();
     nodeDials();
+    document.getElementById("tilt").innerHTML = tiltFigure({ epoch: true });
+    grabTilt();
 
     renderBlockChart(document.getElementById("chart"), {
       title: "מהלך הראש", ref: "ט״ז:ב",
