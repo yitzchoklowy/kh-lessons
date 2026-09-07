@@ -343,9 +343,9 @@
            '" font-size="13.5" text-anchor="middle" fill="currentColor" fill-opacity=".33" ' +
            'direction="rtl">' + MZ[k] + "</text>";
     }
-    // under the plane: the half of the moon's circle that runs south
+    // beneath the plane: the same circle, only seen through it
     g += '<path id="t16Base2" fill="none" stroke="var(--mean)" stroke-width="1.9" ' +
-         'stroke-opacity=".4" stroke-dasharray="6 5"></path>';
+         'stroke-opacity=".22"></path>';
     // his own circle, lying on the plane — the far rim lighter than the near
     g += '<path d="' + eclPath(-TV.spin, 180 - TV.spin) + '" fill="none" stroke="var(--sunc)" ' +
          'stroke-width="1.7" stroke-opacity=".45"></path>' +
@@ -366,7 +366,7 @@
          '<path id="t16Base1" fill="none" stroke="var(--mean)" stroke-width="2" stroke-opacity=".4"></path>';
     // how far it has come from the ראש — whole above the plane, broken below it
     g += '<path id="t16North" fill="none" stroke="var(--mean)" stroke-width="2.8"></path>' +
-         '<path id="t16South" fill="none" stroke="var(--mean)" stroke-width="2.8" stroke-dasharray="7 5"></path>';
+         '<path id="t16South" fill="none" stroke="var(--mean)" stroke-width="2.8" stroke-opacity=".6"></path>';
     // the earth
     g += '<circle cx="' + TV.cx + '" cy="' + TV.cy + '" r="3.6" fill="currentColor" fill-opacity=".6"></circle>' +
          '<text x="' + (TV.cx + 4) + '" y="' + (TV.cy + 19) + '" font-size="13" text-anchor="middle" ' +
@@ -383,8 +383,8 @@
          'fill-opacity=".5" direction="rtl">דרום</text>';
     // the two circles named in the corner: the rim belongs to two points that
     // travel the whole way round it
-    /* and what the broken line means, since a drawing that has to be explained
-       in words is a drawing that has not said it */
+    /* the two circles named, and nothing else: what is above his plane and what
+       is below it, the drawing shows by where it puts them */
     var lx = TV.w - 18, halo = 'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" ' +
         'stroke-linejoin="round" ';
     function leg(y, mark, text, colour, op) {
@@ -395,15 +395,8 @@
     function swatch(y, colour) {
       return '<circle cx="' + lx + '" cy="' + y + '" r="5" fill="' + colour + '"></circle>';
     }
-    function bar(y, dash) {
-      return '<line x1="' + (lx - 10) + '" y1="' + y + '" x2="' + (lx + 6) + '" y2="' + y +
-             '" stroke="var(--mean)" stroke-width="2.4"' +
-             (dash ? ' stroke-dasharray="4 3"' : "") + "></line>";
-    }
     g += leg(15, swatch(15, "var(--mean)"), "עגולת הירח", "var(--mean)", ".95") +
-         leg(37, swatch(37, "var(--sunc)"), "עגולת השמש", "var(--sunc)", ".95") +
-         leg(61, bar(61, false), "מעל המשטח", "currentColor", ".55") +
-         leg(81, bar(81, true), "מתחתיו", "currentColor", ".55");
+         leg(37, swatch(37, "var(--sunc)"), "עגולת השמש", "var(--sunc)", ".95");
     // the moon, and how far it stands off his circle
     g += '<line id="t16Drop" stroke="var(--mas)" stroke-width="1.8"></line>' +
          '<circle id="t16Foot" r="2.6" fill="var(--sunc)" fill-opacity=".85"></circle>' +
@@ -474,7 +467,6 @@
     var drop = document.getElementById("t16Drop");
     drop.setAttribute("x1", m[0].toFixed(1)); drop.setAttribute("y1", m[1].toFixed(1));
     drop.setAttribute("x2", f[0].toFixed(1)); drop.setAttribute("y2", f[1].toFixed(1));
-    drop.setAttribute("stroke-dasharray", v.north ? "none" : "4 3");
     var sun = document.getElementById("t16Sun");
     sun.setAttribute("cx", s[0].toFixed(1)); sun.setAttribute("cy", s[1].toFixed(1));
 
