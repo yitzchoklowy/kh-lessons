@@ -385,7 +385,11 @@
          '<text id="t16Val" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" font-size="13" text-anchor="middle" fill="var(--mas)" ' +
          'font-family="IBM Plex Mono, monospace">—</text>';
     g += '<path id="t16Grab" class="grab16" fill="none" stroke="transparent" stroke-width="26" ' +
-         'pointer-events="stroke" style="cursor:grab;touch-action:none"></path>';
+         'pointer-events="stroke" style="cursor:grab;touch-action:none"></path>' +
+         '<circle id="t16RoshGrab" class="grab16" r="17" fill="transparent" ' +
+         'style="cursor:grab;touch-action:none"></circle>' +
+         '<circle id="t16ZanavGrab" class="grab16" r="17" fill="transparent" ' +
+         'style="cursor:grab;touch-action:none"></circle>';
     // what in the drawing is not to his measure
     g += '<text x="' + TV.cx + '" y="' + (TV.h - 8) + '" font-size="12" text-anchor="middle" ' +
          'fill="currentColor" fill-opacity=".45" direction="rtl">לא שלו: המשטח, והנטייה מוגדלת ' +
@@ -419,6 +423,7 @@
     zanav.setAttribute("cx", B[0].toFixed(1)); zanav.setAttribute("cy", B[1].toFixed(1));
     place("t16RoshL", A[0] + (TV.cx - A[0]) * 0.2, A[1] + (TV.cy - A[1]) * 0.2 - 4);
     place("t16ZanavL", B[0] + (TV.cx - B[0]) * 0.2, B[1] + (TV.cy - B[1]) * 0.2 - 4);
+    dot("t16RoshGrab", A); dot("t16ZanavGrab", B);
 
     var hi = tEdge(true), lo = tEdge(false);
     place("t16North1", hi[0] + 30, hi[1] - 8);
@@ -447,10 +452,35 @@
     val.textContent = v.rochav < 1 / 3600 ? "—" : degShort(v.rochav);
   }
 
+  function dot(id, p) {
+    var c = document.getElementById(id);
+    if (!c) return;
+    c.setAttribute("cx", p[0].toFixed(1)); c.setAttribute("cy", p[1].toFixed(1));
+  }
+
   function place(id, x, y) {
     var t = document.getElementById(id);
     if (!t) return;
     t.setAttribute("x", x.toFixed(1)); t.setAttribute("y", y.toFixed(1));
+  }
+
+  /* Turning the ראש by hand: what the reader moves is the day count, and the
+     ראש answers to it at his own three חלקים and eleven שניות — so a hand's
+     width of it is years, and the moon whirls round while it creeps. */
+  function dayForRosh(dayNow, wantLon) {
+    var rate = dmsToDecimal(CONSTANTS.NODE.DAILY_MOTION);        // it backs away
+    var day = Math.max(0, dayNow);
+    /* His published daily motion carries the first guess. His own tables of
+       ט״ז:ב, which is what the ראש is actually built from, imply a rate a
+       fraction of a second under it — over a long pull that tells, so the guess
+       is asked of the tables again and corrected twice. */
+    for (var i = 0; i < 3; i++) {
+      var now = chapter16Cached(Math.round(day)).rosh;
+      var d = ((wantLon - now + 540) % 360) - 180;               // the short way round
+      if (Math.abs(d) < rate / 2) break;
+      day = Math.max(0, Math.round(day - d / rate));
+    }
+    return Math.round(day);
   }
 
   /* Rule eight again: this circle turns too. Dragging the moon round it moves
@@ -489,6 +519,39 @@
     function drop() { if (!holding) return; holding = false; setDay(day); }
     handle.addEventListener("pointerup", drop);
     handle.addEventListener("pointercancel", drop);
+    grabPoints(svg);
+  }
+
+  /* And so do the two points. Where the pointer is, read as a place on his
+     plane, is where the ראש is asked to stand; the day count is what answers. */
+  function grabPoints(svg) {
+    var held = null;
+    function lonAt(e) {
+      var b = svg.getBoundingClientRect();
+      var x = (e.clientX - b.left) * TV.w / b.width - TV.cx;
+      var y = (e.clientY - b.top) * TV.h / b.height;
+      var Y = (TV.cy - y) / Math.sin(TV.view * RAD16);
+      return normalizeDegrees(Math.atan2(Y, x) / RAD16 - TV.spin);
+    }
+    ["t16RoshGrab", "t16ZanavGrab"].forEach(function (id) {
+      var h = document.getElementById(id);
+      if (!h) return;
+      h.addEventListener("pointerdown", function (e) {
+        held = id === "t16RoshGrab" ? 0 : 180;
+        playing = false; el.play.textContent = "▶ Turn"; stopRun();
+        h.setPointerCapture(e.pointerId);
+        e.preventDefault(); e.stopPropagation();
+      });
+      h.addEventListener("pointermove", function (e) {
+        if (held === null) return;
+        day = dayForRosh(day, normalizeDegrees(lonAt(e) - held));
+        drawAt(day);
+        e.stopPropagation();
+      });
+      function up() { if (held === null) return; held = null; setDay(day); }
+      h.addEventListener("pointerup", up);
+      h.addEventListener("pointercancel", up);
+    });
   }
 
   // ═══ the side view ═══════════════════════════════════════════════════

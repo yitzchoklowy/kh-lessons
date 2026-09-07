@@ -21,7 +21,7 @@ const K = new Function(
   + '\n' + read('src/partials/kh16.js')
   + '\nreturn { chapter15At, chapter16At, tiltAt, foldMaslul, rochavBracket, hisLatRows, waveRows,'
   + ' FOLD_RULES, CONSTANTS, formatDms, normalizeDegrees, dmsToDecimal, zodiacPosition,'
-  + ' calculateNodePosition, calculateMoonLatitude, epochRoshLon, roshRoundDays };')();
+  + ' calculateNodePosition, calculateMoonLatitude, epochRoshLon, roshRoundDays, dayForRosh };')();
 
 const { CONSTANTS: C, formatDms: F, dmsToDecimal: D } = K;
 const dms = (d, m = 0, s = 0) => d + m / 60 + s / 3600;
@@ -179,6 +179,49 @@ test('the two points travel, and their round comes out of his own daily motion',
   // half a round later the two points have changed places
   const half = K.chapter16At(Math.round(round / 2));
   near(K.normalizeDegrees(half.rosh - K.chapter16At(0).zanav), 0, 1, 'the ראש stands where the זנב stood');
+});
+
+test('the drawing turns at his own rates, and not at some rate of its own', () => {
+  /* Over a long enough run the true motions average to the mean ones he
+     publishes. What is left over is his own tables' rounding — the ten- and
+     hundred- and thousand-day blocks do not imply exactly the same daily rate —
+     so a second of arc a day is the whole of the disagreement. */
+  const N = 20000, from = 300000, step = (a, b) => ((b - a + 540) % 360) - 180;
+  let rosh = 0, moon = 0, maslul = 0, sun = 0, a = K.chapter16At(from);
+  for (let d = from; d < from + N; d++) {
+    const b = K.chapter16At(d + 1);
+    rosh += step(a.rosh, b.rosh);
+    moon += step(a.amiti, b.amiti);
+    maslul += step(a.maslul, b.maslul);
+    sun += step(a.sunTrue, b.sunTrue);
+    a = b;
+  }
+  const SEC = 1 / 3600;
+  assert.ok(rosh < 0, 'the ראש must go backwards through the mazalos');
+  near(Math.abs(rosh / N), D(C.NODE.DAILY_MOTION), SEC, 'the ראש · ט״ז:ב');
+  near(moon / N, D(C.MOON.MEAN_MOTION_PER_DAY), SEC, 'the moon · י״ד:א');
+  near(sun / N, D(C.SUN.MEAN_MOTION_PER_DAY), SEC, 'the sun · י״ב:א');
+  // and מסלול הרוחב grows by both, since the ראש comes to meet the moon
+  near(maslul / N, D(C.MOON.MEAN_MOTION_PER_DAY) + D(C.NODE.DAILY_MOTION), SEC,
+    'מסלול הרוחב · י״ד:א with ט״ז:ב');
+});
+
+test('taking hold of the ראש moves the day count, at his rate', () => {
+  const rate = D(C.NODE.DAILY_MOTION);
+  const now = K.chapter16At(29).rosh;
+  // ask it to stand thirty degrees further back: that is thirty degrees of his
+  // own daily motion, which is a great many days
+  const want = K.normalizeDegrees(now - 30);
+  const day = K.dayForRosh(29, want);
+  assert.ok(Math.abs(day - (29 + 30 / rate)) < 12, `${day} days is not thirty degrees of the ראש`);
+  near(K.chapter16At(day).rosh, want, rate, 'and it lands within a day of where it was put');
+  // asking for where it already stands leaves the day where it is
+  assert.equal(K.dayForRosh(29, now), 29, 'no movement, no day');
+  // and every place on his circle can be asked for
+  for (let lon = 0; lon < 360; lon += 37) {
+    const d = K.dayForRosh(4000, lon);
+    near(K.chapter16At(d).rosh, lon, rate, `asking the ראש for ${lon}°`);
+  }
 });
 
 test('no chapter-16 page or partial types a DMS figure into a chart', () => {
