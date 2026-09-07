@@ -18,7 +18,9 @@
                '<span class="pn-name">' + item.name + "</span>" +
                '<span class="pn-mark">' + item.mark + "</span></a>";
       }
-      nav.innerHTML = side(ORDER[i + 1], "next") + side(ORDER[i - 1], "prev");
+      /* The row is RTL, so the first one written lands on the right — and on the
+         right is where you came from. */
+      nav.innerHTML = side(ORDER[i - 1], "prev") + side(ORDER[i + 1], "next");
       page.appendChild(nav);
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);

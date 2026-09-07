@@ -208,11 +208,13 @@
                  border:1px solid var(--line); background:var(--card); border-radius:10px;
                  padding:.7rem .95rem; color:var(--ink); }
   .pagenav .pn:hover { border-color:var(--brass); }
-  .pagenav .pn.prev { text-align:left; }
+  /* Going on means going left, the way the words do: הקודם sits on the right,
+     הבא on the left, each hugging the outer edge. */
+  .pagenav .pn.next { text-align:left; }
   .pagenav .pn-dir { font-size:.7rem; letter-spacing:.1em; color:var(--faint); }
   .pagenav .pn-name { font-family:var(--serif); font-size:1.02rem; }
   .pagenav .pn-mark { font-family:var(--mono); font-size:.72rem; color:var(--faint); direction:ltr; }
-  .pagenav .pn.prev .pn-mark, .pagenav .pn.prev .pn-dir { align-self:flex-start; }
+  .pagenav .pn.next .pn-mark { align-self:flex-end; }
   @media (max-width:520px) { .pagenav { grid-template-columns:1fr; } }
 
   .eyebrow a { color:inherit; text-decoration:none; border-bottom:1px dotted currentColor; }

@@ -118,16 +118,17 @@ notes and the `verse-translation` block, and what is left is the halacha.
 **Do not fall back to Sefaria to fill a gap**; leave the page unwritten and say
 the text is missing.
 
-One thing to settle: what comes back is alhatorah's own base text, and the site
-carries **דפוס הרב שילת** only as a scanned print witness (`Rambam Mishneh Torah
-Printing Rav Sheilat`, `branch:false`) — not as a text stream the data server
-will hand over. Its layers there are דפוסים, הרב קאפח, כתבי יד תימניים,
-ר׳ דוד ב״ר עובדיה and יד פשוטה. So the chapter-15 pages carry alhatorah's base
-text, pulled 2026-09-07.
+**alhatorah's base Mishneh Torah text is Shilat's**, so `mainText` is already
+the edition this rule asks for — there is nothing further to fetch. Don't be
+thrown by the registry's separate `Rambam Mishneh Torah Printing Rav Sheilat`
+(`branch:false`): that is the scanned printing, for the manuscripts pane. The
+alternative *text* layers beside the base are דפוסים, הרב קאפח,
+כתבי יד תימניים, ר׳ דוד ב״ר עובדיה and יד פשוטה.
 
 Pages still carrying Sefaria's text, to be replaced: `kh12-sun-mean`,
 `kh12-govah`, `kh14-2`, `kh14-sun`, `galgalim`. The text on `kh14-1` and
-`kh14-3` was supplied directly and is not Sefaria's; chapter 15 is alhatorah's.
+`kh14-3` was supplied directly and is not Sefaria's; chapter 15 came from
+alhatorah — that is, from Shilat — pulled 2026-09-07.
 
 ## 10. Hebrew reads right to left, everywhere
 
