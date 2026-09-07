@@ -688,11 +688,13 @@
     put(el.moonBody, Mo[0], Mo[1]);
     var fa2 = (farA + 20) * RAD, fl = epiR + 11;
     put(el.farLbl, C[0] + fl * Math.cos(fa2), C[1] - fl * Math.sin(fa2) + 3);
-    var mr = epiR * 0.80, span = N(mas);
+    // stop the sweep a few degrees short so its arrowhead does not sit on the moon
+    var mr = epiR * 0.80, span = N(mas), gap = Math.min(9, span / 2);
+    var endA = moonA + gap;
     var q0 = [C[0] + mr * Math.cos(farA * RAD), C[1] - mr * Math.sin(farA * RAD)];
-    var q1 = [C[0] + mr * Math.cos(moonA * RAD), C[1] - mr * Math.sin(moonA * RAD)];
-    el.arcMas.setAttribute("d", span < 1 ? "" : "M " + q0[0].toFixed(2) + " " + q0[1].toFixed(2) +
-      " A " + mr.toFixed(2) + " " + mr.toFixed(2) + " 0 " + (span > 180 ? 1 : 0) + " 1 " +
+    var q1 = [C[0] + mr * Math.cos(endA * RAD), C[1] - mr * Math.sin(endA * RAD)];
+    el.arcMas.setAttribute("d", span < 2 ? "" : "M " + q0[0].toFixed(2) + " " + q0[1].toFixed(2) +
+      " A " + mr.toFixed(2) + " " + mr.toFixed(2) + " 0 " + (span - gap > 180 ? 1 : 0) + " 1 " +
       q1[0].toFixed(2) + " " + q1[1].toFixed(2));
 
     var tip = P(R_PTR, mean);
