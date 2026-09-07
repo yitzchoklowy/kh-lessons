@@ -119,11 +119,11 @@
         var off = Math.abs(mine - want);
         if (off < 1 / 60) { say(i, "ok", "יפה — <b>" + formatDms(want) + "</b>." + tail); settle(i, true); }
         else if (off < 0.5) {
-          say(i, "near", "קרוב מאד. והוא <b>" + formatDms(want) + "</b> — you were " +
+          say(i, "near", "קרוב מאד. והוא <b>" + formatDms(want) + "</b> — טעית ב־" +
               formatDms(off) + "." + tail);
           settle(i, true);
         } else {
-          say(i, "no", "והוא <b>" + formatDms(want) + "</b> — you were " + formatDms(off) + "." + tail);
+          say(i, "no", "והוא <b>" + formatDms(want) + "</b> — טעית ב־" + formatDms(off) + "." + tail);
           settle(i, false);
         }
         return;
