@@ -1,0 +1,155 @@
+<title>הזנב כנגדו</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh16.css--></style>
+
+<div class="page solo">
+
+  <header>
+    <h1 class="bigtitle">הזנב כנגדו</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/16" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ז:ו–ח</a></div>
+    <p class="halacha lead">לעולם יהיה בין הראש ובין הזנב <b class="node">חצי הגלגל בשוה</b>.<br>
+      לפיכך כל מזל שתמצא בו מקום הראש, יהיה הזנב <b class="node">במזל שביעי ממנו</b> בכמו מנין המעלות והחלקים בשוה.<br>
+      אם יהיה הראש בעשר מעלות במזל פלוני, יהיה הזנב בעשר מעלות ממזל שביעי ממנו:</p>
+    <p class="halacha">ומאחר שתדע מקום הראש ומקום הזנב ומקום הירח האמיתי, התבונן בשלשתן,<br>
+      אם מצאתה הירח עם הראש או עם הזנב במעלה אחת וחלק אחד, תדע שאין הירח נוטה לא לצפון השמש ולא לדרומה.<br>
+      ואם ראיתה מקום הירח <b class="node">לפני מקום הראש</b>, והוא הולך כנגד הזנב, תדע שהירח <b class="mean">נטה לצפון השמש</b>.<br>
+      ואם היה הירח <b class="node">לפני מקום הזנב</b>, והרי הוא הולך כנגד הראש, תדע שהירח <b class="mean">נטה לדרום השמש</b>:</p>
+    <p class="halacha">הנטייה שנוטה הירח לצפון השמש או לדרומה היא הנקראת <b class="mas">רוחב הירח</b>.<br>
+      ואם היה נוטה לצפון, נקרא <b class="mas">רוחב צפוני</b>, ואם היה נוטה לדרום, נקרא <b class="mas">רוחב דרומי</b>.<br>
+      ואם היה הירח באחת משתי הנקודות, לא יהיה לו רוחב, כמו שביארנו:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="book n" id="work">
+        <h3><i></i>שלשתן, זה כנגד זה</h3>
+        <p class="cap">ט״ז:ו–ח</p>
+        <table class="led"><tbody id="led"></tbody></table>
+      </div>
+      <div class="rchart" id="fig" style="--c:var(--minus)">
+        <div class="rc-head"><h4>לפני הראש, או לפני הזנב</h4><span class="rc-ref">ט״ז:ז</span></div>
+        <div id="wave"></div>
+        <div class="rc-sum" id="say"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--minus)"></div>
+
+  <p class="note"><a href="kh16-2.html">מהיכן בא מקום הראש</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh16.js-->
+  <!--@include partials/wheel.js-->
+
+  var MAZAL = CONSTANTS.CONSTELLATIONS;
+
+  function verdict(v) {
+    if (v.rochav < 1 / 3600) return { side: "none", says: "עם הנקודה עצמה — אין לו רוחב" };
+    return v.north
+      ? { side: "north", says: "לפני מקום הראש, והולך כנגד הזנב — רוחב צפוני" }
+      : { side: "south", says: "לפני מקום הזנב, והולך כנגד הראש — רוחב דרומי" };
+  }
+
+  function show(n) {
+    var v = chapter16At(n), d = verdict(v);
+    var zr = zodiacPosition(v.rosh), zz = zodiacPosition(v.zanav), zm = zodiacPosition(v.amiti);
+    drawNode(v);
+    markWave(v, false);
+    paint(document.getElementById("led"), [
+      { l: "מקום הראש", s: zr.ordinalDegree + " מעלות במזל " + zr.hebrew, a: "", t: formatDms(v.rosh) },
+      { l: "מקום הזנב", s: "מזל שביעי ממנו — " + zz.hebrew, a: "+ 180°", t: formatDms(v.zanav) },
+      { l: "מקום הירח האמיתי", s: zm.ordinalDegree + " מעלות במזל " + zm.hebrew + " · פרק ט״ו",
+        a: "", t: formatDms(v.amiti) },
+      { l: d.says, a: "", t: formatDms(v.rochav), out: true }
+    ]);
+    document.getElementById("say").innerHTML =
+      "מן הראש עד הירח <b>" + formatDms(v.maslul) + "</b> — " +
+      (v.maslul <= 180 ? "בחצי הצפוני" : "בחצי הדרומי") + "." +
+      '<span class="eq">' + formatDms(v.rochav) + (d.side === "north" ? " צפוני" : d.side === "south" ? " דרומי" : "") + "</span>";
+  }
+
+  function onDraw(n) { show(n); }
+
+  /* a night with a width to speak of, so the two halves can be told apart */
+  function slantedDay() {
+    for (var t = 0; t < 400; t++) {
+      var d = 280000 + Math.floor(Math.random() * 60000);
+      if (chapter16At(d).rochav > 0.05) return d;
+    }
+    return 29;
+  }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    dimGalgalim();
+    nodeDials();
+    document.getElementById("wave").innerHTML = waveFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "ט״ז:ו–ח",
+      note: "שני מקומות ידועים, והשלישי אומר לאיזה צד.",
+      newCase: function () { return chapter16At(slantedDay()); },
+      caseLine: function (c) {
+        var zr = zodiacPosition(c.rosh), zm = zodiacPosition(c.amiti);
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מקום הראש <b>" + formatDms(c.rosh) + "</b> — " + zr.ordinalDegree + " מעלות במזל " + zr.hebrew +
+          "<br>מקום הירח האמיתי <b>" + formatDms(c.amiti) + "</b> — " + zm.ordinalDegree +
+          " מעלות במזל " + zm.hebrew + ".";
+      },
+      steps: [
+        { ask: function (c) { return "הראש במזל <b>" + zodiacPosition(c.rosh).hebrew +
+            "</b>. באיזה מזל הזנב?"; },
+          type: "pick",
+          choices: function (c) {
+            var i = zodiacPosition(c.rosh).index;
+            return [{ label: MAZAL[(i + 6) % 12], value: (i + 6) % 12 },
+                    { label: MAZAL[(i + 5) % 12], value: (i + 5) % 12 },
+                    { label: MAZAL[(i + 11) % 12], value: (i + 11) % 12 }];
+          },
+          answer: function (c) { return (zodiacPosition(c.rosh).index + 6) % 12; },
+          hint: function () { return "מזל שביעי ממנו — חצי הגלגל בשוה."; },
+          after: function () { return "בכמו מנין המעלות והחלקים בשוה."; } },
+
+        { ask: function () { return "וכמה הוא <b>מקום הזנב</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.zanav; },
+          hint: function (c) { return formatDms(c.rosh) + " ועוד מאה ושמונים."; },
+          after: function () { return "וכנגדו לעולם."; } },
+
+        { ask: function () { return "התבונן בשלשתן. לאיזה צד נטה הירח?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "לצפון השמש", value: "north" },
+                    { label: "לדרום השמש", value: "south" },
+                    { label: "אינו נוטה כלל", value: "none" }];
+          },
+          answer: function (c) { return verdict(c).side; },
+          hint: function (c) { return "מן הראש עד הירח " + formatDms(c.maslul) +
+            " — לפני הראש, או כבר לפני הזנב?"; },
+          after: function (c) { return verdict(c).says + "."; } },
+
+        { ask: function () { return "ואילו נמצא הירח עם הראש במעלה אחת וחלק אחד — כמה רוחבו?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "אין לו רוחב", value: "none" },
+                    { label: "חמש מעלות", value: "five" }];
+          },
+          answer: function () { return "none"; },
+          hint: function () { return "שם פוגעות שתי העגולות זו בזו."; },
+          after: function () { return "וכן בזנב."; } }
+      ]
+    });
+  }
+})();
+</script>

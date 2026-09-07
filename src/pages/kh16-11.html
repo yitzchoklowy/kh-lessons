@@ -1,0 +1,171 @@
+<title>מנת מסלול הרוחב</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh16.css--></style>
+
+<div class="page solo">
+
+  <header>
+    <h1 class="bigtitle">מנת מסלול הרוחב</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/16" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ז:י״א–י״ב</a></div>
+    <p class="halacha lead">וכמה היא מנת מסלול הרוחב,<br>
+      אם יהיה מסלול הרוחב עשר מעלות, תהיה מנתו <b class="mas">שנים וחמישים חלקים</b>:<br>
+      ואם יהיה המסלול הזה עשרים מעלות, תהיה מנתו <b class="mas">מעלה אחת ושלשה וארבעים חלקים</b>:<br>
+      ואם יהיה המסלול שלשים, תהיה מנתו <b class="mas">שתי מעלות ושלשים חלקים</b>:<br>
+      ואם יהיה המסלול ארבעים, תהיה מנתו <b class="mas">שלש מעלות ושלשה עשר חלקים</b>:<br>
+      ואם יהיה המסלול חמישים מעלות, תהיה מנתו <b class="mas">שלש מעלות וחמישים חלקים</b>:<br>
+      ואם יהיה המסלול שישים, תהיה מנתו <b class="mas">ארבע מעלות ועשרים חלקים</b>:<br>
+      ואם יהיה המסלול שבעים, תהיה מנתו <b class="mas">ארבע מעלות ושנים וארבעים חלקים</b>:<br>
+      ואם יהיה המסלול שמונים, תהיה מנתו <b class="mas">ארבע מעלות וחמישה וחמישים חלקים</b>:<br>
+      ואם יהיה המסלול תשעים, תהיה מנתו <b class="mas">חמש מעלות</b>:</p>
+    <p class="halacha">אם יהיו <b class="mas">אחדים עם העשרות</b>, תקח הראוי להם לפי היתר שבין שתי המנות, כמו שעשיתה במסלול השמש ובמסלול הירח.<br>
+      כיצד, הרי שהיה מסלול הרוחב שלש וחמישים מעלות,<br>
+      וכבר ידעת שאילו היה המסלול חמישים היתה מנתו שלש מעלות וחמישים חלקים,<br>
+      ואילו היה המסלול שישים היתה מנתו ארבע מעלות ועשרים חלקים.<br>
+      נמצא היתר בין שתי המנות שלשים חלקים, <b class="mas">שלשה חלקים לכל מעלה</b>.<br>
+      ונמצא לפי חשבון מסלול זה שהוא שלש וחמישים, מנתו שלש מעלות ותשעה וחמישים חלקים.<br>
+      ועל דרך זו תעשה בכל מנין ומנין:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="rchart" id="chart" style="--c:var(--mas)"></div>
+      <div class="book n" id="work">
+        <h3><i></i>כיצד — שלש וחמישים</h3>
+        <p class="cap">ט״ז:י״ב</p>
+        <div class="agree" id="agree"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh16-9.html">מהיכן בא מסלול הרוחב</a> · <a href="kh16-13.html">מסלול יתר על תשעים</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh16.js-->
+  <!--@include partials/wheel.js-->
+
+  var ROWS = hisLatRows();          // his nine, ten degrees to ninety
+  var T = CONSTANTS.MOON_LATITUDE_TABLE;
+
+  /* His own כיצד of ט״ז:י״ב, quoted: fifty-three degrees, and the מנה he
+     reaches by taking three חלקים for every degree past fifty. */
+  var HIS_MASLUL = 53, HIS_MNAT = { sign: "שלש מעלות ותשעה וחמישים חלקים", d: 3, m: 59 };
+
+  function show(n) {
+    var v = chapter16At(n), f = foldMaslul(v.maslul), b = rochavBracket(f.eff);
+    var hits = [];
+    if (b.lo > 0) hits.push({ i: b.lo - 1, tag: "מכאן" });
+    hits.push({ i: b.hi - 1, tag: "עד כאן" });
+
+    var sum = "מסלול הרוחב <b>" + formatDms(v.maslul) + "</b>";
+    if (f.q > 0) {
+      sum += ' · <a href="kh16-13.html">' + FOLD_RULES[f.q - 1].says + "</a>: <b>" +
+             formatDms(f.eff) + "</b>";
+    }
+    sum += ". בין שורת <b>" + T[b.lo].distance + "°</b> לשורת <b>" + T[b.hi].distance + "°</b>, " +
+           "<b>" + Math.round(b.part * 100) + "%</b> מן היתר שביניהן." +
+           '<span class="eq">' + formatDms(v.rochav) + "   " +
+           (v.rochav < 1 / 3600 ? "" : f.north ? "צפוני" : "דרומי") + "</span>";
+
+    traceListChart(document.getElementById("chart"), hits, sum);
+    drawNode(v);
+    markWave(v, false);
+  }
+
+  function onDraw(n) { show(n); }
+
+  /* His own worked degree, checked against the two rows it is read between. */
+  function agree() {
+    var b = rochavBracket(HIS_MASLUL);
+    var got = T[b.lo].latitude + b.part * b.gap;
+    var want = HIS_MNAT.d + HIS_MNAT.m / 60;
+    var off = Math.round(Math.abs(got - want) * 3600);
+    document.getElementById("agree").innerHTML =
+      '<h4>אצלו · וכאן</h4><table class="cmp"><tbody>' +
+      '<tr><td class="l">היתר בין שתי המנות</td><td class="a">שלשים חלקים</td>' +
+      '<td class="t">' + degMin(b.gap) + '</td><td class="o"></td></tr>' +
+      '<tr><td class="l">לכל מעלה</td><td class="a">שלשה חלקים</td>' +
+      '<td class="t">' + degMin(b.perDeg) + '</td><td class="o"></td></tr>' +
+      '<tr><td class="l">מנת שלש וחמישים</td><td class="a">' + HIS_MNAT.sign + "</td>" +
+      '<td class="t">' + degMin(got) + '</td><td class="o">' + (off === 0 ? "—" : off + "″") +
+      "</td></tr></tbody></table>";
+  }
+
+  /* a night his table is entered with as it stands — bringing a larger מסלול
+     inside the ninety is its own halacha, and its own page */
+  function plainDay() {
+    for (var t = 0; t < 600; t++) {
+      var d = 280000 + Math.floor(Math.random() * 60000), v = chapter16At(d);
+      if (normalizeDegrees(v.maslul) > 1 && normalizeDegrees(v.maslul) < 90) return v;
+    }
+    return chapter16At(29);
+  }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    dimGalgalim();
+    nodeDials();
+
+    renderListChart(document.getElementById("chart"), {
+      title: "מנת מסלול הרוחב", ref: "ט״ז:י״א",
+      heads: ["מסלול הרוחב", "מנתו"],
+      rows: ROWS.map(function (r) { return { in: r.distance + "°", out: degMin(r.latitude) }; })
+    });
+    document.getElementById("chart").insertAdjacentHTML("beforeend", '<div id="wave"></div>');
+    document.getElementById("wave").innerHTML = waveFigure();
+    agree();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "ט״ז:י״א–י״ב",
+      note: "מצא את שתי השורות, וקח את הראוי לאחדים.",
+      newCase: function () { return plainDay(); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מסלול הרוחב <b>" + formatDms(c.maslul) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "בין אילו שתי שורות הוא נופל?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "פחות מעשר", value: 0 }].concat(
+              ROWS.slice(0, ROWS.length - 1).map(function (r, i) {
+                return { label: '<span dir="ltr">' + r.distance + "° – " + ROWS[i + 1].distance + "°</span>", value: r.distance };
+              }));
+          },
+          answer: function (c) { return T[rochavBracket(c.eff).lo].distance; },
+          hint: function (c) { return "עגל למטה: " + Math.floor(c.eff) + "°."; },
+          after: function (c) { var b = rochavBracket(c.eff);
+            return "בין " + degMin(T[b.lo].latitude) + " לבין " + degMin(T[b.hi].latitude) + "."; } },
+
+        { ask: function () { return "כמה היתר שבין שתי המנות, לכל מעלה?"; },
+          type: "dms",
+          answer: function (c) { return rochavBracket(c.eff).perDeg; },
+          hint: function (c) { var b = rochavBracket(c.eff);
+            return "היתר ביניהן " + degMin(b.gap) + ", לעשר מעלות."; },
+          after: function () { return "ועל דרך זו תעשה בכל מנין ומנין."; } },
+
+        { ask: function () { return "תקח הראוי לאחדים. כמה היא <b>מנת מסלול הרוחב</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.rochav; },
+          hint: function (c) { var b = rochavBracket(c.eff);
+            return degMin(T[b.lo].latitude) + " ועוד " + (Math.floor(c.eff) - T[b.lo].distance) +
+                   " פעמים " + degMin(b.perDeg) + "."; },
+          after: function (c) { return "והיא שיעור נטייתו, והוא " +
+            (c.north ? "צפוני" : "דרומי") + "."; } }
+      ]
+    });
+  }
+})();
+</script>

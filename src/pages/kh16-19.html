@@ -1,0 +1,137 @@
+<title>כיצד — רוחב הירח</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh16.css--></style>
+
+<div class="page solo">
+
+  <header>
+    <h1 class="bigtitle">כיצד — רוחב הירח</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/16" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ז:י״ט</a></div>
+    <p class="halacha lead">הרי שרצינו לידע רוחב הירח כמה הוא, ובאיזו רוח הוא אם צפוני או דרומי,<br>
+      בתחילת ליל ערב שבת שני לחודש אייר משנה זו.<br>
+      וכבר ידעת שמקום הירח האמיתי היה בליל זה בשמונה עשרה מעלות וארבעים חלקים ממזל שור, סימנו <b class="mean">מח״מ</b>,<br>
+      ומקום הראש היה באותה העת בשבע ועשרים מעלות ושלשים חלקים ממזל בתולה, סימנו <b class="node">קעז״ל</b>:</p>
+    <p class="halacha">תגרע מקום הראש ממקום הירח, יצא לך מסלול הרוחב מאתים אחת ושלשים מעלות ועשרה חלקים, סימנו <b class="mas">רלא״י</b>,<br>
+      לפי ש<b class="mas">אין משגיחין על החלקים בכל מסלול</b>.<br>
+      ונמצאת המנה של מסלול זה בדרכים שביארנו בפרק זה <b class="mas">שלש מעלות ושלשה וחמישים חלקים</b>,<br>
+      וזה הוא רוחב הירח בתחילת ליל זה, והוא <b class="mas">דרומי</b>, שהרי המסלול יתר על מאה ושמונים:</p>
+  </header>
+
+  <div class="pair">
+    <div class="book n" id="work">
+      <h3><i></i>כל החשבון, ליל זה</h3>
+      <p class="cap">ט״ז:ג–י״ט</p>
+      <table class="led"><tbody id="led"></tbody></table>
+      <div class="agree" id="agree"></div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh16-13.html">מסלול יתר על תשעים</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh16.js-->
+  <!--@include partials/wheel.js-->
+
+  var HIS_DAY = 29;
+
+  /* His own four figures for this night, ט״ז:י״ט, as he writes them. */
+  var HIS = [
+    { k: "amiti",  name: "מקום הירח האמיתי", sign: "מח״מ",  d: 48,  m: 40 },
+    { k: "rosh",   name: "מקום הראש",        sign: "קעז״ל", d: 177, m: 30 },
+    { k: "maslul", name: "מסלול הרוחב",      sign: "רלא״י", d: 231, m: 10 },
+    { k: "rochav", name: "רוחב הירח · דרומי", sign: "ג׳ נ״ג", d: 3,  m: 53 }
+  ];
+
+  function show(n) {
+    var v = chapter16At(n);
+    drawNode(v);
+    paint(document.getElementById("led"), rochavLedger(v));
+    agree(n, v);
+  }
+
+  function agree(n, v) {
+    var host = document.getElementById("agree");
+    if (n !== HIS_DAY) {
+      host.innerHTML = '<p class="cap">חשבונו שלו הוא לתשעה ועשרים יום מן העיקר.</p>';
+      return;
+    }
+    var h = '<h4>אצלו · וכאן</h4><table class="cmp"><tbody>';
+    for (var i = 0; i < HIS.length; i++) {
+      var r = HIS[i], want = r.d + r.m / 60, got = v[r.k];
+      var off = Math.abs(normalizeDegrees(got - want + 180) - 180);
+      h += '<tr><td class="l">' + r.name + '</td><td class="a">' + r.sign + "</td>" +
+           '<td class="t">' + formatDms(got) + '</td><td class="o">' +
+           (Math.round(off * 60) === 0 ? "—" : Math.round(off * 60) + "′") + "</td></tr>";
+    }
+    h += '</tbody></table><p class="cap">ובפרק ט״ו יצא מקום הירח מ״ח ל״ו.</p>';
+    host.innerHTML = h;
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    dimGalgalim();
+    nodeDials();
+    setDay(HIS_DAY);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה, לליל אחר", ref: "ט״ז:י–י״ט",
+      note: "אותו סדר עצמו, משני המקומות עד הרוחב.",
+      newCase: function () { return chapter16At(280000 + Math.floor(Math.random() * 60000)); },
+      caseLine: function (c) {
+        var zm = zodiacPosition(c.amiti), zr = zodiacPosition(c.rosh);
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מקום הירח האמיתי <b>" + formatDms(c.amiti) + "</b> — " + zm.ordinalDegree +
+          " מעלות במזל " + zm.hebrew +
+          "<br>מקום הראש <b>" + formatDms(c.rosh) + "</b> — " + zr.ordinalDegree +
+          " מעלות במזל " + zr.hebrew + ".";
+      },
+      steps: [
+        { ask: function () { return "תגרע מקום הראש ממקום הירח. כמה הוא <b>מסלול הרוחב</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.maslul; },
+          hint: function () { return "ואם יצא פחות מכלום — הוסף מעגל שלם."; },
+          after: function () { return "לפי שאין משגיחין על החלקים בכל מסלול."; } },
+
+        { ask: function () { return "הבא אותו לתוך תשעים. כמה נשאר?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return Math.floor(foldMaslul(c.maslul).eff); },
+          hint: function (c) { var q = foldMaslul(c.maslul).q;
+            return q ? FOLD_RULES[q - 1].says + "." : "עד תשעים — כמות שהוא."; },
+          after: function () { return "והנשאר תדע בו המנה."; } },
+
+        { ask: function () { return "כמה היא המנה, והיא <b>רוחב הירח</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.rochav; },
+          hint: function (c) { var T = CONSTANTS.MOON_LATITUDE_TABLE,
+            b = rochavBracket(foldMaslul(c.maslul).eff);
+            return "בין " + degMin(T[b.lo].latitude) + " לבין " + degMin(T[b.hi].latitude) + "."; },
+          after: function () { return "ולעולם לא יהיה יתר על חמש מעלות."; } },
+
+        { ask: function () { return "ובאיזו רוח הוא?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "צפוני", value: "north" }, { label: "דרומי", value: "south" }];
+          },
+          answer: function (c) { return c.north ? "north" : "south"; },
+          hint: function (c) { return "המסלול " + Math.floor(normalizeDegrees(c.maslul)) +
+            "° — יתר על מאה ושמונים, או פחות?"; },
+          after: function (c) { return "וזה הוא רוחב הירח בתחילת ליל זה."; } }
+      ]
+    });
+  }
+})();
+</script>

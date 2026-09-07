@@ -44,9 +44,15 @@
   /* His three rules, in his words, as rows. The first quarter is not among them
      — there the מנין is asked of the table as it stands. */
   var FOLD_RULES = [
-    { from: 90,  to: 180, take: 180, ref: "ט״ז:י״ג", says: "תגרע המסלול ממאה ושמונים" },
-    { from: 180, to: 270, take: 180, ref: "ט״ז:י״ד", says: "תגרע ממנו מאה ושמונים" },
-    { from: 270, to: 360, take: 360, ref: "ט״ז:ט״ו", says: "תגרע אותו משלש מאות ושישים" }
+    { from: 90,  to: 180, ref: "ט״ז:י״ג", flip: true,
+      range: "יתר על תשעים עד מאה ושמונים",
+      says: "תגרע המסלול ממאה ושמונים", op: "180° −" },
+    { from: 180, to: 270, ref: "ט״ז:י״ד", flip: false,
+      range: "יתר ממאה ושמונים עד מאתים ושבעים",
+      says: "תגרע ממנו מאה ושמונים", op: "− 180°" },
+    { from: 270, to: 360, ref: "ט״ז:ט״ו", flip: true,
+      range: "יתר על מאתים ושבעים עד שלש מאות ושישים",
+      says: "תגרע אותו משלש מאות ושישים", op: "360° −" }
   ];
 
   /* The two rows of ט״ז:י״א a folded מסלול falls between, and how far along it
@@ -82,7 +88,7 @@
     ];
     if (f.q > 0) {
       var r = FOLD_RULES[f.q - 1];
-      rows.push({ l: r.says, s: r.ref, a: (f.q === 3 ? "360°" : "180°") + " −", t: formatDms(f.eff), drop: true });
+      rows.push({ l: r.says, s: r.ref, a: r.op, t: formatDms(f.eff), drop: true });
     }
     rows.push({ l: "מנת מסלול הרוחב", s: "ט״ז:י״א–י״ב", a: formatDms(v.rochav),
                 t: (v.rochav < 1 / 3600 ? "אין לו רוחב" : f.north ? "צפוני" : "דרומי"), out: true });

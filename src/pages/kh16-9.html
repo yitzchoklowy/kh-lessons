@@ -1,0 +1,142 @@
+<title>רוחב הירח</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh16.css--></style>
+
+<div class="page solo">
+
+  <header>
+    <h1 class="bigtitle">רוחב הירח</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/16" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש ט״ז:ט–י</a></div>
+    <p class="halacha lead">לעולם לא יהיה רוחב הירח יתר על <b class="mas">חמש מעלות</b>, בין בצפון בין בדרום.<br>
+      אלא כך היא דרכו, יתחיל מן הראש ויתרחק מעט מעט, והמרחק הולך ונוסף עד שיגיע לחמש מעלות,<br>
+      ויחזור ויתקרב מעט מעט, עד שלא יהיה לו רוחב כשיגיע לזנב,<br>
+      ויחזור ויתרחק מעט מעט, והמרחק נוסף עד שיגיע לחמש מעלות, ויחזור ויתקרב, עד שלא יהיה לו רוחב:</p>
+    <p class="halacha">אם תרצה לידע רוחב הירח כמה הוא בכל עת שתרצה, ואם צפוני הוא או דרומי,<br>
+      תוציא מקום הראש ומקום הירח האמיתי לאותה העת,<br>
+      <b class="node">ותגרע מקום הראש ממקום הירח האמיתי</b>, והנשאר הוא הנקרא <b class="mas">מסלול הרוחב</b>.<br>
+      אם יהיה מסלול הרוחב ממעלה אחת עד מאה ושמונים, תדע שרוחב הירח <b class="mas">צפוני</b>,<br>
+      ואם היה המסלול יתר על מאה ושמונים, תדע שרוחב הירח <b class="mas">דרומי</b>,<br>
+      ואם היה מאה ושמונים בשוה או שלש מאות ושישים בשוה, אין לירח רוחב כלל.<br>
+      ותחזור ותראה <b class="mas">מנת מסלול הרוחב</b> כמה היא, והיא שיעור נטייתו לצפון או לדרום,<br>
+      והוא הנקרא רוחב הירח הדרומי או הצפוני, כמו שביארנו:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="book n" id="work">
+        <h3><i></i>ותגרע מקום הראש ממקום הירח</h3>
+        <p class="cap">ט״ז:י</p>
+        <table class="led"><tbody id="led"></tbody></table>
+      </div>
+      <div class="rchart" id="fig" style="--c:var(--mas)">
+        <div class="rc-head"><h4>יתרחק מעט מעט, ויחזור ויתקרב</h4><span class="rc-ref">ט״ז:ט</span></div>
+        <div id="wave"></div>
+        <div class="rc-sum" id="say"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh16-6.html">הזנב כנגדו</a> · <a href="kh16-11.html">מנת מסלול הרוחב</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh16.js-->
+  <!--@include partials/wheel.js-->
+
+  function sideOf(v) {
+    if (v.rochav < 1 / 3600) return "אין לירח רוחב כלל";
+    return v.north ? "רוחב צפוני" : "רוחב דרומי";
+  }
+
+  function show(n) {
+    var v = chapter16At(n);
+    drawNode(v);
+    markWave(v, false);
+    var zm = zodiacPosition(v.amiti), zr = zodiacPosition(v.rosh);
+    paint(document.getElementById("led"), [
+      { l: "מקום הירח האמיתי", s: zm.ordinalDegree + " מעלות במזל " + zm.hebrew + " · פרק ט״ו",
+        a: "", t: formatDms(v.amiti) },
+      { l: "מקום הראש", s: zr.ordinalDegree + " מעלות במזל " + zr.hebrew + " · ט״ז:ג",
+        a: "", t: formatDms(v.rosh) },
+      { l: "תגרע זה מזה", a: "− " + formatDms(v.rosh), t: formatDms(v.maslul) },
+      { l: "מסלול הרוחב", s: sideOf(v), a: "", t: formatDms(v.maslul), out: true }
+    ]);
+    document.getElementById("say").innerHTML =
+      "מן הראש עד הירח <b>" + formatDms(v.maslul) + "</b> — " + sideOf(v) + "." +
+      '<span class="eq">' + formatDms(v.rochav) + "</span>";
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    dimGalgalim();
+    nodeDials();
+    document.getElementById("wave").innerHTML = waveFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "ט״ז:ט–י",
+      note: "חסר, ודע לאיזה צד.",
+      newCase: function () { return chapter16At(280000 + Math.floor(Math.random() * 60000)); },
+      caseLine: function (c) {
+        var zm = zodiacPosition(c.amiti), zr = zodiacPosition(c.rosh);
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מקום הירח האמיתי <b>" + formatDms(c.amiti) + "</b> — " + zm.ordinalDegree +
+          " מעלות במזל " + zm.hebrew +
+          "<br>מקום הראש <b>" + formatDms(c.rosh) + "</b> — " + zr.ordinalDegree +
+          " מעלות במזל " + zr.hebrew + ".";
+      },
+      steps: [
+        { ask: function () { return "תגרע מקום הראש ממקום הירח. כמה הוא <b>מסלול הרוחב</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.maslul; },
+          hint: function () { return "ואם יצא פחות מכלום — הוסף מעגל שלם."; },
+          after: function () { return "וממנו הכל."; } },
+
+        { ask: function () { return "צפוני הוא או דרומי?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "צפוני", value: "north" }, { label: "דרומי", value: "south" }];
+          },
+          answer: function (c) { return c.north ? "north" : "south"; },
+          hint: function () { return "ממעלה אחת עד מאה ושמונים — צפוני."; },
+          after: function (c) { return "מסלול הרוחב " + formatDms(c.maslul) + "."; } },
+
+        { ask: function () { return "ובאיזה מסלול אין לירח רוחב כלל?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "מאה ושמונים בשוה, או שלש מאות ושישים בשוה", value: "points" },
+                    { label: "תשעים בשוה, או מאתים ושבעים בשוה", value: "quarters" }];
+          },
+          answer: function () { return "points"; },
+          hint: function () { return "שם הוא עם הראש או עם הזנב."; },
+          after: function () { return "ושם פוגעות שתי העגולות זו בזו."; } },
+
+        { ask: function () { return "ולכמה יגיע רוחבו לכל היותר?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "חמש מעלות", value: 5 }, { label: "עשר מעלות", value: 10 },
+                    { label: "מעלה אחת", value: 1 }];
+          },
+          answer: function () {
+            var T = CONSTANTS.MOON_LATITUDE_TABLE;
+            return T[T.length - 1].latitude;
+          },
+          hint: function () { return "בין בצפון בין בדרום, לעולם."; },
+          after: function () { return "ומשם יחזור ויתקרב מעט מעט."; } }
+      ]
+    });
+  }
+})();
+</script>

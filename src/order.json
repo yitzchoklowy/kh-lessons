@@ -9,6 +9,13 @@
   { "file": "kh15-3.html",        "mark": "ט״ו:ג",    "name": "המסלול הנכון" },
   { "file": "kh15-6.html",        "mark": "ט״ו:ד–ז",  "name": "מנת המסלול" },
   { "file": "kh15-8.html",        "mark": "ט״ו:ח–ט",  "name": "כיצד — ליל ערב שבת" },
+  { "file": "kh16-1.html",        "mark": "ט״ז:א",    "name": "ראש וזנב" },
+  { "file": "kh16-2.html",        "mark": "ט״ז:ב–ה",  "name": "מהלך הראש" },
+  { "file": "kh16-6.html",        "mark": "ט״ז:ו–ח",  "name": "הזנב כנגדו" },
+  { "file": "kh16-9.html",        "mark": "ט״ז:ט–י",   "name": "רוחב הירח" },
+  { "file": "kh16-11.html",       "mark": "ט״ז:י״א–י״ב", "name": "מנת מסלול הרוחב" },
+  { "file": "kh16-13.html",       "mark": "ט״ז:י״ג–י״ח", "name": "מסלול יתר על תשעים" },
+  { "file": "kh16-19.html",       "mark": "ט״ז:י״ט",  "name": "כיצד — רוחב הירח" },
   { "file": "galgalim.html",      "mark": "י״ד–ט״ז",  "name": "ארבעת גלגלי הירח" },
   { "file": "calculator.html",    "mark": "י״א–י״ז",  "name": "כל החשבון" }
 ]
