@@ -196,12 +196,12 @@
           <path id="bandArc" class="p2" fill="none" stroke="var(--sunc)" stroke-width="40" stroke-opacity=".13"></path>
           <text id="bandLbl" class="p2" font-size="11.5" text-anchor="middle" fill="var(--sunc)"></text>
 
-          <circle cx="310" cy="372" r="160" fill="none" stroke="var(--mean)" stroke-width="1.8" stroke-opacity=".5"></circle>
+          <circle cx="310" cy="372" r="160" fill="none" stroke="var(--mean)" stroke-width="1.6" stroke-opacity=".22"></circle>
           <line x1="310" y1="372" x2="534" y2="372" stroke="currentColor" stroke-opacity=".2" stroke-width="1"></line>
           <text x="539" y="376" font-size="11" fill="currentColor" fill-opacity=".45">0°</text>
 
-          <path id="arcMean" fill="none" stroke="var(--mean)" stroke-width="1.3" stroke-opacity=".85"
-                stroke-dasharray="3 3" marker-end="url(#tipMean)"></path>
+          <path id="arcMean" fill="none" stroke="var(--mean)" stroke-width="2.6"
+                marker-end="url(#tipMean)"></path>
 
           <g class="p2">
             <circle cx="310" cy="372" r="210" fill="none" stroke="var(--sunc)" stroke-width="1.2"
@@ -699,7 +699,7 @@
     el.ptrMean.setAttribute("x2", tip[0].toFixed(2)); el.ptrMean.setAttribute("y2", tip[1].toFixed(2));
     // the sweep hugs the big circle, the same way the maslul hugs the small one —
     // held just inside the epicycle so the arrowhead never lands under it
-    el.arcMean.setAttribute("d", arcPath(R_DEF - epiR - 7, 0, mean, true));
+    el.arcMean.setAttribute("d", arcPath(R_DEF, 0, mean, true));
     el.cMean.textContent = F(mean);
     el.cMas.textContent = step === 2 ? F(sun) : F(mas);
     el.cMasLbl.textContent = step === 2 ? "השמש האמיתי" : "אמצע המסלול";
