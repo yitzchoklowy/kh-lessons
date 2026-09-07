@@ -49,8 +49,12 @@ fs.mkdirSync(R('dist'), { recursive: true });
 let built = 0;
 
 // lessons: a spec file dropped into src/lessons becomes a page via the shared shell
-const shell = read('src/shell.html');
-for (const file of fs.readdirSync(R('src/lessons')).filter((f) => f.endsWith('.js'))) {
+// spec-built lessons are optional; a fresh checkout has no src/lessons at all
+const lessonDir = R('src/lessons');
+const lessonFiles = fs.existsSync(lessonDir)
+  ? fs.readdirSync(lessonDir).filter((f) => f.endsWith('.js')) : [];
+const shell = lessonFiles.length ? read('src/shell.html') : '';
+for (const file of lessonFiles) {
   const spec = read(path.join('src/lessons', file));
   const title = (spec.match(/title:\s*"([^"]+)"/) || [, file])[1];
   let html = shell.replace('__TITLE__', title).replace('<!--@spec-->', () => spec);
