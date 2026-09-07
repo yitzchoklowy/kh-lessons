@@ -156,11 +156,12 @@
     ? Number(PAGE.dataset.epoch) : null;
   function emphasise() {
     if (!EMPH) return;
-    var dim = "0.18";
-    var mas = [el.epi, el.epiC, el.arcEpi, el.farLine, el.farLbl, el.moonBody];
-    var mean = [el.defCircle, el.arcMean, el.ptrMean, el.sightLine];
+    var mas = [el.epi, el.epiC, el.arcEpi, el.farLine, el.farLbl, el.moonBody, el.grabEpi];
+    var mean = [el.defCircle, el.arcMean, el.ptrMean, el.sightLine, el.fromTick, el.grabDef];
     var off = EMPH === "mean" ? mas : mean;
-    for (var i = 0; i < off.length; i++) if (off[i]) off[i].setAttribute("opacity", dim);
+    for (var i = 0; i < off.length; i++) if (off[i]) off[i].classList.add("dimmed");
+    var on = EMPH === "mean" ? mean : mas;
+    for (var j = 0; j < on.length; j++) if (on[j]) on[j].classList.add("lit");
   }
   var day = 0, playing = false, last = 0, step = 1, lastWhole = null, trueScale = false;
   var runTo = null, runRate = 0, runKind = null;

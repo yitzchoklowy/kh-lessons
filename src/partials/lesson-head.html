@@ -15,12 +15,25 @@
   .page.solo .dials { border-left:0; border-top:1px solid var(--line);
                      grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); display:grid; gap:.9rem 1.2rem; }
   .rchart, .drill { margin-left:auto; margin-right:auto; max-width:44rem; }
+  .page.solo { max-width:74rem; }
+  .page.solo > header, .page.solo .part, .page.solo .book,
+  .page.solo .drill, .page.solo .note { max-width:44rem; margin-left:auto; margin-right:auto; }
   .rchart td.in, .rchart th:first-child { direction:rtl; text-align:right; }
   .rchart td.moves, .rchart td.use, .rchart th { direction:ltr; }
   .rc-head { direction:rtl; }
   .rc-note, .rc-sum { direction:rtl; text-align:right; }
   .rc-sum .eq { direction:ltr; text-align:left; }
   .part { max-width:44rem; margin:2rem auto 0; }
+
+  /* the chart and the wheel together, so a row can be pressed and seen at once */
+  .pair { direction:rtl; display:grid; grid-template-columns:minmax(0,20rem) minmax(0,1.6fr);
+          gap:1rem; align-items:start; margin-top:1.2rem; }
+  .pair .rchart { margin:0; max-width:none; }
+  .pair .rig { margin:0; position:sticky; top:1rem; }
+  @media (max-width:900px) {
+    .pair { grid-template-columns:1fr; }
+    .pair .rig { position:static; order:-1; }
+  }
   .book, .drill { max-width:44rem; margin-left:auto; margin-right:auto; }
   .book h3 { direction:rtl; text-align:right; }
   .led td.l { direction:rtl; text-align:right; }

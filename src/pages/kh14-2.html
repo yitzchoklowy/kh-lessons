@@ -9,7 +9,6 @@
     <p class="halacha lead">מהלך אמצע הירח ביום אחד <b class="mean">י״ג מעלות וי׳ חלקים ול״ה שניות</b>. סימנם <b class="mean">י״ג יל״ה</b>.</p>
   </header>
 
-  <!--@include partials/wheel.html-->
 
   <div class="rchart" id="chDay" style="--c:var(--mean)"></div>
 
@@ -17,7 +16,10 @@
     <p class="halacha">נמצא מהלכו בעשרה ימים <b class="mean">קל״א מעלות ומ״ה חלקים וחמשים שניות</b>. סימנם קל״א מה״נ.<br>ונמצא שארית מהלכו בק׳ יום <b class="mean">רל״ז מעלות ול״ח חלקים וכ״ג שניות</b>. סימנם רל״ז ל״ח כ״ג.<br>ונמצא שארית מהלכו באלף יום <b class="mean">רי״ו מעלות וכ״ג חלקים ונ׳ שניות</b>. סימנם רי״ו כג״ן.<br>ונמצא שארית מהלכו בי׳ אלפים יום <b class="mean">ג׳ מעלות ונ״ח חלקים וכ׳ שניות</b>. סימנם ג׳ נ״ח כ׳.</p>
   </div>
 
+  <div class="pair">
   <div class="rchart" id="chBlocks" style="--c:var(--mean)"></div>
+  <!--@include partials/wheel.html-->
+  </div>
 
   <div class="book" style="--c:var(--mean)">
     <h3>אמצע הירח</h3>
@@ -45,6 +47,8 @@
   <!--@include partials/practice.js-->
   <!--@include partials/wheel.js-->
 
+  var LABELS = ["1 יום", "10 ימים", "100 יום", "1,000 יום", "10,000 יום", "29 יום", "354 יום · שנה סדורה"];
+  var SIGNS = ["י״ג יל״ה", "קל״א מה״נ", "רל״ז ל״ח כ״ג", "רי״ו כג״ן", "ג׳ נ״ח כ׳", "כב״ו ונ״ו", "שד״ם כ״ו מ״ג"];
   var START = "א׳ י״ד מ״ג במזל שור";
 
   function pageReady() {
@@ -62,7 +66,7 @@
 
     renderBlockChart(document.getElementById("chBlocks"), {
       title: "שארית מהלכו", ref: "י״ד:ב", note: "", plain: true, pick: true,
-      heads: ["בכמה", "מהלך"],
+      heads: ["בכמה", "מהלך"], labels: LABELS, signs: SIGNS,
       blocks: CONSTANTS.MOON_MEAN_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
       heb: true, startLabel: START, step: function (d) { return calculateMoonMeanLongitude(d); }
     });
