@@ -68,7 +68,9 @@
   .stage { display:grid; grid-template-columns:minmax(0,1fr) 17.5rem; }
   @media (max-width:800px) { .stage { grid-template-columns:1fr; } }
   .art { padding:.8rem .8rem .2rem; min-width:0; }
-  .art svg { display:block; width:100%; height:auto; }
+  .art svg { display:block; width:100%; height:auto; touch-action:none; }
+  .art svg .grab { cursor:grab; }
+  .art svg.dragging, .art svg.dragging .grab { cursor:grabbing; }
 
   .dials { border-left:1px solid var(--line); background:var(--sunk); padding:1rem 1.1rem;
            display:flex; flex-direction:column; gap:.85rem; }
@@ -197,6 +199,7 @@
           <text id="bandLbl" class="p2" font-size="11.5" text-anchor="middle" fill="var(--sunc)"></text>
 
           <circle cx="310" cy="372" r="160" fill="none" stroke="var(--mean)" stroke-width="1.6" stroke-opacity=".3"></circle>
+          <circle id="grabDef" class="grab" cx="310" cy="372" r="160" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"></circle>
           <line x1="310" y1="372" x2="534" y2="372" stroke="currentColor" stroke-opacity=".2" stroke-width="1"></line>
           <text x="539" y="376" font-size="11" fill="currentColor" fill-opacity=".45">0°</text>
 
@@ -215,6 +218,7 @@
           <line id="ptrFix" class="p2" x1="310" y1="372" x2="523" y2="372" stroke="var(--sunc)" stroke-width="2"></line>
 
           <circle id="epi" cx="470" cy="372" r="40" fill="none" stroke="var(--mas)" stroke-width="1.6" stroke-opacity=".3"></circle>
+          <circle id="grabEpi" class="grab" cx="470" cy="372" r="40" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"></circle>
           <path id="arcEpi" fill="none" stroke="var(--mas)" stroke-width="2.6" marker-end="url(#tipMas)"></path>
           <circle id="epiC" cx="460" cy="372" r="2.6" fill="var(--mas)"></circle>
           <line id="farLine" stroke="var(--mas)" stroke-width="1.6" stroke-opacity=".95"></line>
@@ -492,7 +496,7 @@
 
   var el = {};
   ["ring","bandArc","bandLbl","arcMean","arcMeanLbl","sunPtr","sunBody","ptrMean","ptrFix",
-   "epi","epiC","farLine","farLbl","arcEpi","sightLine","moonBody","scaleNote","cMean","cMas","cMasLbl","corner",
+   "epi","epiC","grabEpi","grabDef","farLine","farLbl","arcEpi","sightLine","moonBody","scaleNote","cMean","cMas","cMasLbl","corner",
    "dDays","dDate","dMean","dMeanZ","dMas","dSun","dSunZ","dSight","dFix",
    "ledMean","ledMas","ledSight","play","speed","dayIn","rig","tabs","swSpeed","speedBody",
    "gDot","gTxt","zNaive","zFix","zNaiveT","zFixT","zGap","zGapT","zoomTicks",
@@ -675,6 +679,8 @@
     var C = P(R_DEF, mean);
     el.epi.setAttribute("cx", C[0].toFixed(2)); el.epi.setAttribute("cy", C[1].toFixed(2));
     el.epi.setAttribute("r", epiR.toFixed(2));
+    el.grabEpi.setAttribute("cx", C[0].toFixed(2)); el.grabEpi.setAttribute("cy", C[1].toFixed(2));
+    el.grabEpi.setAttribute("r", epiR.toFixed(2));
     el.epiC.setAttribute("cx", C[0].toFixed(2)); el.epiC.setAttribute("cy", C[1].toFixed(2));
     var farA = mean, moonA = mean - mas;
     var Mo = [C[0] + epiR * Math.cos(moonA * RAD), C[1] - epiR * Math.sin(moonA * RAD)];
@@ -928,6 +934,53 @@
     if (e.key === "ArrowLeft") setDay(Math.floor(day) - 1);
     if (e.key === " ") { e.preventDefault(); el.play.click(); }
   });
+
+  // Dragging a circle turns it, and the day count is what really changes — so
+  // the other circle comes with it, at its own rate.
+  (function () {
+    var art = document.getElementById("art"), holding = null;
+    var RATE_MEAN = dmsToDecimal(CONSTANTS.MOON.MEAN_MOTION_PER_DAY);
+    var RATE_MAS = dmsToDecimal(CONSTANTS.MOON.MASLUL_MEAN_MOTION);
+    function at(e) {
+      var b = art.getBoundingClientRect();
+      return [(e.clientX - b.left) * 620 / b.width, (e.clientY - b.top) * 700 / b.height];
+    }
+    function shortest(a) { return ((a + 540) % 360) - 180; }
+    art.addEventListener("pointerdown", function (e) {
+      if (!e.target.classList.contains("grab")) return;
+      holding = e.target.id === "grabEpi" ? "epi" : "def";
+      playing = false; el.play.textContent = "▶ Turn"; stopRun();
+      art.classList.add("dragging");
+      art.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    art.addEventListener("pointermove", function (e) {
+      if (!holding) return;
+      var p = at(e), v = atDay(Math.floor(day)), f = day - Math.floor(day);
+      var w = f > 0 ? atDay(Math.floor(day) + 1) : v;
+      var mean = f > 0 ? tween(v.mean.result, w.mean.result, f) : v.mean.result;
+      var mas = f > 0 ? tween(v.mas.result, w.mas.result, f) : v.mas.result;
+      if (holding === "def") {
+        var want = Math.atan2(CY - p[1], p[0] - CX) / RAD;
+        day += shortest(want - mean) / RATE_MEAN;
+      } else {
+        var C = P(R_DEF, mean);
+        var angC = Math.atan2(C[1] - p[1], p[0] - C[0]) / RAD;
+        day += shortest(N(mean - angC) - mas) / RATE_MAS;
+      }
+      if (day < 0) day = 0;
+      lastWhole = null;
+      drawAt(day);
+    });
+    function drop(e) {
+      if (!holding) return;
+      holding = null;
+      art.classList.remove("dragging");
+      setDay(Math.round(day));          // he counts whole days
+    }
+    art.addEventListener("pointerup", drop);
+    art.addEventListener("pointercancel", drop);
+  })();
 
   var today = new Date();
   day = Math.round((Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) - EPOCH_MS) / 86400000);

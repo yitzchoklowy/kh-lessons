@@ -94,6 +94,11 @@ end. Never a second circle, and never a separate dashed arc inside — the angle
 is read off the circle itself. This holds for every galgal on every page, the
 small ones as much as the large.
 
+And every such circle can be **taken hold of and turned**. What the reader is
+really moving is the day count, so the other galgalim come round with it at
+their own rates — which is the thing to feel. Let go and it settles on a whole
+day, because he counts whole days.
+
 ## 9. Every chart gets the same transport
 
 Step by day, and **watch one day / one month / one year**. Same control, same
