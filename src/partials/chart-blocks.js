@@ -22,12 +22,19 @@
             (spec.note ? '<p class="rc-note">' + spec.note + "</p>" : "") +
             '<div class="rc-scroll"><table><thead><tr><th>' + H[0] + "</th><th>" + H[1] +
             (plain ? "" : "</th><th>" + H[2]) + "</th></tr></thead><tbody>";
+    var SEC = spec.sections || {};
+    var cols = plain ? 2 : 3;
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
+      if (SEC[i]) {
+        h += '<tr class="sec"><td colspan="' + cols + '">' + SEC[i] + "</td></tr>";
+      }
       h += '<tr data-row="' + (r.key || "spare" + i) + '"' +
            (spec.pick ? ' data-days="' + [1, 10, 100, 1000, 10000, 29, 354][i] + '"' : "") +
            (r.key ? "" : ' class="spare"') + '>' +
-           '<td class="in">' + r.label + (r.note ? "<small>" + r.note + "</small>" : "") + "</td>" +
+           '<td class="in">' + (spec.remainderFrom !== undefined && i >= spec.remainderFrom
+             ? '<em class="shearis">שארית</em> ' : "") + r.label +
+           (r.note ? "<small>" + r.note + "</small>" : "") + "</td>" +
            '<td class="moves">' + formatDms(r.v) +
            (r.sign ? '<small dir="rtl">' + r.sign + "</small>" : "") + "</td>" +
            (plain ? "" : '<td class="use">' + (r.key ? "" : "—") + "</td>") + "</tr>";

@@ -32,7 +32,9 @@
                         color:var(--faint); margin-top:.2rem; word-break:break-word; }
 
   .rc-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-  .rc-scroll table { min-width:20rem; }
+  .rc-scroll table { min-width:19rem; }
+  /* a figure must never be clipped; let the column take what it needs */
+  .rchart td.moves { padding-left:.2rem; }
   .book { overflow-x:auto; }
   @media (max-width:520px) {
     .rchart table, .book table.led { font-size:.75rem; }

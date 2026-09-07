@@ -10,7 +10,6 @@
   </header>
 
 
-  <div class="rchart" id="chDay" style="--c:var(--mean)"></div>
 
   <div class="part">
     <p class="halacha">נמצא מהלכו בעשרה ימים <b class="mean">קל״א מעלות ומ״ה חלקים וחמשים שניות</b>. סימנם קל״א מה״נ.<br>ונמצא שארית מהלכו בק׳ יום <b class="mean">רל״ז מעלות ול״ח חלקים וכ״ג שניות</b>. סימנם רל״ז ל״ח כ״ג.<br>ונמצא שארית מהלכו באלף יום <b class="mean">רי״ו מעלות וכ״ג חלקים ונ׳ שניות</b>. סימנם רי״ו כג״ן.<br>ונמצא שארית מהלכו בי׳ אלפים יום <b class="mean">ג׳ מעלות ונ״ח חלקים וכ׳ שניות</b>. סימנם ג׳ נ״ח כ׳.</p>
@@ -33,7 +32,6 @@
     <p class="halacha">ונמצא שארית מהלכו בכ״ט יום <b class="mean">כ״ב מעלות וששה חלקים ונ״ו שניות</b>. סימנם כב״ו ונ״ו.<br>ונמצא שארית מהלכו בשנה סדורה <b class="mean">שמ״ד מעלות וכ״ו חלקים ומ״ג שניות</b>. סימן להם שד״ם כ״ו מ״ג.<br>ועל דרך זו תכפל לכל מנין ימים או שנים שתרצה.</p>
   </div>
 
-  <div class="rchart" id="chYear" style="--c:var(--mean)"></div>
 
   <p class="note"><a href="kh14-1.html">י״ד:א</a> · <a href="index.html">כל השיעורים</a></p>
 </div>
@@ -56,31 +54,16 @@
     setDay(1);
     var r0 = document.querySelector("tr[data-days]");
     if (r0) r0.classList.add("on");
-    document.getElementById("chDay").innerHTML =
-      '<div class="rc-head"><h4>ביום אחד</h4><span class="rc-ref">י״ד:א</span></div>' +
-      '<table><thead><tr><th>ביום</th><th>מהלך</th><th>סימן</th></tr></thead><tbody>' +
-      '<tr class="on"><td class="in">אחד</td><td class="moves">' +
-      formatDms(dmsToDecimal(CONSTANTS.MOON.MEAN_MOTION_PER_DAY)) +
-      '</td><td class="use" dir="rtl">י״ג יל״ה</td></tr></tbody></table>' +
-      '<div class="rc-sum" data-sum></div>';
 
     renderBlockChart(document.getElementById("chBlocks"), {
       title: "שארית מהלכו", ref: "י״ד:ב", note: "", plain: true, pick: true,
       heads: ["בכמה", "מהלך"], labels: LABELS, signs: SIGNS,
+      sections: { 0: "מהלכו ביום אחד", 1: "מהלכו לימים רבים", 5: "לחודש ולשנה" },
+      remainderFrom: 2,
       blocks: CONSTANTS.MOON_MEAN_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
       heb: true, startLabel: START, step: function (d) { return calculateMoonMeanLongitude(d); }
     });
 
-    var B = CONSTANTS.MOON_MEAN_PERIOD_BLOCKS;
-    var y = [["כ״ט יום", B.p29, "כב״ו ונ״ו"], ["שנה סדורה", B.p354, "שד״ם כ״ו מ״ג"]];
-    var h = '<div class="rc-head"><h4>כ״ט יום ושנה סדורה</h4><span class="rc-ref">י״ד:ב</span></div>' +
-      '<table><thead><tr><th>בכמה</th><th>מהלך</th><th>סימן</th></tr></thead><tbody>';
-    for (var i = 0; i < y.length; i++) {
-      h += '<tr><td class="in">' + y[i][0] + '</td><td class="moves">' +
-           formatDms(dmsToDecimal(y[i][1])) + '</td><td class="use" dir="rtl">' + y[i][2] + '</td></tr>';
-    }
-    document.getElementById("chYear").innerHTML =
-      h + '</tbody></table><div class="rc-sum" data-sum></div>';
 
     drill(document.getElementById("drill"), {
       title: "עשה אתה", ref: "י״ד:ב", note: "",
@@ -95,10 +78,8 @@
   }
 
   function onDraw(n, mean) {
-    var v = calculateMoonMeanLongitude(n), B = CONSTANTS.MOON_MEAN_PERIOD_BLOCKS;
+    var v = calculateMoonMeanLongitude(n);
 
-    document.querySelector("#chDay [data-sum]").innerHTML =
-      "מן העיקר <b>" + n.toLocaleString() + "</b> ימים, ואמצע הירח <b>" + formatDms(mean) + "</b>";
 
     var rows = blockLedger(v, "MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY, START, true), h = "";
     for (var i = 0; i < rows.length; i++) {
@@ -109,9 +90,6 @@
     }
     document.getElementById("ledger").innerHTML = h;
 
-    document.querySelector("#chYear [data-sum]").innerHTML =
-      "ועוד כ״ט יום — <b>" + formatDms(calculateMoonMeanLongitude(n + 29).result) + "</b>" +
-      '<span class="eq">' + formatDms(mean) + "  +  " + formatDms(dmsToDecimal(B.p29)) + "</span>";
   }
 })();
 </script>

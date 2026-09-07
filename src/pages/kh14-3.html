@@ -53,6 +53,8 @@
     renderBlockChart(document.getElementById("chBlocks"), {
       title: "מהלך אמצע המסלול", ref: "י״ד:ג–ד", note: "",
       heads: ["בכמה", "מהלך"], plain: true, pick: true,
+      sections: { 0: "מהלכו ביום אחד", 1: "מהלכו לימים רבים", 5: "לחודש ולשנה" },
+      remainderFrom: 2,
       labels: LABELS, signs: SIGNS,
       blocks: CONSTANTS.MOON_MASLUL_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MASLUL_MEAN_MOTION,
       heb: true, startLabel: START, step: function (d) { return calculateMoonMaslul(d); }

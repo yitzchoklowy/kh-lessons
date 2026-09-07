@@ -90,6 +90,7 @@
   .art svg .grab { cursor:grab; touch-action:none; }
   /* the galgal a page is not about stays visible, but plainly out of the way */
   .art svg .dimmed { opacity:.13; }
+  .dial.dimmed { opacity:.28; }
   .art svg .lit { opacity:1; }
   .art svg.dragging, .art svg.dragging .grab { cursor:grabbing; }
 

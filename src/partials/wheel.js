@@ -156,8 +156,11 @@
     ? Number(PAGE.dataset.epoch) : null;
   function emphasise() {
     if (!EMPH) return;
-    var mas = [el.epi, el.epiC, el.arcEpi, el.farLine, el.farLbl, el.moonBody, el.grabEpi];
-    var mean = [el.defCircle, el.arcMean, el.ptrMean, el.sightLine, el.fromTick, el.grabDef];
+    var corner = el.corner ? el.corner.querySelectorAll("text, circle") : [];
+    var mas = [el.epi, el.epiC, el.arcEpi, el.farLine, el.farLbl, el.moonBody, el.grabEpi,
+               document.querySelector(".dial.s"), el.cMas, el.cMasLbl, corner[3], corner[5]];
+    var mean = [el.defCircle, el.arcMean, el.ptrMean, el.sightLine, el.fromTick, el.grabDef,
+                document.querySelector(".dial.m"), el.cMean, corner[0], corner[2]];
     var off = EMPH === "mean" ? mas : mean;
     for (var i = 0; i < off.length; i++) if (off[i]) off[i].classList.add("dimmed");
     var on = EMPH === "mean" ? mean : mas;
