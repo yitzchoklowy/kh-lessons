@@ -49,6 +49,7 @@
   .halacha b { font-weight:700; }
   .halacha b.mas { color:var(--mas); }
   .halacha b.mean { color:var(--mean); }
+  .halacha b.sun { color:var(--sun); }
   .legend { display:grid; grid-template-columns:repeat(auto-fit,minmax(17rem,1fr)); gap:.9rem;
             margin-top:1.1rem; }
   .leg { background:var(--card); border:1px solid var(--line); border-radius:11px;

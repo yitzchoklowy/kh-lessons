@@ -23,6 +23,12 @@
           <line x1="310" y1="372" x2="534" y2="372" stroke="currentColor" stroke-opacity=".2" stroke-width="1"></line>
           <text x="539" y="376" font-size="11" fill="currentColor" fill-opacity=".45">0°</text>
 
+          <circle id="sunCircle" cx="310" cy="372" r="196" fill="none" stroke="var(--sun)"
+                  stroke-width="1.6" stroke-opacity=".3" opacity="0"></circle>
+          <path id="arcSun" fill="none" stroke="var(--sun)" stroke-width="2.6"
+                marker-end="url(#tipMean)" opacity="0"></path>
+          <line id="sunFrom" stroke="var(--sun)" stroke-width="2" opacity="0"></line>
+          <use id="sunBody2" href="#gSun" x="0" y="0" opacity="0"></use>
           <line id="fromTick" stroke="var(--mean)" stroke-width="2" opacity="0"></line>
           <path id="arcMean" fill="none" stroke="var(--mean)" stroke-width="2.6"
                 marker-end="url(#tipMean)"></path>

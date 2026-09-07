@@ -1,0 +1,44 @@
+<title>גובה השמש</title>
+<!--@include partials/lesson-head.html-->
+
+<div class="page solo" data-emph="sun" data-epoch="86.7522222222">
+
+  <header>
+    <h1 class="bigtitle">גובה השמש</h1>
+    <div class="eyebrow">רמב״ם · הלכות קידוש החודש י״ב:ב</div>
+    <p class="halacha lead">נקודה אחת יש בגלגל השמש, בעת שיהיה הכוכב בה יהיה גבוה מעל הארץ כל מאורו. ואותה הנקודה סובבת בשוה, ומהלכה בכל שבעים שנה בקירוב <b class="sun">מעלה אחת</b>. ונקודה זו היא הנקראת <b class="sun">גובה השמש</b>.</p>
+    <p class="halacha">מהלכו בכל עשרה ימים <b class="sun">שניה אחת וחצי שניה</b>.<br>נמצא מהלכו בק׳ יום <b class="sun">ט״ו שניות</b>.<br>ומהלכו באלף יום <b class="sun">שני חלקים ושלשים שניות</b>.<br>ומהלכו בעשרת אלפים יום <b class="sun">כ״ה חלקים</b>.<br>ונמצא מהלכו לתשעה ועשרים יום <b class="sun">ארבע שניות ועוד</b>.<br>ומהלכו בשנה סדורה <b class="sun">נ״ג שניות</b>.</p>
+  </header>
+
+  <div class="pair">
+    <div class="rchart" id="chart" style="--c:var(--sun)"></div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--sun)"></div>
+
+  <p class="note"><a href="kh12-sun-mean.html">מהלך השמש</a> · <a href="kh12-govah.html">גובה השמש</a> · <a href="kh14-1.html">שני מהלכים</a> · <a href="kh14-2.html">מהלך הירח</a> · <a href="kh14-3.html">מהלך המסלול</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-blocks.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/wheel.js-->
+  <!--@include partials/mean-page.js-->
+
+  var SPEC = {
+    chartTitle: "מהלך הגובה", ref: "י״ב:ב",
+    table: "SUN_APOGEE_PERIOD_BLOCKS", daily: CONSTANTS.SUN.APOGEE_MOTION_PER_DAY,
+    signs: ["—", "א׳ וחצי", "ט״ו", "ב׳ ל׳", "כ״ה", "ד׳ ועוד", "נ״ג"],
+    startLabel: "כ״ו מ״ה ח׳ במזל תאומים",
+    step: function (d) { return calculateSunApogee(d); },
+    result: "גובה השמש"
+  };
+  function SUN_AT(d) { return calculateSunApogee(d).result; }
+
+})();
+</script>

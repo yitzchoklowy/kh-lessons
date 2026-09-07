@@ -11,18 +11,14 @@
     <p class="halacha">ונמצא שארית מהלכו בכ״ט יום <b class="mean">כ״ב מעלות וששה חלקים ונ״ו שניות</b>. סימנם כב״ו ונ״ו.<br>ונמצא שארית מהלכו בשנה סדורה <b class="mean">שמ״ד מעלות וכ״ו חלקים ומ״ג שניות</b>. סימן להם שד״ם כ״ו מ״ג.<br>ועל דרך זו תכפל לכל מנין ימים או שנים שתרצה.</p>
   </header>
 
-
-
   <div class="pair">
-  <div class="rchart" id="chBlocks" style="--c:var(--mean)"></div>
-  <!--@include partials/wheel.html-->
+    <div class="rchart" id="chart" style="--c:var(--mean)"></div>
+    <!--@include partials/wheel.html-->
   </div>
-
 
   <div class="drill" id="drill" style="--c:var(--mean)"></div>
 
-
-  <p class="note"><a href="kh14-1.html">י״ד:א</a> · <a href="index.html">כל השיעורים</a></p>
+  <p class="note"><a href="kh12-sun-mean.html">מהלך השמש</a> · <a href="kh12-govah.html">גובה השמש</a> · <a href="kh14-1.html">שני מהלכים</a> · <a href="kh14-2.html">מהלך הירח</a> · <a href="kh14-3.html">מהלך המסלול</a> · <a href="kh14-sun.html">לשעת הראייה</a> · <a href="index.html">כל השיעורים</a></p>
 </div>
 
 <!--ENGINE-->
@@ -33,44 +29,15 @@
   <!--@include partials/chart-blocks.js-->
   <!--@include partials/practice.js-->
   <!--@include partials/wheel.js-->
+  <!--@include partials/mean-page.js-->
 
-  var LABELS = ["1 יום", "10 ימים", "100 יום", "1,000 יום", "10,000 יום", "29 יום", "354 יום · שנה סדורה"];
-  var SIGNS = ["י״ג יל״ה", "קל״א מה״נ", "רל״ז ל״ח כ״ג", "רי״ו כג״ן", "ג׳ נ״ח כ׳", "כב״ו ונ״ו", "שד״ם כ״ו מ״ג"];
-  var START = "א׳ י״ד מ״ג במזל שור";
-
-  function pageReady() {
-    playing = false;
-    setDay(1);
-    var r0 = document.querySelector("tr[data-days]");
-    if (r0) r0.classList.add("on");
-
-    renderBlockChart(document.getElementById("chBlocks"), {
-      title: "מהלך הירח", ref: "י״ד:א–ב", note: "", plain: true, pick: true,
-      heads: ["בכמה", "מהלך"], labels: LABELS, signs: SIGNS,
-      sections: { 0: "מהלכו ביום אחד", 1: "מהלכו לימים רבים", 5: "לחודש ולשנה" },
-      remainderFrom: 2,
-      blocks: CONSTANTS.MOON_MEAN_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
-      heb: true, startLabel: START, step: function (d) { return calculateMoonMeanLongitude(d); }
-    });
-
-
-    drill(document.getElementById("drill"), {
-      title: "עשה אתה", ref: "י״ד:ב", note: "",
-      newCase: function () {
-        var d = 280000 + Math.floor(Math.random() * 60000);
-        return { day: d, step: calculateMoonMeanLongitude(d) };
-      },
-      caseLine: function (c) { return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים."; },
-      steps: blockDrillSteps("MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
-        "י״ג יל״ה", "אמצע הירח")
-    });
-  }
-
-  function onDraw(n, mean) {
-    var v = calculateMoonMeanLongitude(n);
-
-
-
-  }
+  var SPEC = {
+    chartTitle: "מהלך הירח", ref: "י״ד:א–ב",
+    table: "MOON_MEAN_PERIOD_BLOCKS", daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
+    signs: ["י״ג יל״ה", "קל״א מה״נ", "רל״ז ל״ח כ״ג", "רי״ו כג״ן", "ג׳ נ״ח כ׳", "כב״ו ונ״ו", "שד״ם כ״ו מ״ג"],
+    startLabel: "א׳ י״ד מ״ג במזל שור",
+    step: function (d) { return calculateMoonMeanLongitude(d); },
+    result: "אמצע הירח"
+  };
 })();
 </script>

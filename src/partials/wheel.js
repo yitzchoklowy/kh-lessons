@@ -11,7 +11,7 @@
 
   var el = {};
   ["ring","arcMean","ptrMean",
-   "epi","epiC","grabEpi","grabDef","farLine","farLbl","arcEpi","sightLine","moonBody","defCircle","fromTick","scaleNote","cMean","cMas","cMasLbl","corner",
+   "epi","epiC","grabEpi","grabDef","farLine","farLbl","arcEpi","sightLine","moonBody","defCircle","fromTick","sunCircle","arcSun","sunFrom","sunBody2","scaleNote","cMean","cMas","cMasLbl","corner",
    "dDays","dDate","dMean","dMeanZ","dMas",
    "play","speed","dayIn","rig","tabs",
    "scaleNote"].forEach(function (id) { el[id] = document.getElementById(id); });
@@ -163,6 +163,20 @@
                 document.querySelector(".dial.m"), el.cMean, corner[0], corner[2]];
     var off = EMPH === "mean" ? mas : mean;
     for (var i = 0; i < off.length; i++) if (off[i]) off[i].classList.add("dimmed");
+    if (EMPH === "sun") {
+      var show = [el.sunCircle, el.arcSun, el.sunFrom, el.sunBody2];
+      for (var k = 0; k < show.length; k++) if (show[k]) show[k].setAttribute("opacity", "1");
+      var hide = mas.concat(mean);
+      for (var m = 0; m < hide.length; m++) if (hide[m]) hide[m].classList.add("dimmed");
+      // the two dials belong to the moon; on a sun page they say the sun's own
+      var dm = document.querySelector(".dial.m"), ds = document.querySelector(".dial.s");
+      if (dm) { dm.classList.remove("dimmed"); dm.querySelector(".lbl").innerHTML = "<i></i>מהלכו מן העיקר"; }
+      if (ds) { ds.classList.remove("dimmed"); ds.querySelector(".lbl").innerHTML = "<i></i>מקומו במזלות"; }
+      if (el.cMasLbl) el.cMasLbl.textContent = "מקומו";
+      var lbl = el.corner ? el.corner.querySelector("text") : null;
+      if (lbl) lbl.textContent = "מהלכו";
+      return;
+    }
     var on = EMPH === "mean" ? mean : mas;
     for (var j = 0; j < on.length; j++) if (on[j]) on[j].classList.add("lit");
   }
@@ -226,6 +240,23 @@
     var lp = P(R_PTR, moonDir);
     el.sightLine.setAttribute("x2", lp[0].toFixed(2)); el.sightLine.setAttribute("y2", lp[1].toFixed(2));
 
+    if (EMPH === "sun" && typeof SUN_AT === "function") {
+      var sv = SUN_AT(n), R_S = 196;
+      var sp2 = P(R_S, sv);
+      put(el.sunBody2, sp2[0], sp2[1]);
+      el.arcSun.setAttribute("d", arcPath(R_S, FROM_EPOCH === null ? 0 : FROM_EPOCH, sv, true));
+      var sf0 = P(R_S - 9, FROM_EPOCH === null ? 0 : FROM_EPOCH),
+          sf1 = P(R_S + 9, FROM_EPOCH === null ? 0 : FROM_EPOCH);
+      el.sunFrom.setAttribute("x1", sf0[0].toFixed(1)); el.sunFrom.setAttribute("y1", sf0[1].toFixed(1));
+      el.sunFrom.setAttribute("x2", sf1[0].toFixed(1)); el.sunFrom.setAttribute("y2", sf1[1].toFixed(1));
+      var swept = F(N(sv - (FROM_EPOCH === null ? 0 : FROM_EPOCH)));
+      el.cMean.textContent = swept;
+      el.cMas.textContent = F(sv);
+      el.dMean.textContent = swept;
+      el.dMas.textContent = F(sv);
+      var zs2 = zodiacPosition(sv);
+      el.dMeanZ.textContent = zs2.ordinalDegree + "° " + zs2.hebrew;
+    }
     var z = zodiacPosition(mean);
     el.dDays.textContent = n.toLocaleString();
     el.dDate.textContent = new Date(EPOCH_MS + n * 86400000)

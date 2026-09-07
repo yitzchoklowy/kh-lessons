@@ -1,0 +1,45 @@
+<title>מהלך אמצע השמש</title>
+<!--@include partials/lesson-head.html-->
+
+<div class="page solo" data-emph="sun" data-epoch="7.0588888889">
+
+  <header>
+    <h1 class="bigtitle">מהלך אמצע השמש</h1>
+    <div class="eyebrow">רמב״ם · הלכות קידוש החודש י״ב:א</div>
+    <p class="halacha lead">מהלך השמש האמצעי ביום אחד <b class="sun">נ״ט חלקים ושמונה שניות</b>. סימנם <b class="sun">כ״ד נט״ח</b>.</p>
+    <p class="halacha">נמצא מהלכה בעשרה ימים <b class="sun">תשע מעלות ונ״א חלקים וכ״ג שניות</b>. סימנם טנ״א כ״ג.<br>ונמצא מהלכה במאה יום <b class="sun">צ״ח מעלות ושלשה ושלשים חלקים ונ״ג שניות</b>. סימנם צ״ח ל״ג נ״ג.<br>ונמצא שארית מהלכה באלף יום, אחר שתשליך כל ש״ס מעלות, <b class="sun">רס״ה מעלות ול״ח חלקים ונ׳ שניות</b>. סימנם רס״ה לח״ן.<br>ונמצא שארית מהלכה בעשרת אלפים יום <b class="sun">קל״ו מעלות וכ״ח חלקים וכ׳ שניות</b>. סימנם קל״ו כ״ח כ׳.</p>
+    <p class="halacha">ומהלך השמש האמצעי לכ״ט יום <b class="sun">כ״ח מעלות ול״ה חלקים ושניה אחת</b>. סימנן כ״ח ל״ה א׳.<br>ומהלכה לשנה סדורה <b class="sun">שמ״ח מעלות ונ״ה חלקים וט״ו שניות</b>. סימנן שמ״ח נ״ה ט״ו.</p>
+  </header>
+
+  <div class="pair">
+    <div class="rchart" id="chart" style="--c:var(--sun)"></div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--sun)"></div>
+
+  <p class="note"><a href="kh12-sun-mean.html">מהלך השמש</a> · <a href="kh12-govah.html">גובה השמש</a> · <a href="kh14-1.html">שני מהלכים</a> · <a href="kh14-2.html">מהלך הירח</a> · <a href="kh14-3.html">מהלך המסלול</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-blocks.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/wheel.js-->
+  <!--@include partials/mean-page.js-->
+
+  var SPEC = {
+    chartTitle: "מהלך השמש", ref: "י״ב:א",
+    table: "SUN_MEAN_PERIOD_BLOCKS", daily: CONSTANTS.SUN.MEAN_MOTION_PER_DAY,
+    signs: ["כ״ד נט״ח", "טנ״א כ״ג", "צ״ח ל״ג נ״ג", "רס״ה לח״ן", "קל״ו כ״ח כ׳", "כ״ח ל״ה א׳", "שמ״ח נ״ה ט״ו"],
+    startLabel: "ז״ג ל״ב במזל טלה",
+    step: function (d) { return calculateSunMeanLongitude(d); },
+    result: "אמצע השמש"
+  };
+  function SUN_AT(d) { return calculateSunMeanLongitude(d).result; }
+
+})();
+</script>
