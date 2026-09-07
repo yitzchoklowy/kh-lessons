@@ -21,7 +21,7 @@ const K = new Function(
   + '\n' + read('src/partials/kh16.js')
   + '\nreturn { chapter15At, chapter16At, tiltAt, foldMaslul, rochavBracket, hisLatRows, waveRows,'
   + ' FOLD_RULES, CONSTANTS, formatDms, normalizeDegrees, dmsToDecimal, zodiacPosition,'
-  + ' calculateNodePosition, calculateMoonLatitude, epochRoshLon, roshRoundDays, dayForRosh };')();
+  + ' calculateNodePosition, calculateMoonLatitude, epochRoshLon, roshRoundDays, dayForRosh, roshOrder, zrX, zrCellW, daysPerMazal, daysToNextMazal, nextMazal };')();
 
 const { CONSTANTS: C, formatDms: F, dmsToDecimal: D } = K;
 const dms = (d, m = 0, s = 0) => d + m / 60 + s / 3600;
@@ -222,6 +222,47 @@ test('taking hold of the ראש moves the day count, at his rate', () => {
     const d = K.dayForRosh(4000, lon);
     near(K.chapter16At(d).rosh, lon, rate, `asking the ראש for ${lon}°`);
   }
+});
+
+test('ט״ז:א — the twelve laid out in the order the ראש meets them', () => {
+  const order = K.roshOrder();
+  assert.equal(order.length, 12, 'all twelve, once each');
+  assert.deepEqual([...order].sort((a, b) => a - b), [...Array(12).keys()], 'none missing, none twice');
+  // "מטלה לדגים, לדלי" — his own three, in his own order
+  const MZ = C.CONSTELLATIONS;
+  assert.deepEqual(order.slice(0, 3).map((m) => MZ[m]), ['טלה', 'דגים', 'דלי'], 'his three');
+  // laid out right to left, so טלה is at the right end and each next is left of it
+  let prev = Infinity;
+  for (const m of order) {
+    const x = K.zrX(m * 30 + 15);
+    assert.ok(x < prev, `${MZ[m]} should stand left of the one before it`);
+    prev = x;
+  }
+  // and as the ראש backs away, it walks leftwards along them
+  let last = K.zrX(200);
+  for (let lon = 199; lon > 150; lon--) {
+    const x = K.zrX(lon);
+    assert.ok(x < last, `backing away from ${lon}° should move it left`);
+    last = x;
+  }
+  // the זנב walks it too, six mazalos along
+  for (const lon of [5, 95, 187, 300]) {
+    const gap = Math.abs(K.zrX(lon) - K.zrX(K.normalizeDegrees(lon + 180)));
+    near(gap / K.zrCellW(), 6, 1e-9, `the זנב at ${lon}°`);
+  }
+});
+
+test('how long the ראש takes over a mazal, by his own daily motion', () => {
+  const rate = D(C.NODE.DAILY_MOTION);
+  assert.equal(K.daysPerMazal(), Math.round(30 / rate), 'thirty degrees at his rate');
+  assert.ok(K.daysPerMazal() > 560 && K.daysPerMazal() < 570, 'about a year and a half in each');
+  // and when it leaves the one it is in now, it is in the next of his order
+  const v = K.chapter16At(29), was = K.zodiacPosition(v.rosh).hebrew;
+  const wait = K.daysToNextMazal(29, v.rosh);
+  assert.ok(wait > 0 && wait < K.daysPerMazal(), `${wait} days is not part of a mazal`);
+  assert.equal(K.zodiacPosition(K.chapter16At(29 + wait).rosh).hebrew, K.nextMazal(v.rosh),
+    'it crosses into the next of his order');
+  assert.notEqual(K.nextMazal(v.rosh), was, 'and leaves the one it was in');
 });
 
 test('no chapter-16 page or partial types a DMS figure into a chart', () => {

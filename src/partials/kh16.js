@@ -226,7 +226,7 @@
      a turn of the ראש where the leaning circle is seen almost edge on — true,
      and a sliver on the page; from here it is never worse than squat. */
   var TV = { w: 580, h: 320, cx: 290, cy: 150, r: 150,
-             view: 32, spin: -150, mag: 4, plane: 1.5 };
+             view: 32, spin: -150, mag: 4, plane: 1.78, belt: [1.3, 1.56, 1.43] };
   var RAD16 = Math.PI / 180;
   var MAG_WORD = { 2: "פי שנים", 3: "פי שלשה", 4: "פי ארבעה", 5: "פי חמישה" };
   var NODE_LON = 0;                          // where the ראש stands, this moment
@@ -263,6 +263,20 @@
     var i = leanShown() * RAD16, t = u * RAD16;
     return proj(TV.r * Math.cos(t), TV.r * Math.sin(t) * Math.cos(i), 0, TV.spin + NODE_LON);
   }
+  /* one mazal of the belt: thirty degrees of it, out and back */
+  function bandPath(k) {
+    var r1 = TV.r * TV.belt[0], r2 = TV.r * TV.belt[1], a0 = k * 30, a1 = a0 + 30, d = "", a, q;
+    for (a = a0; a <= a1; a += 3) {
+      q = ecl(a, r2);
+      d += (d ? " L " : "M ") + q[0].toFixed(1) + " " + q[1].toFixed(1);
+    }
+    for (a = a1; a >= a0; a -= 3) {
+      q = ecl(a, r1);
+      d += " L " + q[0].toFixed(1) + " " + q[1].toFixed(1);
+    }
+    return d + " Z";
+  }
+
   function ecl(lon, radius) {                // a place in the mazalos, on his plane
     var t = lon * RAD16, r = radius === undefined ? TV.r : radius;
     return proj(r * Math.cos(t), r * Math.sin(t), 0);
@@ -318,17 +332,16 @@
          '<stop offset="1" stop-color="var(--sunc)" stop-opacity="0"></stop></radialGradient>' +
          '<ellipse cx="' + TV.cx + '" cy="' + TV.cy + '" rx="' + pr.toFixed(1) +
          '" ry="' + pe.toFixed(1) + '" fill="url(#plane16)"></ellipse>';
-    // the twelve, ticked round his plane: these do not move, and the ראש does
+    /* the twelve bound round his plane, each in its own thirty degrees: this
+       belt does not move, and against it the two points plainly do */
     var MZ = CONSTANTS.CONSTELLATIONS;
     for (var k = 0; k < 12; k++) {
-      var lon = k * 30, i1 = ecl(lon, TV.r * 1.06), i2 = ecl(lon, TV.r * 1.15);
-      g += '<line x1="' + i1[0].toFixed(1) + '" y1="' + i1[1].toFixed(1) + '" x2="' + i2[0].toFixed(1) +
-           '" y2="' + i2[1].toFixed(1) + '" stroke="currentColor" stroke-opacity=".25"></line>';
-      if (k % 3 === 0) {
-        var nm = ecl(lon + 2, TV.r * 1.36);
-        g += '<text x="' + nm[0].toFixed(1) + '" y="' + (nm[1] + 4).toFixed(1) + '" font-size="11.5" ' +
-             'text-anchor="middle" fill="currentColor" fill-opacity=".38" direction="rtl">' + MZ[k] + '</text>';
-      }
+      g += '<path id="mz16_' + k + '" d="' + bandPath(k) + '" fill="currentColor" fill-opacity="' +
+           (k % 2 ? ".035" : ".015") + '" stroke="currentColor" stroke-opacity=".1"></path>';
+      var nm = ecl(k * 30 + 15, TV.r * TV.belt[2]);
+      g += '<text id="mzn16_' + k + '" x="' + nm[0].toFixed(1) + '" y="' + (nm[1] + 4).toFixed(1) +
+           '" font-size="13.5" text-anchor="middle" fill="currentColor" fill-opacity=".33" ' +
+           'direction="rtl">' + MZ[k] + "</text>";
     }
     // under the plane: the half of the moon's circle that runs south
     g += '<path id="t16Base2" fill="none" stroke="var(--mean)" stroke-width="1.9" ' +
@@ -425,6 +438,17 @@
     place("t16ZanavL", B[0] + (TV.cx - B[0]) * 0.2, B[1] + (TV.cy - B[1]) * 0.2 - 4);
     dot("t16RoshGrab", A); dot("t16ZanavGrab", B);
 
+    /* which mazal each of them is in, lit the way the wheel lights one */
+    var mr = Math.floor(normalizeDegrees(v.rosh) / 30), mz = (mr + 6) % 12;
+    for (var k = 0; k < 12; k++) {
+      var band = document.getElementById("mz16_" + k), nm = document.getElementById("mzn16_" + k);
+      if (!band) continue;
+      band.setAttribute("fill", k === mr || k === mz ? "var(--minus)" : "currentColor");
+      band.setAttribute("fill-opacity", k === mr ? ".15" : k === mz ? ".09" : (k % 2 ? ".035" : ".015"));
+      nm.setAttribute("fill", k === mr || k === mz ? "var(--minus)" : "currentColor");
+      nm.setAttribute("fill-opacity", k === mr || k === mz ? ".8" : ".33");
+      nm.setAttribute("font-weight", k === mr || k === mz ? "600" : "400");
+    }
     var hi = tEdge(true), lo = tEdge(false);
     place("t16North1", hi[0] + 30, hi[1] - 8);
     place("t16South1", lo[0] + 30, lo[1] + 19);
@@ -552,6 +576,108 @@
       h.addEventListener("pointerup", up);
       h.addEventListener("pointercancel", up);
     });
+  }
+
+  // ═══ ט״ז:א — מטלה לדגים, לדלי ═══════════════════════════════════════
+  /* His sentence laid out: the twelve, in the order the ראש meets them, and the
+     ראש creeping along them the way he says — backwards, and always round. The
+     names are the engine's own list; the order is his: from טלה to דגים, and
+     from דגים to דלי, so each mazal stands to the left of the one the ראש has
+     just left. The זנב walks it too, six mazalos along. */
+  var ZR = { w: 580, h: 108, pad: 10, top: 36, bot: 78 };
+
+  function roshOrder() {
+    var out = [0];                           // טלה, and then backwards
+    for (var m = 11; m >= 1; m--) out.push(m);
+    return out;
+  }
+  function zrCellW() { return (ZR.w - 2 * ZR.pad) / 12; }
+
+  /* where a place in the mazalos falls along the strip, laid out right to left */
+  function zrX(lon) {
+    var l = normalizeDegrees(lon), m = Math.floor(l / 30);
+    var k = m === 0 ? 0 : 12 - m;            // its cell, in his order of travel
+    var into = (30 * m + 30 - l) / 30;       // it enters at the right and leaves left
+    var cw = zrCellW();
+    return ZR.w - ZR.pad - (k + into) * cw;
+  }
+
+  function zodiacRunFigure() {
+    var MZ = CONSTANTS.CONSTELLATIONS, order = roshOrder(), cw = zrCellW(), g = "";
+    g += '<marker id="zrTip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" ' +
+         'orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--minus)"></path></marker>';
+    for (var k = 0; k < 12; k++) {
+      var x = ZR.w - ZR.pad - (k + 1) * cw;
+      g += '<rect x="' + x.toFixed(1) + '" y="' + ZR.top + '" width="' + cw.toFixed(1) +
+           '" height="' + (ZR.bot - ZR.top) + '" fill="currentColor" fill-opacity="' +
+           (k % 2 ? ".05" : ".02") + '" stroke="currentColor" stroke-opacity=".12"></rect>' +
+           '<text x="' + (x + cw / 2).toFixed(1) + '" y="' + (ZR.top + 26) + '" font-size="13" ' +
+           'text-anchor="middle" fill="currentColor" fill-opacity=".65" direction="rtl">' +
+           MZ[order[k]] + "</text>";
+    }
+    // which way he says it goes
+    g += '<line x1="' + (ZR.w - ZR.pad - cw * 0.4) + '" y1="20" x2="' + (ZR.w - ZR.pad - cw * 2.6) +
+         '" y2="20" stroke="var(--minus)" stroke-opacity=".55" stroke-width="1.6" ' +
+         'marker-end="url(#zrTip)"></line>' +
+         '<text x="' + (ZR.w - ZR.pad - cw * 3.1) + '" y="24" font-size="12.5" text-anchor="start" ' +
+         'fill="var(--minus)" fill-opacity=".8" direction="rtl">אחורנית, וכן הוא סובב תמיד</text>';
+    // the two points, walking it
+    g += '<rect id="zrCell" x="-99" y="' + ZR.top + '" width="' + cw.toFixed(1) + '" height="' +
+         (ZR.bot - ZR.top) + '" fill="var(--minus)" fill-opacity=".13"></rect>';
+    g += '<line id="zrRoshL" y1="' + (ZR.top - 8) + '" y2="' + (ZR.bot + 2) +
+         '" stroke="var(--minus)" stroke-width="2"></line>' +
+         '<circle id="zrRosh" r="5" cy="' + (ZR.top - 9) + '" fill="var(--minus)"></circle>' +
+         '<text id="zrRoshT" y="' + (ZR.top - 18) + '" font-size="13" text-anchor="middle" ' +
+         'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" ' +
+         'fill="var(--minus)" direction="rtl">ראש</text>';
+    g += '<line id="zrZanavL" y1="' + (ZR.top - 2) + '" y2="' + (ZR.bot + 8) +
+         '" stroke="var(--minus)" stroke-width="1.6" stroke-opacity=".7" stroke-dasharray="4 3"></line>' +
+         '<circle id="zrZanav" r="5" cy="' + (ZR.bot + 9) + '" fill="none" stroke="var(--minus)" ' +
+         'stroke-width="2"></circle>' +
+         '<text id="zrZanavT" y="' + (ZR.bot + 26) + '" font-size="13" text-anchor="middle" ' +
+         'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" ' +
+         'fill="var(--minus)" fill-opacity=".8" direction="rtl">זנב</text>';
+    return '<div class="curve"><svg viewBox="0 0 ' + ZR.w + " " + ZR.h + '" role="img" ' +
+      'aria-label="The twelve mazalos in the order the head of the dragon meets them, from Aries to Pisces to Aquarius, with the head and the tail marked where they now stand and creeping backwards along the row.">' +
+      g + "</svg></div>";
+  }
+
+  function markZodiacRun(v) {
+    var rosh = document.getElementById("zrRosh");
+    if (!rosh) return;
+    var xr = zrX(v.rosh), xz = zrX(v.zanav), cw = zrCellW();
+    rosh.setAttribute("cx", xr.toFixed(1));
+    setX("zrRoshL", xr); setX("zrRoshT", xr);
+    document.getElementById("zrZanav").setAttribute("cx", xz.toFixed(1));
+    setX("zrZanavL", xz); setX("zrZanavT", xz);
+    var m = Math.floor(normalizeDegrees(v.rosh) / 30), k = m === 0 ? 0 : 12 - m;
+    document.getElementById("zrCell").setAttribute("x", (ZR.w - ZR.pad - (k + 1) * cw).toFixed(1));
+  }
+
+  function setX(id, x) {
+    var el2 = document.getElementById(id);
+    if (!el2) return;
+    if (el2.tagName === "line") {
+      el2.setAttribute("x1", x.toFixed(1)); el2.setAttribute("x2", x.toFixed(1));
+    } else {
+      el2.setAttribute("x", x.toFixed(1));
+    }
+  }
+
+  /* how long the ראש takes over one mazal, and when it enters the next — the
+     first from his own daily motion, the second asked of his tables */
+  function daysPerMazal() { return Math.round(30 / dmsToDecimal(CONSTANTS.NODE.DAILY_MOTION)); }
+  function daysToNextMazal(dayNow, rosh) {
+    var m = Math.floor(normalizeDegrees(rosh) / 30), now = Math.round(dayNow);
+    var d = dayForRosh(dayNow, 30 * m);
+    /* standing on the line is still the mazal it is leaving — the day it is in
+       the next one is the day after it crosses */
+    for (var i = 0; i < 5 && Math.floor(normalizeDegrees(chapter16Cached(d).rosh) / 30) === m; i++) d++;
+    return Math.max(0, d - now);
+  }
+  function nextMazal(rosh) {
+    var m = Math.floor(normalizeDegrees(rosh) / 30);
+    return CONSTANTS.CONSTELLATIONS[(m + 11) % 12];
   }
 
   // ═══ the side view ═══════════════════════════════════════════════════

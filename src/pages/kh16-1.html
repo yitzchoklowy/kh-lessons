@@ -25,6 +25,12 @@
     ומהלך שוה יש לזה הראש שאין בו לא תוספת ולא גרעון,<br>
     והוא הולך במזלות <b class="node">אחורנית, מטלה לדגים, לדלי</b>, וכן הוא סובב תמיד:</p>
 
+  <div class="rchart fig16" id="run" style="--c:var(--minus)">
+    <div class="rc-head"><h4>מטלה לדגים, לדלי</h4><span class="rc-ref">ט״ז:א</span></div>
+    <div id="zrun"></div>
+    <div class="rc-sum" id="runsay"></div>
+  </div>
+
   <!--@include partials/wheel.html-->
 
   <div class="drill" id="drill" style="--c:var(--minus)"></div>
@@ -50,14 +56,27 @@
   }
 
   function show(n) {
-    var v = chapter16At(n);
-    drawNode(tiltAt(day));
-    markTilt(tiltAt(day));
+    var v = chapter16At(n), live = tiltAt(day);
+    drawNode(live);
+    markTilt(live);
+    markZodiacRun(live);
+    runSay(live);
     var zr = zodiacPosition(v.rosh), zz = zodiacPosition(v.zanav);
     document.getElementById("say").innerHTML =
       "הראש במזל <b>" + zr.hebrew + "</b>, " + zr.ordinalDegree + " מעלות · " +
       "הזנב במזל <b>" + zz.hebrew + "</b>, " + zz.ordinalDegree + " מעלות." +
       "<br>והירח " + side(v) + '.<span class="eq">' + formatDms(v.maslul) + " מן הראש</span>";
+  }
+
+  /* where the ראש stands in the mazalos, and when it leaves for the next */
+  function runSay(v) {
+    var z = zodiacPosition(v.rosh);
+    document.getElementById("runsay").innerHTML =
+      "הראש במזל <b>" + z.hebrew + "</b>, " + z.ordinalDegree + " מעלות · " +
+      "ולמזל <b>" + nextMazal(v.rosh) + "</b> ייכנס בעוד <b>" +
+      daysToNextMazal(day, v.rosh).toLocaleString() + "</b> ימים." +
+      '<span class="eq">30° ÷ ' + formatDms(dmsToDecimal(CONSTANTS.NODE.DAILY_MOTION)) +
+      " = " + daysPerMazal().toLocaleString() + " ימים לכל מזל</span>";
   }
 
   function onDraw(n) { show(n); }
@@ -69,6 +88,7 @@
     nodeDials();
     document.getElementById("tilt").innerHTML = tiltFigure();
     grabTilt();
+    document.getElementById("zrun").innerHTML = zodiacRunFigure();
     setDay(29);
 
     drill(document.getElementById("drill"), {
