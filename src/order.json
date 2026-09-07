@@ -1,0 +1,10 @@
+[
+  { "file": "kh12-sun-mean.html", "mark": "י״ב:א",    "name": "מהלך אמצע השמש" },
+  { "file": "kh12-govah.html",    "mark": "י״ב:ב",    "name": "גובה השמש" },
+  { "file": "kh14-1.html",        "mark": "י״ד:א",    "name": "שני מהלכים אמצעיים" },
+  { "file": "kh14-2.html",        "mark": "י״ד:א–ב",  "name": "מהלך אמצע הירח" },
+  { "file": "kh14-3.html",        "mark": "י״ד:ג–ד",  "name": "מהלך אמצע המסלול" },
+  { "file": "kh14-sun.html",      "mark": "י״ד:ה–ו",  "name": "אמצע הירח לשעת הראייה" },
+  { "file": "galgalim.html",      "mark": "י״ד–ט״ז",  "name": "ארבעת גלגלי הירח" },
+  { "file": "calculator.html",    "mark": "י״א–י״ז",  "name": "כל החשבון" }
+]

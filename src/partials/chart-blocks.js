@@ -123,39 +123,39 @@
     var out = SIZES.map(function (b, n) {
       return {
         ask: function () {
-          return "How many whole blocks of <b>" + b[2] + " days</b> are in it" +
-            (n ? ", after the bigger blocks are taken out" : "") + "?";
+          return "כמה פעמים שלמות של <b>" + b[2] + "</b> יש בו" +
+            (n ? ", אחר שהוצאת את הגדולים ממנו" : "") + "?";
         },
         type: "int",
         answer: function (c) { return c.step.inputs[b[0]].value; },
-        hint: function () { return "Divide, keep the whole number; the remainder goes to the next row down."; },
+        hint: function () { return "חלק, וקח את המנין השלם בלבד; והשאר עובר לשורה שתחתיו."; },
         after: function (c) {
           var one = dmsToDecimal(CONSTANTS[tbl]["p" + b[1]]);
-          return "That row is " + formatDms(one) + " each, so it brings " +
+          return "כל אחת " + formatDms(one) + ", ונמצא שהביאו " +
             formatDms(normalizeDegrees(c.step.inputs[b[0]].value * one)) + ".";
         }
       };
     });
     out.push({
-      ask: function () { return "And how many single days are left over?"; },
+      ask: function () { return "וכמה ימים בודדים נשארו?"; },
       type: "int",
       answer: function (c) { return c.step.inputs.d.value; },
       after: function (c) {
-        return "At " + dailyLabel + " a day, those bring " +
+        return "בכל יום " + dailyLabel + ", ונמצא שהביאו " +
           formatDms(normalizeDegrees(c.step.inputs.d.value * dmsToDecimal(dailyDms))) + ".";
       }
     });
     out.push({
       ask: function () {
-        return "Add the starting place and every row, drop the whole circles. What is " +
+        return "הוסף על העיקר את כל השורות, והשלך הגלגלים השלמים. כמה " +
           '<span dir="rtl">' + resultHeb + "</span>?";
       },
       type: "dms",
       answer: function (c) { return c.step.result; },
-      hint: function () { return "Add them all up first; only then take the circles off."; },
+      hint: function () { return "קבץ הכל תחילה, ורק אחר כך השלך הגלגלים."; },
       after: function (c) {
         var z = zodiacPosition(c.step.result);
-        return "Which puts it " + z.ordinalDegree + "° into " + z.hebrew + ".";
+        return "ונמצא מקומו " + z.ordinalDegree + "° במזל " + z.hebrew + ".";
       }
     });
     return out;

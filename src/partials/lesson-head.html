@@ -16,8 +16,10 @@
                      grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); display:grid; gap:.9rem 1.2rem; }
   .rchart, .drill { margin-left:auto; margin-right:auto; max-width:44rem; }
   .page.solo { max-width:74rem; }
+  /* the text column shares its right edge with the chart, so nothing floats */
   .page.solo > header, .page.solo .part, .page.solo .book,
-  .page.solo .drill, .page.solo .note { max-width:44rem; margin-left:auto; margin-right:auto; }
+  .page.solo .drill, .page.solo .note, .page.solo .pagenav {
+    max-width:44rem; margin-left:auto; margin-right:0; }
   .rchart td.in, .rchart th:first-child { direction:rtl; text-align:right; }
   .rchart td.moves, .rchart td.use, .rchart th { direction:ltr; }
   .rc-head { direction:rtl; }
@@ -41,4 +43,5 @@
 
 <script>
 <!--@include partials/theme.js-->
+<!--@include partials/nav.js-->
 </script>

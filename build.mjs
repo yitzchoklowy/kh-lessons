@@ -21,6 +21,8 @@ const engine = bundleEngine(R('src/engine'));
 fs.mkdirSync(R('build'), { recursive: true });
 fs.writeFileSync(R('build/engine-bundle.js'), engine);
 
+const ORDER = JSON.parse(read('src/order.json'));
+
 const ENGINE_BLOCK = '<script>\n' + engine + '\n' + read('src/lib/pipeline-local.js') + '\n</script>';
 const WORKING_BLOCK = '<script>\n' + read('src/lib/working.js') + '\n</script>';
 
@@ -35,7 +37,8 @@ ${body}`;
 function include(html, depth = 0) {
   if (depth > 4) throw new Error('include nested too deep');
   return html.replace(/<!--@include\s+([\w./-]+)\s*-->/g, (_, rel) => {
-    const body = read(path.join('src', rel));
+    let body = read(path.join('src', rel));
+    body = body.replace('/*@ORDER*/[]', JSON.stringify(ORDER));
     return include(body, depth + 1);
   });
 }
@@ -78,16 +81,7 @@ const NL = String.fromCharCode(10);
 const JOINSEP = NL + '  ';
 
 // a plain index so dist/ is browsable on its own
-const pages = [
-  ['kh14-1.html', 'י״ד:א', 'שני מהלכים אמצעיים'],
-  ['kh14-2.html', 'י״ד:א–ב', 'מהלך אמצע הירח'],
-  ['kh14-3.html', 'י״ד:ג–ד', 'מהלך אמצע המסלול'],
-  ['kh14-sun.html', 'י״ד:ה–ו', 'אמצע הירח לשעת הראייה'],
-  ['kh12-sun-mean.html', 'י״ב:א', 'מהלך אמצע השמש'],
-  ['kh12-govah.html', 'י״ב:ב', 'גובה השמש'],
-  ['galgalim.html', 'י״ד–ט״ז', 'ארבעת גלגלי הירח'],
-  ['calculator.html', 'י״א–י״ז', 'כל החשבון'],
-];
+const pages = ORDER.map((p) => [p.file, p.mark, p.name]);
 fs.writeFileSync(R('dist/index.html'), `<!doctype html>
 <html lang="he">
 <meta charset="utf-8">

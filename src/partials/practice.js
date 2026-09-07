@@ -22,9 +22,9 @@
     var c = null, settled = 0, right = 0, asked = 0;
 
     function dmsInputs(i) {
-      return '<input id="a' + i + 'd" type="number" step="1" placeholder="deg"><span class="unit">°</span>' +
-             '<input id="a' + i + 'm" type="number" step="1" placeholder="min"><span class="unit">′</span>' +
-             '<input id="a' + i + 's" type="number" step="1" placeholder="sec"><span class="unit">″</span>';
+      return '<input id="a' + i + 'd" type="number" step="1" placeholder="מעלות"><span class="unit">°</span>' +
+             '<input id="a' + i + 'm" type="number" step="1" placeholder="חלקים"><span class="unit">′</span>' +
+             '<input id="a' + i + 's" type="number" step="1" placeholder="שניות"><span class="unit">″</span>';
     }
 
     function render() {
@@ -47,11 +47,11 @@
           h += '<input id="a' + i + '" type="number" step="any" class="wide">' +
                (s.unit ? '<span class="unit">' + s.unit + "</span>" : "");
         }
-        h += '<button type="button" class="check">Check</button>' +
-             '<button type="button" class="tell">Show me</button></div>' +
+        h += '<button type="button" class="check">בדוק</button>' +
+             '<button type="button" class="tell">הראה לי</button></div>' +
              '<div class="dr-say" hidden></div></div>';
       }
-      h += '<div class="dr-foot"><button type="button" class="again">Another day</button>' +
+      h += '<div class="dr-foot"><button type="button" class="again">יום אחר</button>' +
            '<span class="score"></span></div>';
       host.innerHTML = h;
       host.className = "drill";
@@ -80,7 +80,7 @@
 
     function score() {
       host.querySelector(".score").textContent =
-        settled ? right + " / " + settled + " worked out" : spec.steps.length + " pieces";
+        settled ? right + " / " + settled + " נכונים" : spec.steps.length + " חלקים";
     }
 
     function read(i) {
@@ -102,34 +102,34 @@
 
     function check(i) {
       var s = spec.steps[i], mine = read(i);
-      if (mine === null) { say(i, "told", "Put something in first."); return; }
+      if (mine === null) { say(i, "told", "מלא תחילה."); return; }
       var want = s.answer(c), tail = s.after ? '<span class="why">' + s.after(c) + "</span>" : "";
 
       if (s.type === "pick") {
         var ch = s.choices(c), ok = ch[mine].value === want;
-        if (ok) { say(i, "ok", "Right — <b>" + ch[mine].label + "</b>." + tail); settle(i, true); }
+        if (ok) { say(i, "ok", "יפה — <b>" + ch[mine].label + "</b>." + tail); settle(i, true); }
         else {
           var wanted = ch.filter(function (x) { return x.value === want; })[0];
-          say(i, "no", "Not that one. It is <b>" + (wanted ? wanted.label : String(want)) + "</b>." + tail);
+          say(i, "no", "לא זו. והוא <b>" + (wanted ? wanted.label : String(want)) + "</b>." + tail);
           settle(i, false);
         }
         return;
       }
       if (s.type === "dms") {
         var off = Math.abs(mine - want);
-        if (off < 1 / 60) { say(i, "ok", "Right — <b>" + formatDms(want) + "</b>." + tail); settle(i, true); }
+        if (off < 1 / 60) { say(i, "ok", "יפה — <b>" + formatDms(want) + "</b>." + tail); settle(i, true); }
         else if (off < 0.5) {
-          say(i, "near", "Very close. It is <b>" + formatDms(want) + "</b> — you were " +
-              formatDms(off) + " out." + tail);
+          say(i, "near", "קרוב מאד. והוא <b>" + formatDms(want) + "</b> — you were " +
+              formatDms(off) + "." + tail);
           settle(i, true);
         } else {
-          say(i, "no", "It is <b>" + formatDms(want) + "</b> — you were " + formatDms(off) + " out." + tail);
+          say(i, "no", "והוא <b>" + formatDms(want) + "</b> — you were " + formatDms(off) + "." + tail);
           settle(i, false);
         }
         return;
       }
-      if (mine === want) { say(i, "ok", "Right — <b>" + want.toLocaleString() + "</b>." + tail); settle(i, true); }
-      else { say(i, "no", "It is <b>" + want.toLocaleString() + "</b>." + tail); settle(i, false); }
+      if (mine === want) { say(i, "ok", "יפה — <b>" + want.toLocaleString() + "</b>." + tail); settle(i, true); }
+      else { say(i, "no", "והוא <b>" + want.toLocaleString() + "</b>." + tail); settle(i, false); }
     }
 
     function tell(i) {
@@ -140,7 +140,7 @@
       var shown = s.type === "dms" ? formatDms(want)
         : s.type === "pick" ? (s.choices(c).filter(function (x) { return x.value === want; })[0] || {}).label
         : want.toLocaleString();
-      say(i, "told", "It is <b>" + shown + "</b>." +
+      say(i, "told", "והוא <b>" + shown + "</b>." +
           (s.after ? '<span class="why">' + s.after(c) + "</span>" : ""));
       settle(i, false);
     }
