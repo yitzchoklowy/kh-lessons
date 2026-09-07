@@ -1,18 +1,19 @@
 <title>מהלך אמצע המסלול</title>
 <!--@include partials/lesson-head.html-->
 
-<div class="page solo">
+<div class="page solo" data-emph="mas" data-epoch="84.4783333333">
 
   <header>
+    <h1 class="bigtitle">מהלך אמצע המסלול</h1>
     <div class="eyebrow">רמב״ם · הלכות קידוש החודש י״ד:ג–ד</div>
-    <p class="halacha lead"><span class="n">ג -</span> ומהלך אמצע המסלול ביום אחד <b class="mas">שלש עשרה מעלות ושלשה חלקים וארבע וחמישים שניות</b>, סימנם <b class="mas">י״ג גנ״ד</b>.</p>
+    <p class="halacha lead">ומהלך אמצע המסלול ביום אחד <b class="mas">שלש עשרה מעלות ושלשה חלקים וארבע וחמישים שניות</b>, סימנם <b class="mas">י״ג גנ״ד</b>.</p>
   </header>
 
   <!--@include partials/wheel.html-->
 
   <div class="part">
     <p class="halacha">נמצא מהלכו בעשרה ימים <b class="mas">מאה ושלשים מעלות ותשעה ושלשים חלקים בלא שניות</b>, סימנם ק״ל ל״ט.<br>ונמצא שאר מהלכו במאה יום <b class="mas">מאתים ושש ועשרים מעלות ותשעה ועשרים חלקים ושלש וחמישים שניות</b>, סימנם רכ״ו כ״ט נ״ג.<br>ונמצא שארית מהלכו באלף יום <b class="mas">מאה וארבע מעלות ושמונה וחמישים חלקים וחמישים שניות</b>, סימנם ק״ד נח״נ.<br>ונמצא שארית מהלכו בעשרת אלפים יום <b class="mas">שלש מאות ותשע ועשרים מעלות ושמונה וארבעים חלקים ועשרים שניות</b>, סימנם שכ״ט מח״כ.<br>ונמצא שארית מהלכו בתשעה ועשרים יום <b class="mas">שמונה עשרה מעלות ושלשה וחמישים חלקים וארבע שניות</b>, סימנם י״ח נג״ד.</p>
-    <p class="halacha"><span class="n">ד -</span> ונמצא שארית מהלכו בשנה סדורה <b class="mas">שלש מאות וחמש מעלות ושלש עשרה שניות בלא חלקים</b>, סימנם ש״ה י״ג.</p>
+    <p class="halacha">ונמצא שארית מהלכו בשנה סדורה <b class="mas">שלש מאות וחמש מעלות ושלש עשרה שניות בלא חלקים</b>, סימנם ש״ה י״ג.</p>
   </div>
 
   <div class="rchart" id="chBlocks" style="--c:var(--mas)"></div>
@@ -44,9 +45,13 @@
                "שכ״ט מח״כ", "י״ח נג״ד", "ש״ה י״ג"];
 
   function pageReady() {
+    playing = false;
+    setDay(1);
+    var r0 = document.querySelector("tr[data-days]");
+    if (r0) r0.classList.add("on");
     renderBlockChart(document.getElementById("chBlocks"), {
       title: "מהלך אמצע המסלול", ref: "י״ד:ג–ד", note: "",
-      heads: ["בכמה", "מהלך", "הפעמים"],
+      heads: ["בכמה", "מהלך"], plain: true, pick: true,
       labels: LABELS, signs: SIGNS,
       blocks: CONSTANTS.MOON_MASLUL_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MASLUL_MEAN_MOTION,
       heb: true, startLabel: START, step: function (d) { return calculateMoonMaslul(d); }
@@ -66,7 +71,6 @@
 
   function onDraw(n) {
     var v = calculateMoonMaslul(n);
-    traceBlockChart(document.getElementById("chBlocks"), v.inputs, v, START);
 
     var rows = blockLedger(v, "MOON_MASLUL_PERIOD_BLOCKS", CONSTANTS.MOON.MASLUL_MEAN_MOTION, START, true), h = "";
     for (var i = 0; i < rows.length; i++) {

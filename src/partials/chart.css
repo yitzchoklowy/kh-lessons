@@ -39,3 +39,8 @@
     .rchart td.in small, .rchart td.moves small { font-size:.66rem; }
     .rchart td.use { font-size:.72rem; }
   }
+
+  .rchart tr[data-days] { cursor:pointer; }
+  .rchart tr[data-days]:hover td { background:color-mix(in srgb, var(--c) 12%, transparent); }
+  .rchart tr[data-days].on td { background:color-mix(in srgb, var(--c) 16%, transparent); }
+  .rchart tr[data-days].on td.in { color:var(--ink); font-weight:600; }

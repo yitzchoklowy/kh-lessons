@@ -1,9 +1,10 @@
 <title>מהלך אמצע הירח</title>
 <!--@include partials/lesson-head.html-->
 
-<div class="page solo">
+<div class="page solo" data-emph="mean" data-epoch="31.2452777778">
 
   <header>
+    <h1 class="bigtitle">מהלך אמצע הירח</h1>
     <div class="eyebrow">רמב״ם · הלכות קידוש החודש י״ד:א–ב</div>
     <p class="halacha lead">מהלך אמצע הירח ביום אחד <b class="mean">י״ג מעלות וי׳ חלקים ול״ה שניות</b>. סימנם <b class="mean">י״ג יל״ה</b>.</p>
   </header>
@@ -47,6 +48,10 @@
   var START = "א׳ י״ד מ״ג במזל שור";
 
   function pageReady() {
+    playing = false;
+    setDay(1);
+    var r0 = document.querySelector("tr[data-days]");
+    if (r0) r0.classList.add("on");
     document.getElementById("chDay").innerHTML =
       '<div class="rc-head"><h4>ביום אחד</h4><span class="rc-ref">י״ד:א</span></div>' +
       '<table><thead><tr><th>ביום</th><th>מהלך</th><th>סימן</th></tr></thead><tbody>' +
@@ -56,7 +61,8 @@
       '<div class="rc-sum" data-sum></div>';
 
     renderBlockChart(document.getElementById("chBlocks"), {
-      title: "שארית מהלכו", ref: "י״ד:ב", note: "",
+      title: "שארית מהלכו", ref: "י״ד:ב", note: "", plain: true, pick: true,
+      heads: ["בכמה", "מהלך"],
       blocks: CONSTANTS.MOON_MEAN_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
       heb: true, startLabel: START, step: function (d) { return calculateMoonMeanLongitude(d); }
     });
@@ -89,8 +95,6 @@
 
     document.querySelector("#chDay [data-sum]").innerHTML =
       "מן העיקר <b>" + n.toLocaleString() + "</b> ימים, ואמצע הירח <b>" + formatDms(mean) + "</b>";
-
-    traceBlockChart(document.getElementById("chBlocks"), v.inputs, v, START);
 
     var rows = blockLedger(v, "MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY, START, true), h = "";
     for (var i = 0; i < rows.length; i++) {

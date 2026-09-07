@@ -11,7 +11,7 @@
 
   var el = {};
   ["ring","arcMean","ptrMean",
-   "epi","epiC","grabEpi","grabDef","farLine","farLbl","arcEpi","sightLine","moonBody","scaleNote","cMean","cMas","cMasLbl","corner",
+   "epi","epiC","grabEpi","grabDef","farLine","farLbl","arcEpi","sightLine","moonBody","defCircle","fromTick","scaleNote","cMean","cMas","cMasLbl","corner",
    "dDays","dDate","dMean","dMeanZ","dMas",
    "play","speed","dayIn","rig","tabs",
    "scaleNote"].forEach(function (id) { el[id] = document.getElementById(id); });
@@ -145,6 +145,23 @@
 
   // ── state ──
   var pageIsReady = false;
+
+  /* A page says which galgal it is about; the other is dimmed rather than gone,
+     so the whole machine is still visible. */
+  var PAGE = document.querySelector(".page") || document.body;
+  var EMPH = PAGE.dataset ? (PAGE.dataset.emph || "") : "";
+  /* When a page is about one row of his table, the sweep starts where he starts
+     — at the position at the epoch — so the arc IS that row's מהלך. */
+  var FROM_EPOCH = PAGE.dataset && PAGE.dataset.epoch !== undefined
+    ? Number(PAGE.dataset.epoch) : null;
+  function emphasise() {
+    if (!EMPH) return;
+    var dim = "0.18";
+    var mas = [el.epi, el.epiC, el.arcEpi, el.farLine, el.farLbl, el.moonBody];
+    var mean = [el.defCircle, el.arcMean, el.ptrMean, el.sightLine];
+    var off = EMPH === "mean" ? mas : mean;
+    for (var i = 0; i < off.length; i++) if (off[i]) off[i].setAttribute("opacity", dim);
+  }
   var day = 0, playing = false, last = 0, step = 1, lastWhole = null, trueScale = false;
   var runTo = null, runRate = 0, runKind = null;
 
@@ -173,8 +190,10 @@
     put(el.moonBody, Mo[0], Mo[1]);
     var fa2 = (farA + 20) * RAD, fl = epiR + 11;
     put(el.farLbl, C[0] + fl * Math.cos(fa2), C[1] - fl * Math.sin(fa2) + 3);
-    var span = N(mas);
-    var q0 = [C[0] + epiR * Math.cos(farA * RAD), C[1] - epiR * Math.sin(farA * RAD)];
+    var masFrom = (FROM_EPOCH !== null && EMPH === "mas") ? FROM_EPOCH : 0;
+    var startA = farA - masFrom;
+    var span = N(mas - masFrom);
+    var q0 = [C[0] + epiR * Math.cos(startA * RAD), C[1] - epiR * Math.sin(startA * RAD)];
     var q1 = [C[0] + epiR * Math.cos(moonA * RAD), C[1] - epiR * Math.sin(moonA * RAD)];
     el.arcEpi.setAttribute("d", span < 1 ? "" : "M " + q0[0].toFixed(2) + " " + q0[1].toFixed(2) +
       " A " + epiR.toFixed(2) + " " + epiR.toFixed(2) + " 0 " + (span > 180 ? 1 : 0) + " 1 " +
@@ -184,9 +203,18 @@
     el.ptrMean.setAttribute("x2", tip[0].toFixed(2)); el.ptrMean.setAttribute("y2", tip[1].toFixed(2));
     // the sweep hugs the big circle, the same way the maslul hugs the small one —
     // held just inside the epicycle so the arrowhead never lands under it
-    el.arcMean.setAttribute("d", arcPath(R_DEF, 0, mean, true));
-    el.cMean.textContent = F(mean);
-    el.cMas.textContent = F(mas);
+    var meanFrom = (FROM_EPOCH !== null && EMPH === "mean") ? FROM_EPOCH : 0;
+    el.arcMean.setAttribute("d", arcPath(R_DEF, meanFrom, mean, true));
+    if (el.fromTick) {
+      var ft0 = P(R_DEF - 9, meanFrom), ft1 = P(R_DEF + 9, meanFrom);
+      el.fromTick.setAttribute("x1", ft0[0].toFixed(1)); el.fromTick.setAttribute("y1", ft0[1].toFixed(1));
+      el.fromTick.setAttribute("x2", ft1[0].toFixed(1)); el.fromTick.setAttribute("y2", ft1[1].toFixed(1));
+      el.fromTick.setAttribute("opacity", FROM_EPOCH !== null && EMPH === "mean" ? "1" : "0");
+    }
+    el.cMean.textContent = (FROM_EPOCH !== null && EMPH === "mean")
+      ? F(N(mean - FROM_EPOCH)) : F(mean);
+    el.cMas.textContent = (FROM_EPOCH !== null && EMPH === "mas")
+      ? F(N(mas - FROM_EPOCH)) : F(mas);
 
 
 
@@ -327,9 +355,18 @@
   setTimeout(function () {
     if (typeof pageReady === "function") pageReady();
     pageIsReady = true;
+    document.addEventListener("click", function (e) {
+      var tr = e.target.closest ? e.target.closest("tr[data-days]") : null;
+      if (!tr) return;
+      var rows = document.querySelectorAll("tr[data-days]");
+      for (var i = 0; i < rows.length; i++) rows[i].classList.toggle("on", rows[i] === tr);
+      setDay(Number(tr.dataset.days));
+    });
     drawAt(day);
+    emphasise();
   }, 0);
-  if (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (!PAGE.dataset.epoch &&
+      (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
     playing = true; el.play.textContent = "❙❙ Pause";
   }
   requestAnimationFrame(frame);

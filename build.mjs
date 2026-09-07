@@ -74,37 +74,46 @@ for (const file of fs.readdirSync(R('src/pages')).filter((f) => f.endsWith('.htm
   built++;
 }
 
+const NL = String.fromCharCode(10);
+const JOINSEP = NL + '  ';
+
 // a plain index so dist/ is browsable on its own
 const pages = [
-  ['kh12-sun-mean.html', 'KH 12:1 · The sun’s mean motion', 'One rate, one table of blocks.'],
-  ['kh12-govah.html', 'KH 12:2 · The sun’s far point', 'The govah, and how slowly it drifts.'],
-  ['kh14-1.html', 'י"ד:א · שני מהלכים אמצעיים', 'שני הגלגלים, ושני האמצעים.'],
-  ['kh14-2.html', 'י"ד:א–ב · מהלך אמצע הירח', 'ביום אחד, בעשרה ובמאה ובאלף, ובשנה סדורה.'],
-  ['kh14-sun.html', 'KH 14:5–6 · The sun’s nudge', 'The nine bands as a ring of the year, and why they are what they are.'],
-  ['kh14-3.html', 'י"ד:ג–ד · מהלך אמצע המסלול', 'ביום אחד עד שנה סדורה.'],
-  ['galgalim.html', 'KH 14–16 · The four galgalim', 'The moon model built up one chapter at a time.'],
-  ['calculator.html', 'KH 11–17 · The whole calculation', 'All 26 steps for ליל ל׳ of any month.'],
+  ['kh14-1.html', 'י״ד:א', 'שני מהלכים אמצעיים'],
+  ['kh14-2.html', 'י״ד:א–ב', 'מהלך אמצע הירח'],
+  ['kh14-3.html', 'י״ד:ג–ד', 'מהלך אמצע המסלול'],
+  ['kh14-sun.html', 'י״ד:ה–ו', 'אמצע הירח לשעת הראייה'],
+  ['kh12-sun-mean.html', 'י״ב:א', 'מהלך אמצע השמש'],
+  ['kh12-govah.html', 'י״ב:ב', 'גובה השמש'],
+  ['galgalim.html', 'י״ד–ט״ז', 'ארבעת גלגלי הירח'],
+  ['calculator.html', 'י״א–י״ז', 'כל החשבון'],
 ];
 fs.writeFileSync(R('dist/index.html'), `<!doctype html>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kiddush HaChodesh — lessons</title>
+<html lang="he">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>רמב״ם · הלכות קידוש החודש</title>
 <style>
-  body{margin:0;background:#0a0c11;color:#e7e9f0;font:16px/1.6 system-ui,sans-serif}
-  @media (prefers-color-scheme:light){body{background:#e7e9ee;color:#0f1218}}
-  main{max-width:44rem;margin:0 auto;padding:3rem 1.2rem}
-  h1{font-size:1.8rem;margin:0 0 .3rem}
-  p.lede{opacity:.65;margin:0 0 2rem}
-  a.card{display:block;text-decoration:none;color:inherit;border:1px solid #2a3039;
-         border-radius:10px;padding:1rem 1.2rem;margin-bottom:.7rem}
-  @media (prefers-color-scheme:light){a.card{border-color:#d1d5de;background:#fbfbfd}}
-  a.card:hover{border-color:#d8b264}
-  a.card b{display:block;font-size:1.05rem}
-  a.card span{opacity:.6;font-size:.92rem}
+  :root { --bg:#e7e9ee; --card:#fbfbfd; --ink:#0f1218; --muted:#555c6b; --line:#d1d5de; --brass:#8a6a1f; }
+  @media (prefers-color-scheme:dark) { :root:not([data-theme="light"]) {
+    --bg:#0a0c11; --card:#13161d; --ink:#e7e9f0; --muted:#99a0b0; --line:#242a34; --brass:#d8b264; } }
+  :root[data-theme="dark"] { --bg:#0a0c11; --card:#13161d; --ink:#e7e9f0; --muted:#99a0b0;
+    --line:#242a34; --brass:#d8b264; }
+  body { margin:0; background:var(--bg); color:var(--ink); direction:rtl;
+         font:16px/1.7 'Frank Ruhl Libre','David',Georgia,serif; }
+  main { max-width:40rem; margin:0 auto; padding:3rem 1.2rem 4rem; }
+  h1 { font-size:1.9rem; margin:0 0 2rem; font-weight:700; }
+  a.card { display:flex; align-items:baseline; gap:.8rem; text-decoration:none; color:inherit;
+           border:1px solid var(--line); background:var(--card); border-radius:10px;
+           padding:.85rem 1.1rem; margin-bottom:.6rem; }
+  a.card:hover { border-color:var(--brass); }
+  a.card b { font-size:1.15rem; font-weight:500; }
+  a.card span { color:var(--muted); font-size:.9rem; margin-inline-start:auto;
+                font-family:'IBM Plex Mono',monospace; direction:ltr; }
 </style>
 <main>
-  <h1>Kiddush HaChodesh — lessons</h1>
-  <p class="lede">One halacha at a time, computed by the project's own engine.</p>
-  ${pages.map(([f, t, d]) => `<a class="card" href="${f}"><b>${t}</b><span>${d}</span></a>`).join('\n  ')}
+  <h1>רמב״ם · הלכות קידוש החודש</h1>
+  ${pages.map(([f, mark, name]) => `<a class="card" href="${f}"><b>${name}</b><span>${mark}</span></a>`).join(JOINSEP)}
 </main>
 `);
-console.log(`\n${built} pages + index → dist/`);
+console.log(NL + `${built} pages + index → dist/`);

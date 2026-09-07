@@ -17,19 +17,22 @@
       { key: null, label: L[6], v: dmsToDecimal(B.p354), sign: G[6], note: spec.labels ? "" : "354 days at a step" }
     ];
     var H = spec.heads || ["in", "it moves", "this count"];
+    var plain = !!spec.plain;          // his table only: no trace, nothing that moves
     var h = '<div class="rc-head"><h4>' + spec.title + '</h4><span class="rc-ref">' + spec.ref + "</span></div>" +
             (spec.note ? '<p class="rc-note">' + spec.note + "</p>" : "") +
             '<div class="rc-scroll"><table><thead><tr><th>' + H[0] + "</th><th>" + H[1] +
-            "</th><th>" + H[2] + "</th></tr></thead><tbody>";
+            (plain ? "" : "</th><th>" + H[2]) + "</th></tr></thead><tbody>";
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
-      h += '<tr data-row="' + (r.key || "spare" + i) + '"' + (r.key ? "" : ' class="spare"') + '>' +
+      h += '<tr data-row="' + (r.key || "spare" + i) + '"' +
+           (spec.pick ? ' data-days="' + [1, 10, 100, 1000, 10000, 29, 354][i] + '"' : "") +
+           (r.key ? "" : ' class="spare"') + '>' +
            '<td class="in">' + r.label + (r.note ? "<small>" + r.note + "</small>" : "") + "</td>" +
            '<td class="moves">' + formatDms(r.v) +
            (r.sign ? '<small dir="rtl">' + r.sign + "</small>" : "") + "</td>" +
-           '<td class="use">' + (r.key ? "" : "—") + "</td></tr>";
+           (plain ? "" : '<td class="use">' + (r.key ? "" : "—") + "</td>") + "</tr>";
     }
-    h += '</tbody></table></div><div class="rc-sum" data-sum></div>';
+    h += "</tbody></table></div>" + (plain ? "" : '<div class="rc-sum" data-sum></div>');
     host.innerHTML = h;
     host.className = "rchart";
     host._rows = rows;
