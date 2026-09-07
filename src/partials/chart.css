@@ -24,7 +24,7 @@
   .rchart tr.on td { background:color-mix(in srgb, var(--c) 8%, transparent); }
   .rchart tr.on td.in { color:var(--ink); }
   .rchart tr.on td.use { color:var(--c); }
-  .rchart tr.spare td.in, .rchart tr.spare td.moves { opacity:.55; }
+  /* nothing in his table is spare; every row is one he gives */
   .rchart .rc-sum { margin-top:.7rem; padding-top:.6rem; border-top:1px solid var(--line);
                     font-size:.79rem; color:var(--muted); }
   .rchart .rc-sum b { color:var(--ink); font-weight:600; font-family:var(--mono); }
