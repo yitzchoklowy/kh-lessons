@@ -1,0 +1,27 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap">
+
+<style>
+  <!--@include partials/wheel.css-->
+
+  <!--@include partials/chart.css-->
+
+  <!--@include partials/practice.css-->
+
+  /* the wheel stands on its own, centred, when there is a chart under it */
+  .page.solo .stage { grid-template-columns:1fr; }
+  .page.solo .art { max-width:34rem; margin:0 auto; }
+  .page.solo .dials { border-left:0; border-top:1px solid var(--line);
+                     grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); display:grid; gap:.9rem 1.2rem; }
+  .rchart, .drill { margin-left:auto; margin-right:auto; max-width:44rem; }
+  .rchart td.in, .rchart th:first-child { direction:rtl; text-align:right; }
+  .rchart td.moves, .rchart td.use, .rchart th { direction:ltr; }
+  .rc-head { direction:rtl; }
+  .rc-note, .rc-sum { direction:rtl; text-align:right; }
+  .rc-sum .eq { direction:ltr; text-align:left; }
+  .part { max-width:44rem; margin:2rem auto 0; }
+  .book, .drill { max-width:44rem; margin-left:auto; margin-right:auto; }
+  .book h3 { direction:rtl; text-align:right; }
+  .led td.l { direction:rtl; text-align:right; }
+</style>

@@ -1,9 +1,3 @@
-<title>שני מהלכים אמצעיים</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap">
-
-<style>
   :root {
     --bg:#e7e9ee; --card:#fbfbfd; --sunk:#eff0f4; --ink:#0f1218; --muted:#555c6b;
     --faint:#838b9b; --line:#d1d5de; --hair:#e2e5ec; --brass:#8a6a1f;
@@ -184,39 +178,5 @@
   .note { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); font-size:.83rem; color:var(--faint); }
   a { color:var(--brass); }
   :focus-visible { outline:2px solid var(--brass); outline-offset:2px; border-radius:5px; }
-</style>
 
-<div class="page">
-
-  <header>
-    <div class="eyebrow">רמב"ם · הלכות קידוש החודש י"ד:א</div>
-    <p class="halacha lead">הירח שני מהלכים אמצעיים יש לו.</p>
-    <p class="halacha"><span class="n">א -</span> הירח עצמו מסבב בגלגל קטן שאינו מקיף את העולם כולו.<br>ומהלכו האמצעי באותו הגלגל הקטן נקרא <b class="mas">אמצעי המסלול</b>.</p>
-    <p class="halacha"><span class="n">ב -</span> והגלגל הקטן עצמו מסבב בגלגל גדול המקיף את העולם.<br>ובמהלך אמצעי זה של גלגל הקטן באותו הגלגל הגדול המקיף את העולם הוא הנקרא <b class="mean">אמצע הירח</b>.</p>
-  </header>
-
-  <!--@include partials/wheel.html-->
-
-  <div class="legend">
-    <div class="leg" style="--c:var(--mas)">
-      <div class="t"><i></i>אמצע המסלול</div>
-      <p class="d">מהלכו של הירח עצמו בגלגל הקטן</p>
-    </div>
-    <div class="leg" style="--c:var(--mean)">
-      <div class="t"><i></i>אמצע הירח</div>
-      <p class="d">מהלכו של הגלגל הקטן בגלגל הגדול המקיף את העולם</p>
-    </div>
-  </div>
-  <p class="note">
-    <a href="kh14-sun.html">י"ד:ה</a> · <a href="index.html">כל השיעורים</a>
-  </p>
-</div>
-
-<!--ENGINE-->
-
-<script>
-(function () {
-  "use strict";
-  <!--@include partials/wheel.js-->
-})();
-</script>
+  .dial .in[dir="ltr"], [dir="ltr"] { direction:ltr; }

@@ -1,0 +1,109 @@
+<title>מהלך אמצע הירח</title>
+<!--@include partials/lesson-head.html-->
+
+<div class="page solo">
+
+  <header>
+    <div class="eyebrow">רמב״ם · הלכות קידוש החודש י״ד:א–ב</div>
+    <p class="halacha lead">מהלך אמצע הירח ביום אחד <b class="mean">י״ג מעלות וי׳ חלקים ול״ה שניות</b>. סימנם <b class="mean">י״ג יל״ה</b>.</p>
+  </header>
+
+  <!--@include partials/wheel.html-->
+
+  <div class="rchart" id="chDay" style="--c:var(--mean)"></div>
+
+  <div class="part">
+    <p class="halacha">נמצא מהלכו בעשרה ימים <b class="mean">קל״א מעלות ומ״ה חלקים וחמשים שניות</b>. סימנם קל״א מה״נ.<br>ונמצא שארית מהלכו בק׳ יום <b class="mean">רל״ז מעלות ול״ח חלקים וכ״ג שניות</b>. סימנם רל״ז ל״ח כ״ג.<br>ונמצא שארית מהלכו באלף יום <b class="mean">רי״ו מעלות וכ״ג חלקים ונ׳ שניות</b>. סימנם רי״ו כג״ן.<br>ונמצא שארית מהלכו בי׳ אלפים יום <b class="mean">ג׳ מעלות ונ״ח חלקים וכ׳ שניות</b>. סימנם ג׳ נ״ח כ׳.</p>
+  </div>
+
+  <div class="rchart" id="chBlocks" style="--c:var(--mean)"></div>
+
+  <div class="book" style="--c:var(--mean)">
+    <h3>אמצע הירח</h3>
+    <table class="led"><thead><tr><th>מהלך</th><th>מוסיף</th><th>הכל</th></tr></thead>
+    <tbody id="ledger"></tbody></table>
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mean)"></div>
+
+  <div class="part">
+    <p class="halacha">ונמצא שארית מהלכו בכ״ט יום <b class="mean">כ״ב מעלות וששה חלקים ונ״ו שניות</b>. סימנם כב״ו ונ״ו.<br>ונמצא שארית מהלכו בשנה סדורה <b class="mean">שמ״ד מעלות וכ״ו חלקים ומ״ג שניות</b>. סימן להם שד״ם כ״ו מ״ג.<br>ועל דרך זו תכפל לכל מנין ימים או שנים שתרצה.</p>
+  </div>
+
+  <div class="rchart" id="chYear" style="--c:var(--mean)"></div>
+
+  <p class="note"><a href="kh14-1.html">י״ד:א</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-blocks.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/wheel.js-->
+
+  var START = "א׳ י״ד מ״ג במזל שור";
+
+  function pageReady() {
+    document.getElementById("chDay").innerHTML =
+      '<div class="rc-head"><h4>ביום אחד</h4><span class="rc-ref">י״ד:א</span></div>' +
+      '<table><thead><tr><th>ביום</th><th>מהלך</th><th>סימן</th></tr></thead><tbody>' +
+      '<tr class="on"><td class="in">אחד</td><td class="moves">' +
+      formatDms(dmsToDecimal(CONSTANTS.MOON.MEAN_MOTION_PER_DAY)) +
+      '</td><td class="use" dir="rtl">י״ג יל״ה</td></tr></tbody></table>' +
+      '<div class="rc-sum" data-sum></div>';
+
+    renderBlockChart(document.getElementById("chBlocks"), {
+      title: "שארית מהלכו", ref: "י״ד:ב", note: "",
+      blocks: CONSTANTS.MOON_MEAN_PERIOD_BLOCKS, daily: CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
+      startLabel: START, step: function (d) { return calculateMoonMeanLongitude(d); }
+    });
+
+    var B = CONSTANTS.MOON_MEAN_PERIOD_BLOCKS;
+    var y = [["כ״ט יום", B.p29, "כב״ו ונ״ו"], ["שנה סדורה", B.p354, "שד״ם כ״ו מ״ג"]];
+    var h = '<div class="rc-head"><h4>כ״ט יום ושנה סדורה</h4><span class="rc-ref">י״ד:ב</span></div>' +
+      '<table><thead><tr><th>בכמה</th><th>מהלך</th><th>סימן</th></tr></thead><tbody>';
+    for (var i = 0; i < y.length; i++) {
+      h += '<tr><td class="in">' + y[i][0] + '</td><td class="moves">' +
+           formatDms(dmsToDecimal(y[i][1])) + '</td><td class="use" dir="rtl">' + y[i][2] + '</td></tr>';
+    }
+    document.getElementById("chYear").innerHTML =
+      h + '</tbody></table><div class="rc-sum" data-sum></div>';
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ד:ב", note: "",
+      newCase: function () {
+        var d = 280000 + Math.floor(Math.random() * 60000);
+        return { day: d, step: calculateMoonMeanLongitude(d) };
+      },
+      caseLine: function (c) { return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים."; },
+      steps: blockDrillSteps("MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY,
+        "י״ג יל״ה", "אמצע הירח")
+    });
+  }
+
+  function onDraw(n, mean) {
+    var v = calculateMoonMeanLongitude(n), B = CONSTANTS.MOON_MEAN_PERIOD_BLOCKS;
+
+    document.querySelector("#chDay [data-sum]").innerHTML =
+      "מן העיקר <b>" + n.toLocaleString() + "</b> ימים, ואמצע הירח <b>" + formatDms(mean) + "</b>";
+
+    traceBlockChart(document.getElementById("chBlocks"), v.inputs, v, START);
+
+    var rows = blockLedger(v, "MOON_MEAN_PERIOD_BLOCKS", CONSTANTS.MOON.MEAN_MOTION_PER_DAY, START), h = "";
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      h += "<tr" + (r.out ? ' class="out"' : (r.drop ? ' class="drop"' : "")) +
+           '><td class="l">' + r.l + (r.s ? "<small>" + r.s + "</small>" : "") +
+           '</td><td class="a">' + (r.a || "") + '</td><td class="t">' + r.t + "</td></tr>";
+    }
+    document.getElementById("ledger").innerHTML = h;
+
+    document.querySelector("#chYear [data-sum]").innerHTML =
+      "ועוד כ״ט יום — <b>" + formatDms(calculateMoonMeanLongitude(n + 29).result) + "</b>" +
+      '<span class="eq">' + formatDms(mean) + "  +  " + formatDms(dmsToDecimal(B.p29)) + "</span>";
+  }
+})();
+</script>
