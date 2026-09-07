@@ -99,13 +99,28 @@ really moving is the day count, so the other galgalim come round with it at
 their own rates — which is the thing to feel. Let go and it settles on a whole
 day, because he counts whole days.
 
-## 9. Hebrew reads right to left, everywhere
+## 9. His text comes from Shilat, and always carries its link
+
+Quote the Rambam from **Shilat's edition on alhatorah.org**, never from Sefaria.
+Where a page shows a halacha, its chapter mark links to the source so a reader
+can check it against the edition it came from.
+
+alhatorah is a JavaScript application and does not serve the text over a plain
+request, so it cannot simply be fetched — take the text from a local copy of
+alhatorah if one is available, or have it pasted in. **Do not fall back to
+Sefaria to fill a gap**; leave the page unwritten and say the text is missing.
+
+Pages still carrying Sefaria's text, to be replaced: `kh12-sun-mean`,
+`kh12-govah`, `kh14-2`, `kh14-sun`, `galgalim`. The text on `kh14-1` and
+`kh14-3` was supplied directly and is not Sefaria's.
+
+## 10. Hebrew reads right to left, everywhere
 
 His words, the terms, the legends, the page furniture — all of it RTL and
 right-aligned. Only figures, civil dates and the instrument controls stay LTR;
 mark those `dir="ltr"` rather than leaving the block LTR and hoping.
 
-## 10. Check every page on a phone before it ships
+## 11. Check every page on a phone before it ships
 
 `npm run phone <page>` opens it in a 390px frame. Headless Chrome clamps its own
 viewport at 512px, so `--window-size=390` proves nothing — the frame is the only
@@ -115,7 +130,7 @@ And looking is not enough: **touch it.** `touch-action: none` on a whole diagram
 swallows the swipe and the page can no longer be scrolled past it. Put it on the
 handles alone.
 
-## 11. Every chart gets the same transport
+## 12. Every chart gets the same transport
 
 Step by day, and **watch one day / one month / one year**. Same control, same
 place, every page.

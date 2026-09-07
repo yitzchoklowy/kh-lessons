@@ -210,3 +210,6 @@
   .pagenav .pn-mark { font-family:var(--mono); font-size:.72rem; color:var(--faint); direction:ltr; }
   .pagenav .pn.prev .pn-mark, .pagenav .pn.prev .pn-dir { align-self:flex-start; }
   @media (max-width:520px) { .pagenav { grid-template-columns:1fr; } }
+
+  .eyebrow a { color:inherit; text-decoration:none; border-bottom:1px dotted currentColor; }
+  .eyebrow a:hover { color:var(--brass); }
