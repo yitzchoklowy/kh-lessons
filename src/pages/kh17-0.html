@@ -68,7 +68,7 @@
     <div id="fp"></div>
     <div class="grip">
       <label>הולך את הירח סביב</label>
-      <input type="range" id="rp" min="0" max="360" step="2" value="18">
+      <input type="range" id="rp" min="0" max="360" step="1" value="18">
       <span class="out" id="op">—</span>
     </div>
     <p class="note">בשני האופקים ההפרש בתכלית גדלו, בנכח הראש אינו כלום, ותחת הארץ אין ראייה כלל. ובשעת הראייה הירח נמוך במערב — שם דוקא.</p>
@@ -217,13 +217,63 @@
       'at which every table was reckoned.">' + g + "</svg>";
   }
 
+  /* Each figure draws from its handles; and where the figure has something
+     that stands in a place — the moon, the arc, the sphere — that thing can be
+     taken hold of and dragged, and the handles follow it. */
   function wire(box, fig, ranges, out, say) {
     var rs = ranges.map(function (id) { return document.getElementById(id); });
     var os = out.map(function (id) { return document.getElementById(id); });
+    var host = document.getElementById(box);
+
+    function vals() { return rs.map(function (r) { return Number(r.value); }); }
     function draw() {
-      var vs = rs.map(function (r) { return Number(r.value); });
-      document.getElementById(box).innerHTML = fig.apply(null, vs);
+      var vs = vals();
+      host.innerHTML = fig.apply(null, vs);
       for (var i = 0; i < os.length; i++) os[i].textContent = say[i](vs[i]);
+    }
+    function put(vs) {
+      var moved = false;
+      for (var i = 0; i < rs.length; i++) {
+        var lo = Number(rs[i].min), hi = Number(rs[i].max);
+        var v = String(Math.min(hi, Math.max(lo, vs[i])));
+        if (v !== rs[i].value) { rs[i].value = v; moved = true; }
+      }
+      if (moved) draw();
+    }
+    /* client point → the figure's own coordinates, letterboxing allowed for */
+    function at(ev) {
+      var svg = host.querySelector("svg");
+      if (!svg) return null;
+      var b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+      var k = Math.min(b.width / vb.width, b.height / vb.height);
+      return [(ev.clientX - b.left - (b.width - vb.width * k) / 2) / k,
+              (ev.clientY - b.top - (b.height - vb.height * k) / 2) / k];
+    }
+    if (fig.pick || fig.spin) {
+      host.style.touchAction = "none";
+      host.style.cursor = "grab";
+      host.addEventListener("pointerdown", function (ev) {
+        var p0 = at(ev), start = vals();
+        if (!p0) return;
+        ev.preventDefault();
+        host.setPointerCapture(ev.pointerId);
+        host.style.cursor = "grabbing";
+        var move = function (e) {
+          var p = at(e);
+          if (p) put(fig.pick ? fig.pick(p[0], p[1], vals())
+                              : fig.spin(p[0] - p0[0], start));
+        };
+        var stop = function () {
+          host.style.cursor = "grab";
+          host.removeEventListener("pointermove", move);
+          host.removeEventListener("pointerup", stop);
+          host.removeEventListener("pointercancel", stop);
+        };
+        host.addEventListener("pointermove", move);
+        host.addEventListener("pointerup", stop);
+        host.addEventListener("pointercancel", stop);
+        move(ev);
+      });
     }
     for (var i = 0; i < rs.length; i++) rs[i].addEventListener("input", draw);
     draw();

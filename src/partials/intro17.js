@@ -37,8 +37,16 @@
   /* The whole round, so the shape of the thing can be seen at once: nothing at
      the zenith, most at either horizon, nothing again beneath. The three
      figures sit in a band along the foot, where the circle cannot reach them. */
-  var FP = { w: 640, h: 480, cx: 320, cy: 218, r: 24, far: 158, moon: 104,
-             orech: 11 + 27 / 60, band: 400 };
+  var FP = { w: 640, h: 480, cx: 320, cy: 218, r: 24, far: 158, moon: 104, band: 400 };
+
+  /* degrees on the circle of the mazalos, counted from the western horizon —
+     nought where the sighting is, ninety overhead, a hundred and eighty east. */
+  function dm(x) {
+    var v = ((x % 360) + 360) % 360;
+    var d = Math.floor(v), m = Math.round((v - d) * 60);
+    if (m === 60) { d++; m = 0; }
+    return d + "°" + (m ? " " + m + "′" : "");
+  }
 
   function figParallax(turn) {
     var g = "", a = turn * RD;
@@ -48,13 +56,25 @@
 
     g += '<circle cx="' + FP.cx + '" cy="' + FP.cy + '" r="' + FP.far +
          '" fill="none" stroke="currentColor" stroke-opacity=".26" stroke-width="1.2"></circle>';
+    for (var t = 0; t < 360; t += 10) {
+      var c = Math.cos(t * RD), s = Math.sin(t * RD), big = t % 30 === 0;
+      var q = big ? 9 : 5;
+      g += ln(FP.cx + FP.far * c, FP.cy - FP.far * s,
+              FP.cx + (FP.far + q) * c, FP.cy - (FP.far + q) * s,
+              "currentColor", 'stroke-opacity="' + (big ? ".42" : ".2") + '"');
+      if (big && t % 180 !== 0)
+        g += tx(FP.cx + 177 * c, FP.cy - 177 * s + 3.5, t + "°",
+                { op: ".45", size: 9.5, mono: true });
+    }
     g += '<circle cx="' + mx + '" cy="' + my + '" r="' + FP.moon +
          '" fill="none" stroke="currentColor" stroke-opacity=".12" stroke-width="1" ' +
          'stroke-dasharray="2 4"></circle>';
     g += ln(146, my, 494, my, "currentColor", 'stroke-opacity=".3" stroke-dasharray="4 3"');
     /* the turn starts at the western horizon, where the sighting is */
-    g += tx(498, my + 4, "מערב", { anchor: "start", op: ".7", size: 11, weight: "700" });
-    g += tx(142, my + 4, "מזרח", { anchor: "end", op: ".45", size: 10.5 });
+    g += tx(504, my - 3, "מערב", { anchor: "start", op: ".7", size: 11, weight: "700" });
+    g += tx(504, my + 13, "0°", { anchor: "start", op: ".45", size: 9.5, mono: true });
+    g += tx(136, my - 3, "מזרח", { anchor: "end", op: ".45", size: 10.5 });
+    g += tx(136, my + 13, "180°", { anchor: "end", op: ".35", size: 9.5, mono: true });
     g += tx(mx, my - FP.moon - 12, "נכח הראש", { op: ".4", size: 10 });
     g += tx(mx, my + FP.moon + 20, "תחת הארץ", { op: ".3", size: 10 });
 
@@ -63,8 +83,8 @@
       ux /= L; uy /= L;
       var ex = px - FP.cx, ey = py - FP.cy;
       var bb = ex * ux + ey * uy, cc = ex * ex + ey * ey - FP.far * FP.far;
-      var t = -bb + Math.sqrt(bb * bb - cc);
-      return [px + ux * t, py + uy * t];
+      var t2 = -bb + Math.sqrt(bb * bb - cc);
+      return [px + ux * t2, py + uy * t2];
     }
     var N = hitFrom(FP.cx, FP.cy, lx, ly), M = hitFrom(mx, my, lx, ly);
 
@@ -93,13 +113,26 @@
                     'stroke-linecap="round" stroke-opacity="' + (up ? "1" : ".35") + '"></path>';
     g += dot(N[0], N[1], "currentColor", 2.8) + dot(M[0], M[1], "var(--mas)", 3.2);
 
+    /* which line is which, out of the way of the drawing */
+    var key = [["currentColor", 'stroke-dasharray="5 4" stroke-opacity=".55"', "הקו מן המרכז"],
+               ["var(--mean)", 'stroke-width="1.8"', "הקו מפני הארץ"],
+               ["var(--mas)", 'stroke-width="4" stroke-linecap="round"', "שינוי המראה"]];
+    for (var k = 0; k < key.length; k++) {
+      var ky = 30 + k * 19;
+      g += ln(598, ky - 4, 626, ky - 4, key[k][0], key[k][1]);
+      g += tx(590, ky, key[k][2], { anchor: "end", op: ".6", size: 10 });
+    }
+    g += tx(20, 28, "גרור את הירח", { anchor: "start", op: ".45", size: 10 });
+    g += tx(20, 45, "בציור ההפרש מוגדל — שהארץ כנקודה היא כנגד גלגל הירח",
+            { anchor: "start", op: ".3", size: 9 });
+
     /* The shift is his own: the largest חלקים his table of י״ז:ה gives — מעלה
        אחת at שור — falling away with the height, nothing at all overhead. No
-       figure here that is not in his table. */
+       figure here that is not in his table. Above the western horizon it drags
+       the moon down toward מערב, past נכח הראש down toward מזרח. */
     var top = CONSTANTS.PARALLAX_LON_BY_MAZAL.reduce(
       function (m, r) { return Math.max(m, r.chalakim); }, 0);
-    var par = (top / 60) * Math.abs(Math.cos(a));
-    var was = FP.orech, now = was - par;
+    var par = (top / 60) * Math.cos(a);
     g += '<rect x="20" y="' + FP.band + '" width="600" height="66" rx="10" ' +
          'fill="var(--sunk)" stroke="currentColor" stroke-opacity=".16"></rect>';
     var cell = function (cx2, name, val, col, strong) {
@@ -107,15 +140,22 @@
              tx(cx2, FP.band + 50, val, { fill: col, op: "1", mono: true,
                                           size: strong ? 19 : 16, weight: strong ? "700" : "500" });
     };
-    g += cell(500, "אורך ראשון", degMin(was), "currentColor", false);
-    g += cell(320, "שינוי המראה", up ? "− " + Math.round(par * 60) + "′" : "—",
+    g += cell(500, "מקומו מן המרכז", dm(turn), "currentColor", false);
+    g += cell(320, "שינוי המראה",
+              (par >= 0 ? "− " : "+ ") + Math.round(Math.abs(par) * 60) + "′",
               "var(--mas)", true);
-    g += cell(140, "אורך שני", up ? degMin(now) : "—", "var(--mean)", true);
+    g += cell(140, "מקומו מפני הארץ", dm(turn - par), "var(--mean)", true);
     if (!up) g += tx(320, FP.band - 12, "מתחת לאופק — אינו נראה כלל", { op: ".4", size: 10.5 });
     return svg(FP.w, FP.h, "fp",
       "The moon carried right round the observer: the two lines land apart at either horizon, " +
       "together overhead, and together again beneath the earth.", g);
   }
+
+  /* grab the moon itself */
+  figParallax.pick = function (x, y) {
+    var t = Math.atan2((FP.cy - FP.r) - y, x - FP.cx) / RD;
+    return [Math.round((t + 360) % 360)];
+  };
 
   /* ── 2. גובה המדינה ──
      Jerusalem stands two and thirty degrees off the line of the equator, so the
@@ -389,4 +429,35 @@
       "Ten degrees of the circle of the mazalos, and the arc of the equator that comes down " +
       "with them: longer in some mazalos, shorter in others.", g);
   }
+
+  /* ── grabbing the drawing itself ──
+     Every figure that has a thing standing somewhere on it can be taken hold
+     of and moved; the handle beneath it is only a second way in. */
+
+  figGovah.pick = function (x, y) {
+    var slant = (90 - 32) * RD;
+    var mx = F3.sx + 118, my = F3.y0 - 92;
+    var off = (x - mx) * Math.sin(slant) + (y - my) * Math.cos(slant);
+    return [Math.round(off / F3.ppd * 4) / 4];
+  };
+
+  figTime.pick = function (x) {
+    var sc = (F4.x1 - F4.x0) / F4.top;
+    return [Math.round((x - F4.x0) / sc * 4) / 4];
+  };
+
+  figGlobe.spin = function (dx, start) {
+    var v = start[0] + dx * (180 / FG.r);
+    while (v > 180) v -= 360;
+    while (v < -180) v += 360;
+    return [Math.round(v / 2) * 2];
+  };
+
+  figLengths.pick = function (x, y, vs) {
+    var t = F1.tilt * RD;
+    var par = CONSTANTS.PARALLAX_LON_BY_MAZAL[1].chalakim / 60, dN = 20 - par;
+    var nx = F1.ox + dN * F1.ppd * Math.cos(t), ny = F1.oy - dN * F1.ppd * Math.sin(t);
+    var off = (x - nx) * -Math.sin(t) + (y - ny) * -Math.cos(t);
+    return [Math.round(off / (F1.ppd * F1.mag) * 4) / 4, vs[1]];
+  };
 

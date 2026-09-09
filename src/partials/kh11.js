@@ -169,6 +169,19 @@
       // a fat transparent stroke on the circle is the handle
       '<circle id="zgrab" class="grab" cx="' + CX11 + '" cy="' + CY11 + '" r="' + R_CIRC +
       '" fill="none" stroke="transparent" stroke-width="26" pointer-events="stroke"></circle>' +
+      // ── what each of his clauses points at, dark until it is asked for ──
+      '<circle id="zfull" cx="' + CX11 + '" cy="' + CY11 + '" r="' + R_CIRC +
+      '" fill="none" stroke="var(--mas)" stroke-width="4" opacity="0"></circle>' +
+      '<path id="zsecArc" fill="none" stroke="var(--mas)" stroke-width="5" ' +
+      'stroke-linecap="round" opacity="0"></path>' +
+      '<text id="zsecLbl" font-size="13" text-anchor="middle" fill="var(--mas)" ' +
+      'font-family="IBM Plex Mono, monospace" opacity="0">30°</text>' +
+      '<g id="zstart" opacity="0">' +
+      '<line x1="' + CX11 + '" y1="' + CY11 + '" x2="' + (CX11 + R_OUT11) + '" y2="' + CY11 +
+      '" stroke="var(--mas)" stroke-width="2.4"></line>' +
+      '<circle cx="' + (CX11 + R_CIRC) + '" cy="' + CY11 + '" r="5" fill="var(--mas)"></circle>' +
+      '<text x="' + (CX11 + R_CIRC - 6) + '" y="' + (CY11 - 12) + '" font-size="12" ' +
+      'text-anchor="end" fill="var(--mas)">ראש טלה · 0°</text></g>' +
       '<line id="zptr" stroke="var(--mas)" stroke-width="1.4" stroke-dasharray="5 3"></line>' +
       // a ring round the leading end, so the arrowhead is not lost in a blob
       '<circle id="zdot" r="8" fill="none" stroke="var(--mas)" stroke-width="1.5"></circle>' +
@@ -193,6 +206,129 @@
       document.getElementById("zst" + i).setAttribute("opacity", i === idx ? "1" : ".45");
       document.getElementById("znm" + i).setAttribute("fill-opacity", i === idx ? ".9" : ".45");
     }
+  }
+
+  /* His clause, on the drawing. Each one lights the thing it names and nothing
+     else; with no clause chosen the wheel stands as it was. */
+  function showOn(mode, deg) {
+    var p = readPlace(deg), i;
+    var full = document.getElementById("zfull"),
+        arc = document.getElementById("zsecArc"),
+        lbl = document.getElementById("zsecLbl"),
+        start = document.getElementById("zstart");
+
+    full.setAttribute("opacity", mode === "round" ? ".9" : "0");
+    start.setAttribute("opacity", mode === "start" ? "1" : "0");
+
+    var onSector = mode === "sign" || mode === "start";
+    var band = mode === "start" ? 0 : p.index;
+    if (onSector) {
+      arc.setAttribute("d", arc11(R_CIRC + 16, band * ARC, (band + 1) * ARC));
+      arc.setAttribute("opacity", ".95");
+      var mid = P11(R_CIRC + 32, band * ARC + ARC / 2);
+      lbl.setAttribute("x", mid[0].toFixed(1));
+      lbl.setAttribute("y", (mid[1] + 4).toFixed(1));
+      lbl.textContent = ARC + "°";
+      lbl.setAttribute("opacity", mode === "sign" ? ".95" : "0");
+    } else {
+      arc.setAttribute("opacity", "0");
+      lbl.setAttribute("opacity", "0");
+    }
+
+    /* on ראש טלה the first sector is the one being pointed at, not the one the
+       place happens to stand in */
+    for (i = 0; i < 12; i++) {
+      var lit = onSector ? i === band : i === p.index;
+      document.getElementById("zsec" + i).setAttribute("fill-opacity", lit ? (onSector ? ".2" : ".1") : "0");
+      document.getElementById("znm" + i).setAttribute("fill-opacity", lit ? ".95" : ".45");
+      document.getElementById("zst" + i).setAttribute("opacity", lit ? "1" : ".45");
+    }
+    litBand(mode === "sign" ? "sign" : mode === "maalah" ? "maalah"
+          : mode === "chelek" ? "chelek" : mode === "shniya" ? "shniya" : "");
+  }
+
+  /* ── the ladder of י״א:ז, drawn ───────────────────────────────────────────
+     "וכן תדקדק החשבון ותחלק כל זמן שתרצה." One mazal opened out into its thirty
+     מעלות; the מעלה this place stands in opened into its sixty חלקים; that חלק
+     into its שניות, and that שניה into its שלישיות. Each band is one cell of
+     the band above it, blown up — which is the whole of what he is saying.
+
+     Every count comes off the engine: thirty from its sign arc, sixty from the
+     minute it divides a degree into. */
+  var LOU = { x0: 44, x1: 584, top: 44, h: 26, gap: 84 };
+
+  function loupeBands(p) {
+    var d = decimalToDms(p.into);
+    var sec = Math.floor(d.seconds), third = Math.round((d.seconds - sec) * PER);
+    return [
+      { key: "sign",   n: ARC, hit: Math.floor(p.into),
+        name: "מזל " + p.mazal, holds: ARC + " מעלות" },
+      { key: "maalah", n: PER, hit: d.minutes,
+        name: "מעלה " + gem(p.ordinal) + " בו", holds: PER + " חלקים" },
+      { key: "chelek", n: PER, hit: sec,
+        name: "חלק " + gem(d.minutes || PER), holds: PER + " שניות" },
+      { key: "shniya", n: PER, hit: third,
+        name: "שניה " + gem(sec || PER), holds: PER + " שלישיות" }
+    ];
+  }
+
+  function loupeMarkup(p) {
+    var bands = loupeBands(p), W = LOU.x1 - LOU.x0, g = "", i, k;
+
+    for (i = 0; i < bands.length; i++) {
+      var b = bands[i], y = LOU.top + i * LOU.gap, cw = W / b.n;
+
+      // the cell of the band above that this one opens out
+      if (i > 0) {
+        var a = bands[i - 1], aw = W / a.n, ay = LOU.top + (i - 1) * LOU.gap + LOU.h;
+        var lx = LOU.x0 + a.hit * aw, rx = lx + aw;
+        g += '<path class="lz lz' + i + '" d="M ' + lx.toFixed(1) + " " + ay +
+             " L " + rx.toFixed(1) + " " + ay + " L " + LOU.x1 + " " + y +
+             " L " + LOU.x0 + " " + y + ' Z" fill="var(--mas)" fill-opacity=".07" ' +
+             'stroke="var(--mas)" stroke-opacity=".3" stroke-width="1" ' +
+             'stroke-dasharray="4 3"></path>';
+      }
+
+      g += '<g class="lb lb-' + b.key + '">';
+      g += '<rect x="' + LOU.x0 + '" y="' + y + '" width="' + W + '" height="' + LOU.h +
+           '" rx="4" fill="var(--sunk)" stroke="currentColor" stroke-opacity=".18"></rect>';
+      g += '<rect class="lhit" x="' + (LOU.x0 + b.hit * cw).toFixed(1) + '" y="' + y +
+           '" width="' + cw.toFixed(1) + '" height="' + LOU.h +
+           '" fill="var(--mas)" fill-opacity=".3"></rect>';
+
+      for (k = 0; k <= b.n; k++) {
+        var x = LOU.x0 + k * cw, ten = k % 10 === 0;
+        g += '<line x1="' + x.toFixed(1) + '" y1="' + (y + LOU.h - (ten ? 15 : 7)) +
+             '" x2="' + x.toFixed(1) + '" y2="' + (y + LOU.h) + '" stroke="currentColor" ' +
+             'stroke-opacity="' + (ten ? ".5" : ".22") + '" stroke-width="1"></line>';
+        if (ten && k < b.n) {
+          g += '<text x="' + x.toFixed(1) + '" y="' + (y + LOU.h + 13) +
+               '" font-size="9.5" text-anchor="middle" fill="currentColor" fill-opacity=".38" ' +
+               'font-family="IBM Plex Mono, monospace">' + k + "</text>";
+        }
+      }
+
+      // what this band is, and what it holds
+      g += '<text x="' + LOU.x1 + '" y="' + (y - 8) + '" font-size="12" text-anchor="end" ' +
+           'fill="var(--mas)" fill-opacity=".95">' + b.name + "</text>";
+      g += '<text x="' + LOU.x0 + '" y="' + (y - 8) + '" font-size="11" text-anchor="start" ' +
+           'fill="currentColor" fill-opacity=".45">' + b.holds + "</text>";
+      g += "</g>";
+    }
+    return '<svg viewBox="0 0 620 ' + (LOU.top + 3 * LOU.gap + LOU.h + 26) + '" id="loupe" ' +
+           'role="img" aria-label="One mazal opened into its thirty degrees, one degree into ' +
+           'its sixty parts, and each part again, as far as the count is taken.">' + g + "</svg>";
+  }
+
+  /* Which rung the reader is being shown. Everything else stays visible but
+     plainly out of the way — the whole ladder is the point. */
+  function litBand(key) {
+    var g = document.querySelectorAll("#loupe .lb"), i;
+    for (i = 0; i < g.length; i++) {
+      g[i].setAttribute("opacity", !key || g[i].classList.contains("lb-" + key) ? "1" : ".28");
+    }
+    var z = document.querySelectorAll("#loupe .lz");
+    for (i = 0; i < z.length; i++) z[i].setAttribute("opacity", key ? ".45" : "1");
   }
 
   /* The running ledger, laid out the way every other page lays one out. */
