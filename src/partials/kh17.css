@@ -12,7 +12,8 @@
              border-radius:11px; box-shadow:var(--shadow); padding:1rem 1.1rem;
              direction:rtl; text-align:right; }
   .verdict h3 { margin:0 0 .35rem; font-family:var(--serif); font-size:1.16rem; color:var(--c); }
-  .verdict .say { font-family:var(--serif); font-size:1.5rem; font-weight:700; }
+  .verdict .say { font-family:var(--serif); font-size:1.5rem; font-weight:700;
+                  margin-inline-end:.6rem; }
   .verdict .say.yes { color:var(--yes, #2f6a45); }
   .verdict .say.no { color:var(--no, #8c3a3a); }
   .verdict .why { display:block; font-size:.85rem; color:var(--muted); margin-top:.3rem; }

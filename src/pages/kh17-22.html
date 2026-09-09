@@ -75,7 +75,8 @@
       { l: d.seen ? "ודאי ייראה" : "אינו נראה", a: "", t: "", out: true }
     ]);
     document.getElementById("verdict").innerHTML =
-      "<h3>ליל " + (n === HIS_DAY ? "ערב שבת, שני לחודש אייר" : n.toLocaleString() + " מן העיקר") + "</h3>" +
+      "<h3>ליל " + (n === HIS_DAY ? "ערב שבת, שני לחודש אייר"
+        : '<span dir="ltr">' + n.toLocaleString() + "</span> מן העיקר") + "</h3>" +
       '<span class="say ' + (d.seen ? "yes" : "no") + '">' + (d.seen ? "ודאי ייראה" : "אינו נראה") +
       '</span><span class="mark">' + d.mark + "</span>" +
       '<span class="why">' + d.says + "</span>";

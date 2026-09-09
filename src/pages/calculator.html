@@ -65,7 +65,6 @@
 </div>
 
 <!--ENGINE-->
-<!--WORKING-->
 
 <script>
 (function () {
@@ -170,7 +169,9 @@
     var got = rows(n), v = got.v, d = v.verdict;
     paintAll(document.getElementById("led"), got.rows);
     document.getElementById("verdict").innerHTML =
-      "<h3>ליל " + civil(n) + " — " + n.toLocaleString() + " ימים מן העיקר</h3>" +
+      "<h3>" + (isLil(n) ? "ליל ראייה" : "ליל") +
+        ' <span dir="ltr">' + civil(n) + "</span>" +
+        ' · <span dir="ltr">' + n.toLocaleString() + "</span> ימים מן העיקר</h3>" +
       '<span class="say ' + (d.seen ? "yes" : "no") + '">' + (d.seen ? "ודאי ייראה" : "אינו נראה") +
       '</span><span class="mark">' + d.mark + "</span>" +
       '<span class="why">' + d.says + "</span>";
@@ -187,17 +188,6 @@
   }
 
   function onDraw(n) { show(n); }
-
-  /* the night his own halachos are about: ליל ל׳, thirty nights on from the
-     evening the last crescent showed — built in src/lib/working.js */
-  function nextLil(from) {
-    var i = khWorking.molad.indexNear(from);
-    for (var k = -2; k < 40; k++) {
-      var d = khWorking.molad.lilShloshim(i + k);
-      if (d > from) return d;
-    }
-    return from;
-  }
 
   function pageReady() {
     playing = false;

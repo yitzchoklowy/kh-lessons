@@ -91,7 +91,14 @@
      that way too — inside an RTL page, text-anchor="start" would otherwise put
      the corner readout's figures outside their box. Hebrew inside a label still
      reads right to left, as bidi does it. */
-  .art svg { display:block; width:100%; height:auto; direction:ltr; }
+  /* The drawing takes the column it is given, but never more of the screen than
+     it can be looked at in one go — an instrument you have to scroll to see is
+     not an instrument. */
+  /* The drawing takes the column it is given. Its ceiling is set on the WIDTH,
+     not the height: a max-height would letterbox it — the drawing would keep
+     its own size and sit in a wide empty box. */
+  .art svg { display:block; width:100%; height:auto; max-width:min(100%, 85vh);
+             margin-inline:auto; direction:ltr; }
   .art svg .grab { cursor:grab; touch-action:none; }
   /* the galgal a page is not about stays visible, but plainly out of the way */
   .art svg .dimmed { opacity:.13; }
@@ -114,6 +121,11 @@
   .dial.u { --c:var(--sunc); } .dial.d { --c:var(--ink); }
   .dial.d .val { font-size:1.15rem; }
 
+  /* the night he asks about, marked out from the plain day steps */
+  .transport button.lil { border-color:color-mix(in srgb, var(--brass) 55%, var(--line));
+                          color:var(--brass); font-family:var(--serif); }
+  .transport button.lil:hover { background:color-mix(in srgb, var(--brass) 12%, transparent); }
+  .dial .lilmark { color:var(--brass); font-family:var(--serif); font-weight:600; }
   .transport { border-top:1px solid var(--line); background:var(--sunk); display:flex;
                align-items:center; gap:.4rem; flex-wrap:wrap; padding:.7rem .9rem; }
   .transport.second { border-top:1px solid var(--hair); padding-top:.55rem; }

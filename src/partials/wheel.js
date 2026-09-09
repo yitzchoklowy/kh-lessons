@@ -1,6 +1,7 @@
   var F = formatDms, N = normalizeDegrees, D = dmsToDecimal, RAD = Math.PI / 180;
   var EPOCH_MS = Date.UTC(1178, 2, 30);
   <!--@include partials/zodiac.js-->
+  <!--@include partials/lil.js-->
 
   var CX = 310, CY = 372, R_DEF = 160, R_PTR = 214, R_ARC = 76,
       R_IN = 218, R_OUT = 276, R_STAR = 252, R_NAME = 228, R_SUN = 210,
@@ -16,6 +17,7 @@
    "gapRing","arcGap","kafRing","arcKaf","gapFrom",
    "dDays","dDate","dMean","dMeanZ","dMas",
    "play","speed","dayIn","rig","tabs",
+   "lilPrev","lilNext","dLil",
    "scaleNote"].forEach(function (id) { el[id] = document.getElementById(id); });
 
   function P(r, deg) { var t = deg * RAD; return [CX + r * Math.cos(t), CY - r * Math.sin(t)]; }
@@ -312,6 +314,7 @@
       el.dMas.textContent = F(mas);
     }
     if (document.activeElement !== el.dayIn) el.dayIn.value = n;
+    if (el.dLil) el.dLil.hidden = !isLil(n);
     if (pageIsReady && typeof onDraw === "function") onDraw(n, mean, mas);
     lightSector(z.index);
 
@@ -368,6 +371,10 @@
   document.getElementById("m10").addEventListener("click", function () { setDay(Math.floor(day) - 10); });
   document.getElementById("p10").addEventListener("click", function () { setDay(Math.floor(day) + 10); });
   document.getElementById("toEpoch").addEventListener("click", function () { setDay(0); });
+  /* Between two ליל ראייה is a stretch of nights he never asks about, so the
+     instrument steps from one to the next. */
+  el.lilPrev.addEventListener("click", function () { setDay(prevLil(Math.floor(day))); });
+  el.lilNext.addEventListener("click", function () { setDay(nextLil(Math.floor(day))); });
   document.getElementById("toToday").addEventListener("click", function () {
     var t = new Date();
     setDay(Math.round((Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) - EPOCH_MS) / 86400000));
