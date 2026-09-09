@@ -329,3 +329,61 @@
     return svg(F1.w, F1.h, "f1",
       "One distance measured five times: three on the circle of the mazalos, and two on the equator.", g);
   }
+
+  /* ── מצעדי המזלות — the third of the four ──
+     Equal arcs of the circle of the mazalos do not take equal time to set. Ten
+     degrees standing in one mazal may set in thirty-five minutes and ten
+     degrees in another in forty-five: what sets is the arc of the EQUATOR that
+     comes down with them, and that is longer for some mazalos and shorter for
+     others. His table of ארוכי וקצרי שקיעה is nothing but this. */
+  var FM = { w: 640, h: 264, y0: 196, ppd: 15 };
+
+  /* his six pairs, most drawn out first, as ר׳ לוי אבן חביב ranks them at
+     Jerusalem's horizon — and the fraction each pair asks for is his own */
+  function matzadRows() {
+    var T = CONSTANTS.SETTING_TIME_BY_MAZAL, out = [];
+    for (var i = 0; i < 6; i++) out.push({ a: T[11 - i], b: T[i] });
+    return out.sort(function (x, y) {
+      var f = function (r) { return r.operation === "add" ? r.fraction
+        : r.operation === "none" ? 0 : -r.fraction; };
+      return f(y.b) - f(x.b);
+    });
+  }
+
+  function figMatzadim(pick) {
+    var rows = matzadRows(), r = rows[Math.max(0, Math.min(rows.length - 1, Math.round(pick)))];
+    var g = "", ARC = 10;                                  // ten degrees of the mazalos
+    var frac = r.b.operation === "add" ? r.b.fraction
+             : r.b.operation === "none" ? 0 : -r.b.fraction;
+    var onEq = ARC * (1 + frac);
+
+    g += ln(30, FM.y0, 610, FM.y0, "currentColor", 'stroke-opacity=".4" stroke-width="1.3"');
+    g += tx(606, FM.y0 + 17, "קו המשווה — ומעלה אחת, ארבע דקות",
+            { anchor: "end", op: ".45", size: 10 });
+
+    var x0 = 96;
+    // the same ten degrees of the mazalos, twice over
+    g += ln(x0, FM.y0 - 74, x0 + ARC * FM.ppd, FM.y0 - 74, "var(--sunc)",
+            'stroke-width="5" stroke-linecap="round"');
+    g += tx(x0 + ARC * FM.ppd / 2, FM.y0 - 86, "עשר מעלות מן המזלות",
+            { fill: "var(--sunc)", op: "1", size: 11 });
+    g += ln(x0, FM.y0 - 66, x0, FM.y0 - 8, "currentColor", 'stroke-opacity=".25" stroke-dasharray="3 3"');
+    g += ln(x0 + ARC * FM.ppd, FM.y0 - 66, x0 + onEq * FM.ppd, FM.y0 - 8,
+            "currentColor", 'stroke-opacity=".25" stroke-dasharray="3 3"');
+    g += ln(x0, FM.y0 - 8, x0 + onEq * FM.ppd, FM.y0 - 8, "var(--mean)",
+            'stroke-width="5" stroke-linecap="round"');
+    g += tx(x0 + onEq * FM.ppd / 2, FM.y0 - 18, "ומה ששוקע עמן",
+            { fill: "var(--mean)", op: "1", size: 11 });
+
+    g += tx(320, 34, r.a.hebrew + " · " + r.b.hebrew,
+            { op: "1", size: 15, weight: "700", fill: "var(--mas)" });
+    g += tx(320, 54, r.b.operation === "none" ? "תניח כמות שהוא"
+            : (r.b.operation === "add" ? "תוסיף " : "תגרע ") + r.b.phrase,
+            { op: ".7", size: 11.5 });
+    g += tx(320, 236, "עשר מעלות אלו שוקעות ב־" + Math.round(onEq * 4) + " דקות",
+            { op: ".9", size: 12.5, weight: "700", mono: true });
+    g += tx(320, 254, "ולוּ עמדו במזל שכנגדו בסדר, היה זמנן אחר", { op: ".45", size: 10 });
+    return svg(FM.w, FM.h, "fm",
+      "Ten degrees of the circle of the mazalos, and the arc of the equator that comes down " +
+      "with them: longer in some mazalos, shorter in others.", g);
+  }
