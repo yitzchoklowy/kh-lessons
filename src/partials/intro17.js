@@ -34,85 +34,87 @@
      arc between where they land is שינוי המראה. It is largest at the setting
      point and nothing at all overhead, "לפי שהקו היוצא ממוצק הארץ והקו היוצא
      משטח הארץ... נופלים זה על זה". */
-  var FP = { w: 640, h: 330, cx: 104, cy: 246, r: 38, far: 372, moon: 166 };
+  /* The earth sits at the foot and the circle of the mazalos sweeps overhead,
+     so ONE radius serves every altitude and nothing in the drawing changes size
+     as the moon is raised. What moves is the moon, along its own arc — which is
+     the only thing that ought to move. */
+  var FP = { w: 640, h: 476, cx: 152, cy: 414, r: 40, far: 322, moon: 208 };
 
   function figParallax(alt) {
     var g = "", a = alt * RD;
     var mx = FP.cx, my = FP.cy - FP.r;                       // the man, on top
     var lx = mx + FP.moon * Math.cos(a), ly = my - FP.moon * Math.sin(a);
-    /* Drawn as large as the page allows and no larger — where the moon stands
-       high the circle is drawn nearer, so its landing point stays in view. The
-       size of it says nothing; the arc between the two landings is the point. */
-    var ang = Math.atan2(FP.cy - ly, lx - FP.cx);
-    var far = Math.min(FP.far, (FP.cy - 52) / Math.max(0.1, Math.sin(ang)),
-                       (608 - FP.cx) / Math.max(0.1, Math.cos(ang)));
 
-    /* where a ray lands on the circle of the mazalos */
+    /* the circle of the mazalos — a quarter of it, drawn once and for all */
+    var arc = "";
+    for (var d = -4; d <= 102; d += 1.5) {
+      var q = [FP.cx + FP.far * Math.cos(d * RD), FP.cy - FP.far * Math.sin(d * RD)];
+      arc += (arc ? " L " : "M ") + q[0].toFixed(1) + " " + q[1].toFixed(1);
+    }
+    g += '<path d="' + arc + '" fill="none" stroke="currentColor" stroke-opacity=".28" stroke-width="1.2"></path>';
+    g += tx(FP.cx + FP.far + 6, FP.cy - 10, "גלגל המזלות",
+            { anchor: "end", op: ".45", size: 10.5 });
+
     function hitFrom(px, py, qx, qy) {
       var ux = qx - px, uy = qy - py, L = Math.sqrt(ux * ux + uy * uy);
       ux /= L; uy /= L;
       var ex = px - FP.cx, ey = py - FP.cy;
-      var b = ex * ux + ey * uy, c = ex * ex + ey * ey - far * far;
-      return [px + ux * (-b + Math.sqrt(b * b - c)), py + uy * (-b + Math.sqrt(b * b - c))];
+      var bb = ex * ux + ey * uy, cc = ex * ex + ey * ey - FP.far * FP.far;
+      var t = -bb + Math.sqrt(bb * bb - cc);
+      return [px + ux * t, py + uy * t];
     }
     var N = hitFrom(FP.cx, FP.cy, lx, ly);       // from the middle — the true place
     var M = hitFrom(mx, my, lx, ly);             // from his standing place — the seen one
-    var an = Math.atan2(FP.cy - N[1], N[0] - FP.cx) / RD;
-    var am = Math.atan2(FP.cy - M[1], M[0] - FP.cx) / RD;
-
-    /* only the stretch of it the two lines land on — the whole circle would run
-       off the drawing, and none of the rest of it is in question */
-    var lo = Math.min(an, am) - 15, hi = Math.max(an, am) + 13, arc = "";
-    for (var d = lo; d <= hi; d += 1.5) {
-      var q = [FP.cx + far * Math.cos(d * RD), FP.cy - far * Math.sin(d * RD)];
-      arc += (arc ? " L " : "M ") + q[0].toFixed(1) + " " + q[1].toFixed(1);
-    }
-    g += '<path d="' + arc + '" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-width="1.2"></path>';
-    var lbl = [FP.cx + (far + 4) * Math.cos(lo * RD), FP.cy - (far + 4) * Math.sin(lo * RD)];
-    g += tx(Math.min(626, lbl[0] + 4), Math.min(322, lbl[1] + 16), "גלגל המזלות",
-            { anchor: "end", op: ".45", size: 10.5 });
 
     g += '<circle cx="' + FP.cx + '" cy="' + FP.cy + '" r="' + FP.r +
          '" fill="currentColor" fill-opacity=".07" stroke="currentColor" stroke-opacity=".3"></circle>';
     g += dot(FP.cx, FP.cy, "currentColor", 2.6);
-    g += tx(FP.cx - 13, FP.cy + 4, "א", { op: ".85", weight: "700" });
-    g += ln(24, my, FP.cx + 62, my, "currentColor", 'stroke-opacity=".28" stroke-dasharray="4 3"');
-    g += tx(24, my - 7, "האופק שלו", { anchor: "start", op: ".45", size: 10 });
+    g += tx(FP.cx - 14, FP.cy + 4, "א", { op: ".85", weight: "700" });
+    g += ln(28, my, FP.cx + 84, my, "currentColor", 'stroke-opacity=".28" stroke-dasharray="4 3"');
+    g += tx(28, my - 8, "האופק שלו", { anchor: "start", op: ".45", size: 10 });
     g += dot(mx, my, "currentColor", 3);
-    g += tx(mx + 12, my - 7, "מ", { op: ".85", weight: "700" });
+    g += tx(mx - 13, my - 6, "מ", { op: ".85", weight: "700" });
 
     g += ln(FP.cx, FP.cy, N[0], N[1], "currentColor", 'stroke-opacity=".45" stroke-width="1.3" stroke-dasharray="5 4"');
     g += ln(mx, my, M[0], M[1], "var(--mean)", 'stroke-width="1.6"');
     g += '<use href="#gMoon" x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '"></use>';
-    g += tx(lx, ly - 18, "ל", { fill: "var(--mean)", op: "1", weight: "700" });
+    g += tx(lx - 18, ly - 8, "ל", { fill: "var(--mean)", op: "1", weight: "700" });
 
     // the arc between the two landings — that is the whole of it
-    var sweep = "", st = an > am ? -1 : 1;
+    var an = Math.atan2(FP.cy - N[1], N[0] - FP.cx) / RD;
+    var am = Math.atan2(FP.cy - M[1], M[0] - FP.cx) / RD;
+    var sweep = "", st = an > am ? -0.8 : 0.8;
     for (var u = an; st > 0 ? u < am : u > am; u += st) {
-      var pp = [FP.cx + far * Math.cos(u * RD), FP.cy - far * Math.sin(u * RD)];
+      var pp = [FP.cx + FP.far * Math.cos(u * RD), FP.cy - FP.far * Math.sin(u * RD)];
       sweep += (sweep ? " L " : "M ") + pp[0].toFixed(1) + " " + pp[1].toFixed(1);
     }
     if (sweep) g += '<path d="' + sweep + '" fill="none" stroke="var(--mas)" stroke-width="4.5" stroke-linecap="round"></path>';
     g += dot(N[0], N[1], "currentColor", 3.2) + dot(M[0], M[1], "var(--mas)", 3.6);
-    g += tx(Math.min(628, N[0] + 15), Math.max(20, N[1] - 6), "נ", { op: ".85", weight: "700" });
-    g += tx(Math.min(628, M[0] + 17), Math.min(316, M[1] + 12), "מ׳",
+    var out = 1 + 17 / FP.far;                              // just clear of the circle
+    g += tx(FP.cx + (N[0] - FP.cx) * out, FP.cy + (N[1] - FP.cy) * out, "נ",
+            { op: ".85", weight: "700" });
+    var out2 = 1 - 19 / FP.far;                             // and just inside it
+    g += tx(FP.cx + (M[0] - FP.cx) * out2, FP.cy + (M[1] - FP.cy) * out2 + 4, "מ׳",
             { fill: "var(--mas)", op: "1", weight: "700" });
-    /* the name sits inside the drawing, on whichever side has the room */
-    var midY = (N[1] + M[1]) / 2, midX = (N[0] + M[0]) / 2;
-    g += tx(Math.min(624, midX + 92), Math.min(300, Math.max(28, midY + 4)), "שינוי המראה",
-            { anchor: "end", fill: "var(--mas)", op: "1", size: 11.5, weight: "700" });
+    /* the name, set just outside the circle where the two landings fall */
+    var mid = (an + am) / 2, rl = FP.far + 44;
+    var lx2 = FP.cx + rl * Math.cos(mid * RD), ly2 = FP.cy - rl * Math.sin(mid * RD);
+    g += tx(Math.min(616, Math.max(70, lx2)), Math.min(452, Math.max(30, ly2)), "שינוי המראה",
+            { anchor: mid > 55 ? "middle" : "start", fill: "var(--mas)", op: "1",
+              size: 11.5, weight: "700" });
 
     /* the drawing is wide so the thing can be seen; the number is the true one,
        taken from his own sixty radii */
     var par = Math.asin(Math.sin((90 - alt) * RD) / 60) / RD;
-    g += tx(30, 40, Math.round(par * 60) + "′",
+    g += tx(30, 44, Math.round(par * 60) + "′",
             { anchor: "start", fill: "var(--mas)", op: "1", size: 21, mono: true });
-    g += tx(30, 60, "גובה הירח " + Math.round(alt) + "°", { anchor: "start", op: ".5", size: 10 });
-    g += tx(320, 322, "הציור מוגזם — הירח רחוק מן הארץ כפי ששים מרדיוסה, ואז הקשת קטנה בהרבה",
+    g += tx(30, 64, "גובה הירח " + Math.round(alt) + "°", { anchor: "start", op: ".5", size: 10 });
+    g += tx(320, 466, "הציור מוגזם — הירח רחוק מן הארץ כפי ששים מרדיוסה, ואז הקשת קטנה בהרבה",
             { op: ".45", size: 10 });
     return svg(FP.w, FP.h, "fp",
-      "The earth, a man standing on it, the moon, and the circle of the mazalos beyond: the line " +
-      "from the centre and the line from the surface land on two different places of it.", g);
+      "The earth at the foot, a man standing on it, and the circle of the mazalos sweeping " +
+      "overhead: the line from the centre and the line from the surface land on two different " +
+      "places of it, and the gap is widest when the moon is low.", g);
   }
 
   /* ── 2. גובה המדינה ──
