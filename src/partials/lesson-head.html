@@ -83,6 +83,12 @@
   .book, .drill { max-width:44rem; margin-left:auto; margin-right:auto; }
   .book h3 { direction:rtl; text-align:right; }
   .led td.l { direction:rtl; text-align:right; }
+  /* A figure is LTR wherever it lands. Left to the page's own direction, the
+     bidi algorithm reads "70° 30′ 40.0″" as three neutral-terminated runs and
+     hands them back in the other order — 40.0″ first, the degrees last — which
+     looks like a figure and is not one. Every column that holds a number says
+     so itself, rather than trusting the block it sits in. */
+  table.led td.a, table.led td.t, table.cmp td.t { direction:ltr; }
 
   .book .cap { direction:rtl; text-align:right; }
 
