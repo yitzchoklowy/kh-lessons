@@ -161,7 +161,7 @@
       // ראש טלה, where the count opens
       '<line x1="' + CX11 + '" y1="' + CY11 + '" x2="' + (CX11 + R_OUT11) + '" y2="' + CY11 +
       '" stroke="currentColor" stroke-opacity=".22" stroke-width="1"></line>' +
-      '<text x="' + (CX11 + R_CIRC - 4) + '" y="' + (CY11 - 8) +
+      '<text id="zHeadLbl" x="' + (CX11 + R_CIRC - 4) + '" y="' + (CY11 - 8) +
       '" font-size="10" text-anchor="end" fill="currentColor" fill-opacity=".45">ראש טלה</text>' +
       // the part already swept, dark, with the head at the leading end
       '<path id="zarc" fill="none" stroke="var(--mas)" stroke-width="2.8" ' +
@@ -175,6 +175,7 @@
       '<path id="zsecArc" fill="none" stroke="var(--mas)" stroke-width="5" ' +
       'stroke-linecap="round" opacity="0"></path>' +
       '<text id="zsecLbl" font-size="13" text-anchor="middle" fill="var(--mas)" ' +
+      'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" ' +
       'font-family="IBM Plex Mono, monospace" opacity="0">30°</text>' +
       '<g id="zstart" opacity="0">' +
       '<line x1="' + CX11 + '" y1="' + CY11 + '" x2="' + (CX11 + R_OUT11) + '" y2="' + CY11 +
@@ -219,13 +220,15 @@
 
     full.setAttribute("opacity", mode === "round" ? ".9" : "0");
     start.setAttribute("opacity", mode === "start" ? "1" : "0");
+    /* the bright marker says ראש טלה itself; two of them on the same spot is one too many */
+    document.getElementById("zHeadLbl").setAttribute("opacity", mode === "start" ? "0" : "1");
 
     var onSector = mode === "sign" || mode === "start";
     var band = mode === "start" ? 0 : p.index;
     if (onSector) {
-      arc.setAttribute("d", arc11(R_CIRC + 16, band * ARC, (band + 1) * ARC));
+      arc.setAttribute("d", arc11(R_CIRC + 30, band * ARC, (band + 1) * ARC));
       arc.setAttribute("opacity", ".95");
-      var mid = P11(R_CIRC + 32, band * ARC + ARC / 2);
+      var mid = P11(R_CIRC + 15, band * ARC + ARC / 2);
       lbl.setAttribute("x", mid[0].toFixed(1));
       lbl.setAttribute("y", (mid[1] + 4).toFixed(1));
       lbl.textContent = ARC + "°";
@@ -309,10 +312,13 @@
       }
 
       // what this band is, and what it holds
+      /* the zoom cone passes behind these, so punch them out of it */
+      var HALO = 'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" ' +
+                 'stroke-linejoin="round" ';
       g += '<text x="' + LOU.x1 + '" y="' + (y - 8) + '" font-size="12" text-anchor="end" ' +
-           'fill="var(--mas)" fill-opacity=".95">' + b.name + "</text>";
+           HALO + 'fill="var(--mas)" fill-opacity=".95">' + b.name + "</text>";
       g += '<text x="' + LOU.x0 + '" y="' + (y - 8) + '" font-size="11" text-anchor="start" ' +
-           'fill="currentColor" fill-opacity=".45">' + b.holds + "</text>";
+           HALO + 'fill="currentColor" fill-opacity=".45">' + b.holds + "</text>";
       g += "</g>";
     }
     return '<svg viewBox="0 0 620 ' + (LOU.top + 3 * LOU.gap + LOU.h + 26) + '" id="loupe" ' +

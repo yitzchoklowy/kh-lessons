@@ -22,8 +22,10 @@ const include = (html, depth = 0) => {
 
 const K = new Function(
   bundleEngine(path.join(root, 'src/engine'))
+  + '\n' + include(read('src/partials/numerals.js'))
   + '\n' + include(read('src/partials/kh11.js'))
   + '\nreturn { readPlace, hisOrdinal, mazalRows, gem, ARC, ROUND, PER,'
+  + ' hebrewWordsToNumber, numText, loupeBands,'
   + ' CONSTANTS, formatDms, dmsToDecimal, zodiacPosition };')();
 
 const { CONSTANTS: C, formatDms: F, dmsToDecimal: D } = K;
@@ -97,4 +99,53 @@ test('Hebrew numerals, for the degree he names in words', () => {
   assert.equal(K.gem(16), 'ט״ז');
   assert.equal(K.gem(20), 'כ׳');
   assert.equal(K.gem(30), 'ל׳');
+});
+
+/* His numbers are glossed from his own words, so a page cannot gloss one
+   wrongly. Every spelled number in י״א:ז–ט, and the ones the rest of the
+   chapter will want. */
+test('his numbers, read out of his words', () => {
+  const N = K.hebrewWordsToNumber;
+  assert.equal(N('שלש מאות ושישים'), 360, 'הגלגל מוחלק בשלש מאות ושישים מעלות');
+  assert.equal(N('שלשים'), 30, 'כל מזל ומזל שלשים מעלות');
+  assert.equal(N('שישים'), 60, 'וכל מעלה ומעלה שישים חלקים');
+  assert.equal(N('שבעים'), 70, 'בשבעים מעלות');
+  assert.equal(N('ארבעים'), 40, 'וארבעים שניות');
+  assert.equal(N('אחת עשרה'), 11, 'בחצי מעלת אחת עשרה');
+  assert.equal(N('שלש מאות ועשרים'), 320, 'בשלש מאות ועשרים מעלות');
+  assert.equal(N('עשרים'), 20, 'בעשרים מעלה בו');
+  assert.equal(N('עשר'), 10, 'עשר מעלות');
+  assert.equal(N('עשר ומחצה'), 10.5, 'עשר מעלות ומחצה');
+});
+
+test('and the numbers the rest of chapter eleven gives', () => {
+  const N = K.hebrewWordsToNumber;
+  assert.equal(N('מאתים תשע וחמישים'), 259, 'י״א:י״ב — רנ״ט');
+  assert.equal(N('שמונה ושלשים ותשע מאות וארבעת אלפים'), 4938, 'ליצירה');
+  assert.equal(N('תשע ושמונים וארבע מאות ואלף'), 1489, 'לשטרות');
+  assert.equal(N('תשע ומאה ואלף'), 1109, 'לחורבן');
+  assert.equal(N('מאתים ושישים'), 260, 'המחזור');
+  assert.equal(N('שבע עשרה'), 17, 'שנת שבע עשרה');
+});
+
+test('a phrase it does not know gets no figure rather than a guessed one', () => {
+  assert.equal(K.hebrewWordsToNumber('מקומו בגלגל'), null);
+  assert.equal(K.hebrewWordsToNumber(''), null);
+  assert.equal(K.numText(null), '');
+  assert.equal(K.numText(10.5), '10½');
+  assert.equal(K.numText(360), '360');
+});
+
+test('the ladder opens each band out of one cell of the band above', () => {
+  const p = K.readPlace(70 + 30 / 60 + 40 / 3600);
+  const bands = K.loupeBands(p);
+  assert.equal(bands.length, 4, 'מזל, מעלה, חלק, שניה');
+  assert.equal(bands[0].n, K.ARC, 'a mazal holds thirty degrees');
+  assert.equal(bands[0].hit, 10, 'the eleventh degree is the eleventh cell along');
+  assert.equal(bands[1].n, K.PER, 'a degree holds sixty parts');
+  assert.equal(bands[1].hit, 30, 'ושלשים חלקים');
+  assert.equal(bands[2].n, K.PER, 'a part holds sixty seconds');
+  assert.equal(bands[2].hit, 40, 'וארבעים שניות');
+  assert.equal(bands[3].n, K.PER, 'a second holds sixty thirds');
+  bands.forEach((b) => assert.ok(b.hit >= 0 && b.hit < b.n, b.key + ': the cell is inside the band'));
 });

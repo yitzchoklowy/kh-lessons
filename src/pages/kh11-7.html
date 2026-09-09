@@ -14,25 +14,80 @@
   /* what a row gives up sits over what is left of the place after it */
   .rchart td.use small { display:block; font-size:.7rem; color:var(--faint);
                          direction:rtl; text-align:right; margin-top:.1rem; }
+
+  /* ── the sentence the section hangs from ── */
+  .preamble { display:flex; align-items:flex-start; gap:1rem; flex-wrap:wrap;
+              border-bottom:1px solid var(--hair); padding-bottom:.7rem; margin-bottom:.9rem; }
+  .pre-said { flex:1; min-width:16rem; margin:0; font-family:var(--serif);
+              direction:rtl; text-align:right; font-size:1.02rem; line-height:1.7;
+              color:var(--muted); }
+  .pre-said b { color:var(--ink); font-weight:600; }
+
+  /* ── his words in figures, or not ── */
+  .numctl { display:flex; align-items:center; gap:.3rem; direction:rtl; flex:none; }
+  .numctl .nl { font-family:var(--serif); font-size:.8rem; color:var(--faint);
+                margin-inline-end:.25rem; }
+  .numctl button { font:inherit; font-size:.76rem; font-family:var(--serif); cursor:pointer;
+                   padding:.2rem .5rem; border:1px solid var(--line); background:transparent;
+                   color:var(--muted); border-radius:6px; }
+  .numctl button[aria-pressed="true"] { border-color:var(--brass); color:var(--ink);
+                   background:color-mix(in srgb, var(--brass) 12%, transparent); }
+  .w .dg { font-family:var(--mono); font-variant-numeric:tabular-nums; color:var(--mas);
+           font-weight:600; }
+  [data-num="as"] .w .dg { display:none; }
+  [data-num="both"] .w .dg::before { content:"\00a0("; color:var(--faint); font-weight:400; }
+  [data-num="both"] .w .dg::after { content:")"; color:var(--faint); font-weight:400; }
+  [data-num="digits"] .w .ws { display:none; }
+
+  /* ── his clauses, each one a thing to press ── */
+  .halacha .cl { font:inherit; color:inherit; background:transparent; cursor:pointer;
+                 border:0; border-bottom:1px dashed color-mix(in srgb, var(--mas) 55%, transparent);
+                 padding:0 .08em; border-radius:3px; text-align:right; }
+  .halacha .cl:hover { background:color-mix(in srgb, var(--mas) 12%, transparent); }
+  .halacha .cl[aria-pressed="true"] { background:color-mix(in srgb, var(--mas) 20%, transparent);
+                 border-bottom-style:solid; color:var(--ink); }
+  .bigtitle .item { font-family:var(--mono); font-size:.62em; color:var(--brass);
+                    margin-inline-end:.4rem; vertical-align:.18em; }
+
+  /* ── the ladder, opened out ── */
+  .ladder { background:var(--card); border:1px solid var(--line); border-radius:11px;
+            box-shadow:var(--shadow); padding:1rem 1.1rem 1.1rem; margin-top:1rem;
+            max-width:none; }
+  .ladder .rc-head { display:flex; align-items:baseline; justify-content:space-between;
+                     gap:.6rem; direction:rtl; }
+  .ladder h4 { margin:0; font-family:var(--serif); font-size:1.12rem; color:var(--mas); }
+  .ladder .rc-ref { font-family:var(--mono); font-size:.7rem; letter-spacing:.06em;
+                    color:var(--faint); }
+  .ladder svg { display:block; width:100%; height:auto; margin-top:.7rem; direction:ltr; }
+  .ladder .say { margin:.6rem 0 0; padding-top:.55rem; border-top:1px solid var(--hair);
+                 font-size:.82rem; color:var(--muted); direction:rtl; text-align:right; }
 </style>
 
 <div class="page solo">
 
   <header>
-    <h1 class="bigtitle">חלוקת הגלגל</h1>
+    <!--@include partials/section11.html-->
+
+    <h1 class="bigtitle"><span class="item">א]</span>חלוקת הגלגל ל־<span id="tRound">360</span> מעלות</h1>
     <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/11" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״א:ז–ט</a></div>
 
-    <p class="halacha lead">העיקרים שצריך אדם לידע אותן תחילה לכל חשבונות האצטגנינות, בין לדרכי חשבון הראייה בין לשאר הדברים, אלו הן,<br>
-      הגלגל מוחלק ב<b class="pl">שלש מאות ושישים מעלות</b>,<br>
-      כל מזל ומזל <b class="pl">שלשים מעלות</b>, וההתחלה מתחילת מזל טלה.<br>
-      וכל מעלה ומעלה <b class="pl">שישים חלקים</b>, וכל חלק וחלק שישים שניות, וכל שניה ושניה שישים שלישיות.<br>
-      וכן תדקדק החשבון ותחלק כל זמן שתרצה:</p>
+    <p class="halacha lead">אלו הן,<br>
+      <button type="button" class="cl" data-show="round" aria-pressed="false">הגלגל מוחלק ב<b class="w">שלש מאות ושישים</b> מעלות,</button><br>
+      <button type="button" class="cl" data-show="sign" aria-pressed="false">כל מזל ומזל <b class="w">שלשים</b> מעלות,</button>
+      <button type="button" class="cl" data-show="start" aria-pressed="false">וההתחלה מתחילת מזל טלה.</button><br>
+      <button type="button" class="cl" data-show="maalah" aria-pressed="false">וכל מעלה ומעלה <b class="w">שישים</b> חלקים,</button>
+      <button type="button" class="cl" data-show="chelek" aria-pressed="false">וכל חלק וחלק <b class="w">שישים</b> שניות,</button>
+      <button type="button" class="cl" data-show="shniya" aria-pressed="false">וכל שניה ושניה <b class="w">שישים</b> שלישיות.</button><br>
+      <button type="button" class="cl" data-show="" aria-pressed="false">וכן תדקדק החשבון ותחלק כל זמן שתרצה:</button></p>
 
-    <p class="halacha">לפיכך אם יצא לך בחשבון שכוכב פלוני מקומו בגלגל בשבעים מעלות ושלשים חלקים וארבעים שניות,<br>
-      תדע שכוכב זה הוא במזל תאומים, <b class="pl">בחצי מעלת אחת עשרה</b> ממזל זה.<br>
-      לפי שמזל טלה שלשים מעלות, ומזל שור שלשים, נשאר עשר מעלות ומחצה ממזל תאומים, וארבעים שניות מחצי המעלה האחרון:</p>
+    <p class="halacha">לפיכך אם יצא לך בחשבון שכוכב פלוני
+      <button type="button" class="cl" data-his="0" aria-pressed="false">מקומו בגלגל ב<b class="w">שבעים</b> מעלות ו<b class="w">שלשים</b> חלקים ו<b class="w">ארבעים</b> שניות,</button><br>
+      תדע שכוכב זה הוא במזל תאומים, בחצי מעלת <b class="w">אחת עשרה</b> ממזל זה.<br>
+      לפי שמזל טלה <b class="w">שלשים</b> מעלות, ומזל שור <b class="w">שלשים</b>, נשאר <b class="w" data-d="10.5">עשר מעלות ומחצה</b> ממזל תאומים, ו<b class="w">ארבעים</b> שניות מחצי המעלה האחרון:</p>
 
-    <p class="halacha">וכן אם יצא מקומו בגלגל בשלש מאות ועשרים מעלות, תדע שכוכב זה במזל דלי, <b class="pl">בעשרים מעלה בו</b>.<br>
+    <p class="halacha">וכן אם
+      <button type="button" class="cl" data-his="1" aria-pressed="false">יצא מקומו בגלגל ב<b class="w">שלש מאות ועשרים</b> מעלות,</button>
+      תדע שכוכב זה במזל דלי, ב<b class="w">עשרים</b> מעלה בו.<br>
       ועל דרך זו בכל המנינות.<br>
       וסדר המזלות כך הוא, טלה, שור, תאומים, סרטן, אריה, בתולה, מאזנים, עקרב, קשת, גדי, דלי, דגים:</p>
   </header>
@@ -86,6 +141,12 @@
     </div>
   </div>
 
+  <div class="ladder" id="ladder">
+    <div class="rc-head"><h4>וכן תדקדק החשבון ותחלק כל זמן שתרצה</h4><span class="rc-ref">י״א:ז</span></div>
+    <div id="loupeBox"></div>
+    <p class="say" id="ladderSay"></p>
+  </div>
+
   <div class="rcharts">
     <div class="rchart" id="cMaz" style="--c:var(--mas)">
       <div class="rc-head"><h4>וסדר המזלות כך הוא</h4><span class="rc-ref">י״א:ז, ט</span></div>
@@ -100,7 +161,7 @@
     </div>
 
     <div class="rchart" id="cLadder" style="--c:var(--mas)">
-      <div class="rc-head"><h4>וכן תדקדק החשבון</h4><span class="rc-ref">י״א:ז</span></div>
+      <div class="rc-head"><h4>וכל מעלה ומעלה שישים חלקים</h4><span class="rc-ref">י״א:ז</span></div>
       <p class="rc-note">כל אחד שישים של זה שתחתיו</p>
       <table>
         <thead><tr><th>שם</th><th>כמה בו</th><th>מקומו כאן</th></tr></thead>
@@ -131,12 +192,21 @@
 (function () {
   "use strict";
   <!--@include partials/practice.js-->
+  <!--@include partials/numerals.js-->
   <!--@include partials/kh11.js-->
 
   var art = document.getElementById("art");
-  var place = 0, playing = false, last = 0, run = null, runFrom = 0, runSpan = 0;
+  var place = 0, playing = false, last = 0, run = null, runFrom = 0, runSpan = 0, clause = "";
 
   function el(id) { return document.getElementById(id); }
+
+  /* the two places he works out himself — his numbers, entered as he gives them */
+  var HIS = [
+    { lon: dmsToDecimal({ degrees: 70, minutes: 30, seconds: 40 }),
+      said: "במזל תאומים, בחצי מעלת אחת עשרה", ref: "י״א:ח" },
+    { lon: dmsToDecimal({ degrees: 320 }),
+      said: "במזל דלי, בעשרים מעלה בו", ref: "י״א:ט" }
+  ];
 
   /* ── his subtraction, checked against the engine before it is shown ── */
   function ledgerRows(p) {
@@ -203,20 +273,14 @@
 
   /* ── the two places he works out himself ── */
   function paintHis() {
-    var his = [
-      { lon: dmsToDecimal({ degrees: 70, minutes: 30, seconds: 40 }),
-        said: "במזל תאומים, בחצי מעלת אחת עשרה", ref: "י״א:ח" },
-      { lon: dmsToDecimal({ degrees: 320 }),
-        said: "במזל דלי, בעשרים מעלה בו", ref: "י״א:ט" }
-    ];
     var h = "", i;
-    for (i = 0; i < his.length; i++) {
-      var p = readPlace(his[i].lon);
+    for (i = 0; i < HIS.length; i++) {
+      var p = readPlace(HIS[i].lon);
       h += '<tr><td class="t">' + formatDms(p.lon) + "</td>" +
-           '<td class="a">' + his[i].said + "</td>" +
+           '<td class="a">' + HIS[i].said + "</td>" +
            '<td class="l">מזל ' + p.mazal + ", מעלה " + gem(p.ordinal) +
            " — " + formatDms(p.into) + " ממנו</td>" +
-           '<td class="o">' + his[i].ref + "</td></tr>";
+           '<td class="o">' + HIS[i].ref + "</td></tr>";
     }
     el("his").innerHTML = h;
   }
@@ -226,6 +290,8 @@
     place = normalizeDegrees(deg);
     var p = readPlace(place);
     paintWheel(place);
+    el("loupeBox").innerHTML = loupeMarkup(p);
+    showOn(clause, place);
     el("dLon").textContent = formatDms(p.lon);
     el("dMazal").innerHTML = '<span class="gl">' + p.glyph + "</span> " + p.mazal;
     el("dPassed").textContent = p.passed + " מזלות שלמים לפניו";
@@ -233,6 +299,10 @@
     el("dInto").textContent = formatDms(p.into) + " מן המזל";
     el("figSay").textContent = "מקומו בגלגל " + formatDms(p.lon) +
       " — במזל " + p.mazal + ", מעלה " + gem(p.ordinal) + " בו.";
+    var d = decimalToDms(p.into);
+    el("ladderSay").innerHTML = "מזל " + p.mazal + " · מעלה <b>" + gem(p.ordinal) +
+      "</b> · חלק <b>" + d.minutes + "</b> · שניה <b>" + Math.floor(d.seconds) + "</b>" +
+      " — " + formatDms(p.lon) + ".";
     if (document.activeElement !== el("degIn")) el("degIn").value = Math.floor(place);
     paintLed(el("led"), ledgerRows(p));
     paintMazal(p);
@@ -240,6 +310,28 @@
   }
 
   function setPlace(deg) { stopRun(); show(deg); }
+
+  /* ── his clauses, each one pressed to see the thing it names ── */
+  function setClause(mode, btn) {
+    clause = clause === mode && btn && btn.getAttribute("aria-pressed") === "true" ? "" : mode;
+    var all = document.querySelectorAll(".halacha .cl");
+    for (var i = 0; i < all.length; i++) {
+      all[i].setAttribute("aria-pressed", String(all[i] === btn && clause !== ""));
+    }
+    showOn(clause, place);
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".halacha .cl");
+    if (!b) return;
+    if (b.dataset.his !== undefined) {
+      setPlace(HIS[Number(b.dataset.his)].lon);
+      setClause("", b);
+      b.setAttribute("aria-pressed", "true");
+      return;
+    }
+    setClause(b.dataset.show || "", b);
+  });
 
   /* ── the transport, in the same place and the same shape as every page ── */
   function stopRun() { run = null; }
@@ -294,11 +386,22 @@
     if (!isNaN(n)) { stopPlay(); setPlace(n); }
   });
 
+  el("tRound").textContent = String(ROUND);
+  numerals(document.querySelector(".page"), el("numctl"));
   art.innerHTML = wheelMarkup();
   grabWheel(art, function (deg) { stopPlay(); setPlace(deg); });
   paintHis();
-  show(dmsToDecimal({ degrees: 70, minutes: 30, seconds: 40 }));
+  show(HIS[0].lon);
   requestAnimationFrame(frame);
+
+  /* Each clause can be linked to — #round, #sign, #start, #maalah, #chelek,
+     #shniya — so a shiur can send a reader straight to the thing it names. */
+  (function () {
+    var h = (location.hash || "").replace(/^#/, "");
+    if (!h) return;
+    var b = document.querySelector('.halacha .cl[data-show="' + h + '"]');
+    if (b) setClause(h, b);
+  })();
 
   /* ── work it yourself ── */
   drill(document.getElementById("drill"), {
