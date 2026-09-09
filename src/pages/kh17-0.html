@@ -11,7 +11,10 @@
                   font-family:var(--serif); }
   .why-fig .cap { margin:.15rem 0 .8rem; font-size:.78rem; color:var(--faint);
                   font-family:var(--mono); direction:ltr; text-align:right; }
-  .why-fig svg { display:block; width:100%; height:auto; margin:.2rem 0 .5rem; }
+  /* the drawings' own coordinates run left to right, like every other figure
+     here; inside an RTL page text-anchor would otherwise anchor the wrong side */
+  .why-fig svg { display:block; width:100%; height:auto; margin:.2rem 0 .5rem;
+                 direction:ltr; }
   .why-fig .grip { display:flex; align-items:center; gap:.7rem; flex-wrap:wrap;
                    border-top:1px solid var(--hair); padding-top:.7rem; margin-top:.3rem; }
   .why-fig .grip label { font-size:.85rem; color:var(--muted); font-family:var(--serif); }
@@ -63,36 +66,20 @@
     </div>
   </header>
 
-  <div class="why-fig" id="f1box" style="--c:var(--mas)">
-    <h3>מן המילקה אל קו המשווה</h3>
-    <p class="ask">האורך נמדד על מעגל המזלות. השקיעה נמדדת על קו המשווה. אין הם אותה קשת.</p>
-    <p class="cap">י״ז:י–י״ב</p>
-    <div id="f1"></div>
-    <div class="grip">
-      <label>רוחב הירח</label>
-      <input type="range" id="r1" min="-5" max="5" step="0.25" value="3">
-      <span class="out" id="o1">—</span>
-    </div>
-    <p class="note">הירח ל אינו עומד על מעגל המזלות אלא נוטה ממנו ברוחבו. הורד ממנו קו הניצב לקו המשווה: היכן שהוא חותך את מעגל המזלות היא נקודת ג. <b>הקשת שג היא האורך השלישי</b> — ולא שנ. וקשת גנ שביניהן היא <b>מעגל הירח</b>, מקצת מן הרוחב השני.</p>
-    <p class="note">הזז את הרוחב מצפון לדרום: ג עובר מצדו האחד של נ לצדו האחר, והתוספת נעשית גירעון. <b>וזהו ״יהיה הדבר הפך״ שבהלכה י״א.</b></p>
-    <p class="note"><b>ולהמפרש קריאה אחרת</b>, כפשט לשונו ״נלוז מעט במעגלו״: נטייה ממש בגלגל, שלא הכירו בה הראשונים. ״זו הנליזה לא הרגישו בה ולא הבינוה אלא מקצת חכמי התכונה <b>האחרונים</b>, אבל הראשונים כמו בטלמיוס וחבריו לא זכרו זאת הנליזה״ — והם מצאו בכלי העיון שסופה במזל טלה ומאזנים, ותכלה בסרטן ובגדי. <b>ושתי הקריאות עולות לצורת הטבלה אחת</b>: שני חומשין בטלה ובמאזנים, וכלום בסרטן ובגדי.</p>
-    <p class="src">יד פשוטה, י״ז:י — תרשים 17-8 · והמפרש, י״ז:י</p>
-    <p class="goes"><a href="kh17-10.html">אל השיעור: מעגל הירח</a></p>
-  </div>
-
-  <div class="why-fig" id="f2box" style="--c:var(--mean)">
+  <div class="why-fig" id="fpbox" style="--c:var(--mean)">
     <h3>שינוי המראה</h3>
-    <p class="ask">כל החשבון עד כאן נמדד ממרכז הארץ. הצופה עומד על פניה.</p>
+    <p class="ask">התיקון הראשון שבפרק. כל החשבון עד כאן נמדד ממרכז הארץ — והצופה עומד על פניה.</p>
     <p class="cap">י״ז:ה–ט</p>
-    <div id="f2"></div>
+    <div id="fp"></div>
     <div class="grip">
       <label>גובה הירח מעל האופק</label>
-      <input type="range" id="r2" min="0" max="90" step="1" value="12">
-      <span class="out" id="o2">—</span>
+      <input type="range" id="rp" min="0" max="90" step="1" value="10">
+      <span class="out" id="op">—</span>
     </div>
-    <p class="note">הקו ממרכז הארץ א אל הירח, והקו ממקום עמידתו של הצופה מ אל אותו הירח, אינם מראים על מקום אחד. <b>ככל שהירח נמוך יותר, ההפרש גדול יותר</b> — ובשעת הראייה הוא נמוך מאד. הורד את הגובה עד לאופק וראה.</p>
-    <p class="note">ולשמש אין בזה כלום, שמרחקה עצום, ושני הקוים כאחד.</p>
-    <p class="src">יד פשוטה, פתיחה לפרק י״ז — תרשים 17-5 · המספר הנראה כאן הוא מן ההנדסה, לא מלשונו</p>
+    <p class="note">הקו היוצא ממרכז הארץ א אל הירח פוגע בגלגל המזלות בנקודה נ — <b>שם הירח באמת</b>. הקו היוצא ממקום עמידתו של הצופה מ פוגע בו בנקודה מ׳ — <b>שם הוא נראה</b>. הקשת שביניהן היא שינוי המראה.</p>
+    <p class="note">הורד את הגובה עד לאופק וראה: <b>ככל שהירח נמוך יותר הקשת גדולה יותר</b>. ובנכח הראש אין שינוי מראה כלל, ״לפי שהקו היוצא ממוצק הארץ והקו היוצא משטח הארץ... נופלים זה על זה״. ולשמש אין בזה כלום, שמרחקה עצום.</p>
+    <p class="note">ולמה <b>לעולם גורעין</b> ואי אפשר להוסיף בשום מזל? ״לפי שסוף קו כל״מ תמיד הוא נוטה אל האופק <b>שלא על סדר המזלות</b>״ — נמצא המקום הנראה קודם למקום האמיתי לעולם.</p>
+    <p class="src">המפרש, י״ז:ו — ציור מ״ו · יד פשוטה, פתיחה לפרק י״ז</p>
     <p class="goes"><a href="kh17-5.html">אל השיעור: שינוי המראה לאורך</a> · <a href="kh17-7.html">ולרוחב</a></p>
   </div>
 
@@ -106,8 +93,8 @@
       <input type="range" id="r3" min="-5" max="5" step="0.25" value="3">
       <span class="out" id="o3">—</span>
     </div>
-    <p class="note">לצופה העומד על קו המשווה האופק חוצה את קו המשווה בזוית ישרה, והירח יורד ישר. בירושלים, הנוטה שתים ושלשים מעלות, הוא יורד באלכסון — ולכן <b>רוחב צפוני קונה לו זמן מעל האופק, ורוחב דרומי גוזל ממנו</b>.</p>
-    <p class="note">כמה? הדבר תלוי ברוחב הגיאוגרפי, שהוא קבוע, ובזוית שבין המילקה לקו המשווה, המשתנה בין אפס לעשרים ושלש וחצי מעלות. וכיון שכל החשבון בקירוב, <b>די בערך ממוצע של שני שלישים</b>.</p>
+    <p class="note">לצופה העומד על קו המשווה האופק חוצה את קו המשווה בזוית ישרה, והירח יורד ישר. בירושלים, הנוטה ל״ב מעלות, הוא יורד באלכסון — ולכן <b>רוחב צפוני קונה לו זמן מעל האופק, ורוחב דרומי גוזל ממנו</b>.</p>
+    <p class="note">כמה? הדבר תלוי ברוחב הגיאוגרפי, שהוא קבוע, ובזוית שבין המילקה לקו המשווה, המשתנה בין אפס לכ״ג וחצי מעלות. וכיון שכל החשבון בקירוב, <b>די בערך ממוצע של שני שלישים</b>.</p>
     <p class="src">יד פשוטה, י״ז:י״ב — תרשים 17-9</p>
     <p class="goes"><a href="kh17-12.html">אל השיעור: קשת הראייה</a></p>
   </div>
@@ -136,7 +123,44 @@
     <p class="note">התשובה, שמצא ר׳ רפאל הנובר: רבינו לא בנה את הטבלאות לכל מצב, אלא <b>למצב אחד — ליל ראייה ממוצע</b>. המרחק הכפול בליל הראייה לעולם בין חמש לשתים ושישים (ט״ו:ב), ורבינו לקח את האמצע שביניהם, <b>אחת ושלשים מעלות</b>, וממנו חישב את מרחק הירח מן הארץ ואת גובהו על האופק — ועל פיו את כל טבלאותיו.</p>
     <p class="note">רי״י איידלר חישב מחדש את כל הנתונים ואישר את ההנחה: הטבלאות ערוכות ל<b>אורך ראשון של חמש עשרה וחצי מעלות</b> בשעת הראייה, שהיא שליש שעה אחרי שקיעת החמה.</p>
     <p class="src">ספר תכונת השמים סי׳ פ״ד, מובא ביד פשוטה י״ז:ה — ״וכלל זה שמור לך כי בלעדו אי אפשר לעמוד על דעת הרב ז״ל בפרטי חשבונותיו״</p>
-    <p class="goes"><a href="kh17-1.html">אל השיעור הראשון: אורך ראשון ורוחב ראשון</a></p>
+  </div>
+
+  <div class="why-fig" id="fgbox" style="--c:var(--mean)">
+    <h3>שני המעגלים</h3>
+    <p class="ask">ולמה יש כאן שני קוים ולא אחד?</p>
+    <p class="cap">י״ט:ב–ד</p>
+    <div id="fg"></div>
+    <div class="grip">
+      <label>סובב את הגלגל</label>
+      <input type="range" id="rg" min="-180" max="180" step="2" value="-32">
+      <span class="out" id="og">—</span>
+    </div>
+    <p class="note">שני מעגלים גדולים יש כאן, ואינם אותו מעגל. <b>המילקה</b> — עליו הולכים השמש והירח, ועליו נמדד האורך. <b>קו המשווה</b> — עליו סובב הרקיע כולו פעם ביום סביב הקוטב, ועליו נמדד הזמן: ט״ו מעלות לשעה, ומעלה אחת לארבע דקות.</p>
+    <p class="note">הם חותכים זה את זה בשתי נקודות ונוטים זה מזה <b>כ״ג וחצי מעלות</b>. וכיון שהאורך נמדד באחד והשקיעה נמדדת בשני, <b>אין קשת שעל זה שוה לקשת שעל זה</b> — וכל מלאכת ההלכות הבאות אינה אלא מעבר מן האחד אל השני.</p>
+    <p class="src">לשונו, י״ט:ב–ד: ״אינה עוברת באמצע העולם... אלא נוטה היא מעל קו השווה... שלש ועשרים מעלות וחצי מעלה בקירוב״ · יד פשוטה, פתיחה לפרק י״ז</p>
+  </div>
+
+  <div class="why-fig" id="f1box" style="--c:var(--mas)">
+    <h3>ארבעת האורכים, כאחד</h3>
+    <p class="ask">וזה סיכומו של הפרק: אותו מרחק עצמו, נמדד ארבע פעמים, על שני מעגלים.</p>
+    <p class="cap">י״ז:י–י״ב</p>
+    <div id="f1"></div>
+    <div class="grip">
+      <label>רוחב הירח</label>
+      <input type="range" id="r1" min="-5" max="5" step="0.25" value="3">
+      <span class="out" id="o1">—</span>
+    </div>
+    <div class="grip">
+      <label>נטיית השקיעה</label>
+      <input type="range" id="r1b" min="34" max="86" step="1" value="58">
+      <span class="out" id="o1b">—</span>
+    </div>
+    <p class="note"><b>אורך שני</b> — קשת שנ, על המילקה, אחר שגרעת את שינוי מראה האורך.</p>
+    <p class="note"><b>אורך שלישי</b> — קשת שג, ועדיין על המילקה. הירח ל נוטה מן המילקה ברוחבו; הורד ממנו קו הניצב על קו המשווה, והיכן שהוא חותך את המילקה היא ג. וקשת גנ שביניהן היא <b>מעגל הירח</b>. הזז את הרוחב מצפון לדרום וראה את ג עובר מצדו האחד של נ לצדו האחר — <b>וזהו ״יהיה הדבר הפך״</b>.</p>
+    <p class="note"><b>אורך רביעי</b> — קשת אב, <b>ועליה על קו המשווה</b>. העבר קוים מקבילים לאופק המערבי דרך ש ודרך ג; היכן שהם פוגעים בקו המשווה הן א ו־ב. ״הקשת שג שוקעת ביחד עם הקשת על קו המשווה אב, שאותה אנו מכנים האורך הרביעי״. הזז את נטיית השקיעה וראה את אב גדל וקטן כנגד שג — <b>וזו טבלת ארוכי וקצרי שקיעה</b>.</p>
+    <p class="note">ומכאן ואילך אין עוד אלא מנת גובה המדינה, והקשת בידך.</p>
+    <p class="src">יד פשוטה, י״ז:י ו־י״ז:י״ב — תרשימים 17-8 ו־17-9 · והמפרש, י״ז:י, קורא את המעגל כנטייה ממש בגלגל, שלא הכירו בה הראשונים — ושתי הקריאות עולות לצורת הטבלה אחת</p>
+    <p class="goes"><a href="kh17-10.html">אל השיעור: מעגל הירח</a> · <a href="kh17-12.html">וקשת הראייה</a></p>
   </div>
 
   <p class="note"><a href="kh17-1.html">אורך ראשון ורוחב ראשון</a> · <a href="index.html">כל השיעורים</a></p>
@@ -179,23 +203,26 @@
       'at which every table was reckoned.">' + g + "</svg>";
   }
 
-  function wire(box, fig, range, out, say) {
-    var r = document.getElementById(range), o = document.getElementById(out);
+  function wire(box, fig, ranges, out, say) {
+    var rs = ranges.map(function (id) { return document.getElementById(id); });
+    var os = out.map(function (id) { return document.getElementById(id); });
     function draw() {
-      var v = Number(r.value);
-      document.getElementById(box).innerHTML = fig(v);
-      o.textContent = say(v);
+      var vs = rs.map(function (r) { return Number(r.value); });
+      document.getElementById(box).innerHTML = fig.apply(null, vs);
+      for (var i = 0; i < os.length; i++) os[i].textContent = say[i](vs[i]);
     }
-    r.addEventListener("input", draw);
+    for (var i = 0; i < rs.length; i++) rs[i].addEventListener("input", draw);
     draw();
   }
 
   function ns(v) { return (v >= 0 ? "צפוני " : "דרומי ") + Math.abs(v).toFixed(2) + "°"; }
+  var deg = function (v) { return v + "°"; };
 
-  wire("f1", fig1, "r1", "o1", ns);
-  wire("f2", fig2, "r2", "o2", function (v) { return v + "°"; });
-  wire("f3", fig3, "r3", "o3", ns);
-  wire("f4", fig4, "r4", "o4", function (v) { return Math.round(v * 4) + " דקות"; });
+  wire("fp", figParallax, ["rp"], ["op"], [deg]);
+  wire("f3", figGovah, ["r3"], ["o3"], [ns]);
+  wire("f4", figTime, ["r4"], ["o4"], [function (v) { return Math.round(v * 4) + " דקות"; }]);
+  wire("fg", figGlobe, ["rg"], ["og"], [deg]);
+  wire("f1", figLengths, ["r1", "r1b"], ["o1", "o1b"], [ns, deg]);
   document.getElementById("f5").innerHTML = fig5();
 })();
 </script>
