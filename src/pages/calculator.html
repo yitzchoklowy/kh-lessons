@@ -1,1093 +1,230 @@
-<title>Rambam's Moon Calculation</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap">
-
+<title>כל החשבון</title>
+<!--@include partials/lesson-head.html-->
 <style>
-  :root {
-    --bg:      #e7e9ee;
-    --card:    #fbfbfd;
-    --sunk:    #eff0f4;
-    --ink:     #0f1218;
-    --muted:   #555c6b;
-    --faint:   #838b9b;
-    --line:    #d1d5de;
-    --hair:    #e2e5ec;
-    --brass:   #8a6a1f;
-    --sun:     #a8501c;
-    --moon:    #3f679d;
-    --yes:     #2f6a45;
-    --no:      #8c3a3a;
-    --slate:   #3b4655;
-    --act:     var(--brass);
-    --shadow:  0 1px 2px rgba(15,18,24,.05), 0 10px 30px -16px rgba(15,18,24,.28);
-    --serif: 'Frank Ruhl Libre', 'David', Georgia, serif;
-    --sans:  'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    --mono:  'IBM Plex Mono', ui-monospace, Menlo, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg:     #0a0c11;
-      --card:   #13161d;
-      --sunk:   #0e1116;
-      --ink:    #e7e9f0;
-      --muted:  #99a0b0;
-      --faint:  #767e8f;
-      --line:   #242a34;
-      --hair:   #1d222b;
-      --brass:  #d8b264;
-      --sun:    #e18c52;
-      --moon:   #8db2e0;
-      --yes:    #5fb083;
-      --no:     #d97a7a;
-      --slate:  #b3bdcd;
-      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.9);
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg:     #0a0c11;
-    --card:   #13161d;
-    --sunk:   #0e1116;
-    --ink:    #e7e9f0;
-    --muted:  #99a0b0;
-    --faint:  #767e8f;
-    --line:   #242a34;
-    --hair:   #1d222b;
-    --brass:  #d8b264;
-    --sun:    #e18c52;
-    --moon:   #8db2e0;
-    --yes:    #5fb083;
-    --no:     #d97a7a;
-    --slate:  #b3bdcd;
-    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.9);
-  }
+  <!--@include partials/kh17.css-->
 
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.62;
-    -webkit-font-smoothing: antialiased;
-  }
-  .page { max-width: 47rem; margin: 0 auto; padding: 1.6rem 1.1rem 4rem; }
+  /* pick a night: a civil date, a day count, or the next ליל ל׳ */
+  .pick { margin-top:1.2rem; background:var(--card); border:1px solid var(--line);
+          border-radius:11px; box-shadow:var(--shadow); padding:.9rem 1.1rem;
+          direction:rtl; display:flex; flex-wrap:wrap; align-items:center; gap:.55rem .8rem; }
+  .pick label { font-size:.85rem; color:var(--muted); display:flex; align-items:center; gap:.4rem; }
+  .pick input { font:inherit; font-family:var(--mono); font-size:.88rem; color:var(--ink);
+                background:var(--sunk); border:1px solid var(--line); border-radius:7px;
+                padding:.34rem .5rem; direction:ltr; }
+  .pick input[type="number"] { width:7.5rem; text-align:right; }
+  .pick button { font:inherit; font-size:.85rem; cursor:pointer; padding:.36rem .85rem;
+                 border-radius:7px; border:1px solid var(--line); background:var(--card);
+                 color:var(--muted); font-family:var(--serif); }
+  .pick button:hover { border-color:var(--brass); color:var(--ink); }
+  .pick .grow { margin-inline-start:auto; font-size:.82rem; color:var(--faint); }
 
-  /* ─────────── instrument bar ─────────── */
-  .bar {
-    display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
-    padding-bottom: 1rem; border-bottom: 1px solid var(--line);
-  }
-  .brand { display: flex; align-items: baseline; gap: .55rem; margin-right: auto; }
-  .brand .heb { font-family: var(--serif); font-size: 1.15rem; direction: rtl; }
-  .brand .en {
-    font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--faint); font-weight: 600;
-  }
-  .datectl { display: flex; align-items: center; gap: .3rem; }
-  .datectl input[type="date"] {
-    font: inherit; font-family: var(--mono); font-size: .85rem;
-    color: var(--ink); background: var(--card);
-    border: 1px solid var(--line); border-radius: 6px; padding: .35rem .5rem;
-    color-scheme: light dark;
-  }
-  .nudge {
-    font: inherit; font-size: .95rem; line-height: 1;
-    width: 2rem; height: 2rem; border-radius: 6px; cursor: pointer;
-    background: var(--card); border: 1px solid var(--line); color: var(--muted);
-  }
-  .nudge:hover { border-color: var(--act); color: var(--ink); }
-
-  /* ─────────── act rail ─────────── */
-  .rail { display: flex; gap: .5rem; margin: 1rem 0 1.4rem; }
-  .act { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .35rem; }
-  .act .ticks { display: flex; gap: 2px; }
-  .act .ticks span {
-    flex: 1; height: 4px; border-radius: 1px; background: var(--line);
-    cursor: pointer; transition: background .18s ease;
-  }
-  .act .ticks span:hover { background: var(--muted); }
-  .act .ticks span.seen { background: color-mix(in srgb, var(--c) 40%, var(--line)); }
-  .act .ticks span.here { background: var(--c); }
-  .act .cap {
-    font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .act.on .cap { color: var(--c); font-weight: 600; }
-  .act[data-c="sun"]  { --c: var(--sun); }
-  .act[data-c="moon"] { --c: var(--moon); }
-  .act[data-c="see"]  { --c: var(--brass); }
-  .act[data-c="base"] { --c: var(--slate); }
-  @media (max-width: 620px) { .act .cap { font-size: .58rem; letter-spacing: .05em; } }
-
-  /* ─────────── the one card ─────────── */
-  .card {
-    background: var(--card); border: 1px solid var(--line);
-    border-radius: 12px; box-shadow: var(--shadow);
-    padding: 1.7rem 1.6rem 1.8rem;
-    display: flex; flex-direction: column; gap: 1.15rem;
-  }
-  .card[data-act="sun"]  { --act: var(--sun); }
-  .card[data-act="moon"] { --act: var(--moon); }
-  .card[data-act="see"]  { --act: var(--brass); }
-  .card[data-act="base"] { --act: var(--slate); }
-  @media (max-width: 560px) { .card { padding: 1.25rem 1.1rem 1.4rem; } }
-
-  .eyebrow {
-    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-    font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
-  }
-  .eyebrow .where { color: var(--act); }
-  .eyebrow .idx { color: var(--faint); font-family: var(--mono); letter-spacing: .06em; }
-
-  h1 {
-    font-family: var(--serif); font-weight: 700; font-size: 1.75rem;
-    line-height: 1.22; letter-spacing: -.005em; margin: -.5rem 0 0;
-    text-wrap: balance;
-  }
-  @media (max-width: 560px) { h1 { font-size: 1.45rem; } }
-
-  .names { display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap; margin-top: -.5rem; }
-  .names .heb {
-    font-family: var(--serif); direction: rtl; font-size: 1.3rem; color: var(--ink);
-  }
-  .names .tl { font-size: .85rem; color: var(--faint); font-style: italic; }
-  .names .en { font-size: .85rem; color: var(--muted); }
-
-  /* ─────────── readout ─────────── */
-  .readout {
-    display: flex; align-items: center; gap: 1.4rem;
-    background: var(--sunk); border: 1px solid var(--hair);
-    border-radius: 10px; padding: 1.1rem 1.2rem;
-  }
-  @media (max-width: 560px) { .readout { flex-direction: column; align-items: stretch; gap: 1rem; } }
-  .readout .figure { flex: none; }
-  .readout .values { min-width: 0; display: flex; flex-direction: column; gap: .15rem; }
-  .value {
-    font-family: var(--mono); font-weight: 500; font-size: 1.6rem;
-    line-height: 1.15; color: var(--act); font-variant-numeric: tabular-nums;
-    word-break: break-word;
-  }
-  @media (max-width: 560px) { .value { font-size: 1.35rem; } }
-  .value.word { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; }
-  .subvalue { font-family: var(--mono); font-size: .8rem; color: var(--faint); }
-  .caption { font-size: .82rem; color: var(--muted); }
-  .caption b { color: var(--ink); font-weight: 600; }
-
-  .verdict {
-    display: inline-flex; align-items: center; gap: .5rem;
-    font-family: var(--serif); font-size: 1.5rem; font-weight: 700;
-  }
-  .verdict.yes { color: var(--yes); }
-  .verdict.no  { color: var(--no); }
-
-  /* ─────────── prose ─────────── */
-  .plain { margin: 0; font-size: 1.03rem; color: var(--ink); }
-  .plain + .plain { margin-top: -.4rem; }
-  .plain em { color: var(--muted); }
-
-  details {
-    border-top: 1px solid var(--hair); padding-top: .8rem;
-  }
-  details + details { margin-top: -.6rem; }
-  summary {
-    cursor: pointer; list-style: none; font-size: .8rem; font-weight: 600;
-    letter-spacing: .06em; text-transform: uppercase; color: var(--act);
-  }
-  summary::-webkit-details-marker { display: none; }
-  summary::before { content: "＋ "; font-family: var(--mono); font-weight: 400; }
-  details[open] summary::before { content: "－ "; }
-  details .body { padding-top: .6rem; font-size: .93rem; color: var(--muted); }
-  details .body p { margin: 0 0 .6rem; }
-  details .body p:last-child { margin-bottom: 0; }
-  .formula {
-    font-family: var(--mono); font-size: .82rem; color: var(--ink);
-    background: var(--sunk); border: 1px solid var(--hair); border-radius: 6px;
-    padding: .55rem .7rem; margin-bottom: .7rem; overflow-x: auto; white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .attrib { font-size: .78rem; color: var(--faint); font-style: italic; }
-
-  /* chain-so-far table */
-  table.chain { width: 100%; border-collapse: collapse; font-size: .85rem; }
-  table.chain td { padding: .3rem 0; border-bottom: 1px solid var(--hair); vertical-align: baseline; }
-  table.chain tr:last-child td { border-bottom: 0; }
-  table.chain td.n { width: 2rem; color: var(--faint); font-family: var(--mono); font-size: .78rem; }
-  table.chain td.l { color: var(--muted); }
-  table.chain td.v {
-    text-align: right; font-family: var(--mono); color: var(--ink);
-    font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: .6rem;
-  }
-  table.chain tr.jump { cursor: pointer; }
-  table.chain tr.jump:hover td { color: var(--act); }
-
-  .ref a { color: var(--act); font-size: .82rem; font-family: var(--mono); }
-
-  /* ─────────── mode switch + night bar ─────────── */
-  .modes { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
-  .mode {
-    font: inherit; font-size: .78rem; font-weight: 500; cursor: pointer;
-    background: transparent; border: 0; color: var(--muted); padding: .35rem .7rem;
-  }
-  .mode + .mode { border-left: 1px solid var(--line); }
-  .mode.on { background: var(--act); color: var(--card); font-weight: 600; }
-
-  .nightbar {
-    display: flex; align-items: center; gap: .6rem;
-    margin-top: .9rem; padding: .55rem .6rem;
-    background: var(--card); border: 1px solid var(--line); border-radius: 9px;
-  }
-  .nightbar .mid { flex: 1; min-width: 0; text-align: center; }
-  .nightbar .big {
-    font-family: var(--serif); font-size: 1.02rem; font-weight: 500; color: var(--ink);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .nightbar .big .heb { font-size: 1.1rem; }
-  .nightbar .small { font-size: .74rem; color: var(--faint); font-family: var(--mono); }
-  .nightbar .datectl { justify-content: center; }
-
-  /* ─────────── the ledger ─────────── */
-  .work { display: flex; flex-direction: column; gap: .5rem; }
-  .work h2 {
-    margin: 0; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
-    font-weight: 600; color: var(--faint);
-  }
-  table.ledger { width: 100%; border-collapse: collapse; font-size: .87rem; }
-  table.ledger td { padding: .26rem .3rem; vertical-align: baseline; }
-  table.ledger td.op {
-    width: 1.1rem; text-align: center; color: var(--faint);
-    font-family: var(--mono); font-size: .95rem;
-  }
-  table.ledger td.l { color: var(--muted); }
-  table.ledger td.v {
-    text-align: right; font-family: var(--mono); color: var(--ink);
-    font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: .5rem;
-  }
-  table.ledger tr.rule td { padding: 0; border-top: 1px solid var(--line); height: .3rem; }
-  table.ledger tr.total td.v { color: var(--act); font-weight: 500; }
-  table.ledger tr.total td.l { color: var(--ink); }
-  table.ledger .sub {
-    display: block; font-size: .74rem; color: var(--faint); line-height: 1.45;
-    padding-top: .05rem;
-  }
-  table.ledger tr.ref { cursor: pointer; }
-  table.ledger tr.ref td.l { text-decoration: underline; text-decoration-color: var(--hair); }
-  table.ledger tr.ref:hover td.l { color: var(--act); text-decoration-color: var(--act); }
-  @media (max-width: 560px) { table.ledger td.v { white-space: normal; } }
-
-  .daybox {
-    display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
-    font-size: .84rem; color: var(--muted);
-  }
-  .daybox input {
-    font: inherit; font-family: var(--mono); font-size: .84rem; width: 8rem;
-    color: var(--ink); background: var(--sunk);
-    border: 1px solid var(--line); border-radius: 6px; padding: .3rem .5rem;
-  }
-
-  .consequence {
-    border-left: 2px solid var(--act); padding: .1rem 0 .1rem .8rem;
-    font-size: .95rem; color: var(--muted);
-  }
-  .consequence b { color: var(--ink); font-weight: 600; }
-  .offnight {
-    background: var(--sunk); border: 1px solid var(--hair); border-radius: 8px;
-    padding: .7rem .85rem; font-size: .88rem; color: var(--muted);
-  }
-  .offnight button {
-    font: inherit; font-size: .84rem; font-weight: 600; cursor: pointer;
-    background: none; border: 0; color: var(--act); padding: 0; text-decoration: underline;
-  }
-
-  /* ─────────── controls ─────────── */
-  .controls { display: flex; align-items: stretch; gap: .7rem; margin-top: 1.1rem; }
-  .step-btn {
-    font: inherit; text-align: left; cursor: pointer;
-    background: var(--card); border: 1px solid var(--line); border-radius: 9px;
-    padding: .6rem .9rem; color: var(--ink); min-width: 0; flex: 1;
-    display: flex; flex-direction: column; gap: .05rem;
-    transition: border-color .15s ease;
-  }
-  .step-btn:hover:not(:disabled) { border-color: var(--act); }
-  .step-btn:disabled { opacity: .35; cursor: default; }
-  .step-btn .dir {
-    font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--faint);
-  }
-  .step-btn .lbl {
-    font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .step-btn.fwd { text-align: right; align-items: flex-end; }
-  .step-btn.fwd { border-color: var(--act); }
-  .step-btn.fwd .lbl { color: var(--act); font-weight: 600; }
-
-  .note {
-    margin-top: 1.4rem; padding-top: 1rem; border-top: 1px solid var(--line);
-    font-size: .82rem; color: var(--faint);
-  }
-  .note a { color: var(--brass); }
-  a { color: var(--act); }
-  :focus-visible { outline: 2px solid var(--act); outline-offset: 2px; border-radius: 5px; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  /* the ledger runs the whole way, so let it breathe and mark its chapters */
+  table.led tr.head td { padding-top:1rem; }
+  table.led tr.head td.l { color:var(--c); font-weight:700; font-family:var(--serif);
+                           font-size:1rem; border-top:1px solid var(--line); padding-top:.7rem; }
+  table.led tr.head td.a, table.led tr.head td.t { border-top:1px solid var(--line); }
+  table.led td.l a { color:inherit; text-decoration:none; border-bottom:1px dotted var(--faint); }
+  table.led td.l a:hover { color:var(--brass); border-bottom-color:var(--brass); }
 </style>
 
-<div class="page">
+<div class="page solo" data-emph="gap">
 
-  <div class="bar">
-    <div class="brand">
-      <span class="heb">קידוש החודש</span>
-      <span class="en">Rambam · KH 11–17</span>
-    </div>
-    <div class="modes">
-      <button class="mode on" id="m-lil" type="button">ליל ל׳</button>
-      <button class="mode" id="m-any" type="button">Any date</button>
-    </div>
+  <header>
+    <h1 class="bigtitle">כל החשבון</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/17" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״א–י״ז</a></div>
+    <p class="halacha lead">ועל דרך זו תעשה, ותדע קשת הראייה כמה מעלות וכמה חלקים יש בה <b class="mean">בכל ליל ראייה שתרצה לעולם</b>:</p>
+  </header>
+
+  <div class="pick">
+    <label>ליל <input type="date" id="date"></label>
+    <label>מן העיקר <input type="number" id="dayn" step="1"> ימים</label>
+    <button type="button" id="lil">ליל ל׳ הקרוב</button>
+    <button type="button" id="his">לילו של הרמב״ם</button>
+    <span class="grow" id="stamp">—</span>
   </div>
 
-  <div class="nightbar" id="nightbar">
-    <button class="nudge" id="prevstep" title="Previous" aria-label="Previous">‹</button>
-    <div class="mid">
-      <div class="big" id="night-big"></div>
-      <div class="small" id="night-small"></div>
-      <div class="datectl" id="ctl-any" hidden>
-        <input type="date" id="date" aria-label="Date to calculate">
+  <div class="verdict" id="verdict" style="--c:var(--mean)"></div>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="book m" id="work">
+        <h3><i></i>מן העיקר עד קשת הראייה</h3>
+        <p class="cap">י״ב–י״ז · כל שורה קשורה לשיעור שלה</p>
+        <table class="led"><tbody id="led"></tbody></table>
+      </div>
+      <div class="book s" id="figs">
+        <h3><i></i>מה שרואים במערב</h3>
+        <div id="sky"></div>
+        <div id="chain"></div>
       </div>
     </div>
-    <button class="nudge" id="nextstep" title="Next" aria-label="Next">›</button>
+    <!--@include partials/wheel.html-->
   </div>
 
-  <div class="rail" id="rail"></div>
-
-  <div class="card" id="card"></div>
-
-  <div class="controls">
-    <button class="step-btn back" id="back">
-      <span class="dir">← Back</span>
-      <span class="lbl" id="back-lbl"></span>
-    </button>
-    <button class="step-btn fwd" id="fwd">
-      <span class="dir">Next →</span>
-      <span class="lbl" id="fwd-lbl"></span>
-    </button>
-  </div>
-
-  <p class="note">
-    Every number here is computed on this page by the project's own engine
-    (<a href="https://github.com/rayistern/kidushhachodesh">MIT</a>), bundled verbatim from
-    <a href="https://www.shluchimexchange.ai/kh/engine/index.json">shluchimexchange.ai/kh/engine</a>
-    and checked step-for-step against its live API.
-    ליל ל׳ is located the Rambam's own way: day 1 of a month is the first evening
-    after the molad on which this calculation says the crescent showed, and the
-    thirtieth night falls 29 days later. A real court took day 1 from witnesses.
-    The four galgalim behind all of this are drawn, chapter by chapter,
-    <a href="https://claude.ai/code/artifact/539aa874-2717-407d-a419-3481c5de114b">here</a>.
-    These are the 26 astronomical steps;
-    the separate fixed-calendar chain (molad / BaHaRaD, KH 6–10) lives on the
-    <a href="https://www.shluchimexchange.ai/kh">full dashboard</a>.
-    Teaching notes in the Rabbi Losh tradition, via Rabbi Zajac's classes —
-    credit him and <a href="https://www.chabad.org">Chabad.org</a> when quoting.
-  </p>
+  <p class="note"><a href="kh17-22.html">כיצד — ייראה הלילה</a> · <a href="index.html">כל השיעורים</a></p>
 </div>
 
 <!--ENGINE-->
-
 <!--WORKING-->
 
 <script>
 (function () {
   "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/wheel.js-->
 
-  // ── plain-language layer: one entry per engine step, in pipeline order ──
-  var ACTS = [
-    { key: "base", name: "Starting point", c: "base" },
-    { key: "sun",  name: "Where's the sun", c: "sun" },
-    { key: "moon", name: "Where's the moon", c: "moon" },
-    { key: "see",  name: "Can you see it", c: "see" }
-  ];
+  var HIS_DAY = 29;
+  var EPOCH = Date.UTC(1178, 2, 30);
 
-  var GUIDE = {
-    daysFromEpoch: {
-      act: "base", viz: "none",
-      ask: "How many days since the Rambam's starting line?",
-      tl: "yamim mi'techilas haminyan",
-      plain: ["The Rambam picks one fixed night — 3 Nisan 4938 — writes down exactly where the sun and moon stood, and then says: count whole days from then to now.",
-              "Every position that follows is that starting position plus this many days of motion. Get this number wrong and everything downstream is wrong."],
-      cap: "days since 3 Nisan 4938 (30 March 1178)"
-    },
-    sunDailyMotion: {
-      act: "sun", viz: "none",
-      ask: "How far does the sun move in a day?",
-      tl: "mahalach emtza haShemesh l'yom",
-      plain: ["A fixed number you're given: 59 minutes and 8⅓ seconds of arc a day — a hair under one degree. Nothing to compute yet.",
-              "Multiply it by the day count and you have how far the sun has travelled since the starting line."],
-      cap: "degrees per day — 0° 59′ 8⅓″"
-    },
-    sunMeanLongitude: {
-      act: "sun", viz: "pos",
-      ask: "Where would the sun be if it moved perfectly evenly?",
-      tl: "emtza haShemesh",
-      plain: ["Starting position, plus daily motion times days, wrapped around the 360° circle of mazalos.",
-              "This is the <em>emtzoi</em> — the average sun. It is not where you would point in the sky. It's the bookkeeping sun, and the next four steps exist to turn it into the real one."],
-      cap: "around the circle of mazalos, measured from the start of Aries"
-    },
-    sunApogee: {
-      act: "sun", viz: "pos",
-      ask: "Where is the sun's far point right now?",
-      tl: "govah haShemesh",
-      plain: ["The sun's circle isn't centred on us, so there's one point where it is furthest away — the <em>govah</em>.",
-              "It creeps about one degree every seventy years: nearly still, but not still. You need it because the next step measures the sun's distance from it."],
-      cap: "the far point of the sun's circle"
-    },
-    sunMaslul: {
-      act: "sun", viz: "arc",
-      ask: "How far past the far point has the sun gone?",
-      tl: "maslul haShemesh",
-      plain: ["Just a subtraction: average position minus far point.",
-              "This one angle decides the whole size of the correction. At 0° and at 180° there is no correction at all. Around 90° it is at its biggest."],
-      cap: "the sun's course, measured from its far point"
-    },
-    sunMaslulCorrection: {
-      act: "sun", viz: "small2",
-      ask: "How wrong is the average sun?",
-      tl: "mnas hamaslul",
-      plain: ["Look the course up in the Rambam's table (KH 13:4) and read off the correction, interpolating between the table's entries.",
-              "Under 180° you subtract it; over 180° you add it. It never exceeds about two degrees."],
-      cap: "degrees to add or subtract — never more than ~2°"
-    },
-    sunTrueLongitude: {
-      act: "sun", viz: "pos",
-      ask: "So where is the sun actually?",
-      tl: "haShemesh ha'amiti",
-      plain: ["Average sun, plus or minus the correction. This is the <em>amiti</em> — the sun you would really point at.",
-              "The sun is now finished. Everything about the moon leans on this number, and so does the visibility test at the end."],
-      cap: "the sun's true place in the mazalos"
-    },
-    moonMeanLongitude: {
-      act: "moon", viz: "pos",
-      ask: "Where would the moon be if it moved evenly?",
-      tl: "emtza haYareach",
-      plain: ["The same move as the sun, with the moon's own numbers: about 13° 10′ 35″ a day, thirteen times faster.",
-              "Starting position plus days of motion. Again — this is the average moon, not the real one."],
-      cap: "the average moon, around the same circle"
-    },
-    moonSeasonCorrection: {
-      act: "moon", viz: "small1",
-      ask: "A small nudge for the time of year.",
-      tl: "tikkun hatekufah",
-      plain: ["All of this is reckoned for one moment: sunset in Jerusalem. But sunset drifts through the year.",
-              "So depending on where the sun currently sits in the mazalos, the Rambam has you add nothing, a quarter degree, or half a degree to the moon's average position (KH 14:5)."],
-      cap: "0°, 0° 15′ or 0° 30′, depending on the season"
-    },
-    moonMaslul: {
-      act: "moon", viz: "arc",
-      ask: "Where is the moon on its own small circle?",
-      tl: "maslul haYareach",
-      plain: ["The moon rides a small circle — the <em>galgal katan</em> — which is itself being carried around the big one.",
-              "This angle says where on that small circle it currently is. That's what makes the real moon run ahead of its average some weeks and behind it others."],
-      cap: "the moon's course on the galgal katan"
-    },
-    doubleElongation: {
-      act: "moon", viz: "arc",
-      ask: "How far is the moon from the sun — doubled?",
-      tl: "merchak kaful",
-      plain: ["Take the gap between the average moon and the average sun, and double it.",
-              "The doubling isn't decorative. The moon's small circle gets pulled around by the sun, and it turns out to be twice the gap that measures the pull."],
-      cap: "twice the moon-sun gap (KH 15:1-2)"
-    },
-    maslulHanachon: {
-      act: "moon", viz: "arc",
-      ask: "Fix the small-circle angle before you use it.",
-      tl: "hamaslul hanachon",
-      plain: ["That doubled distance buys you a small addition or subtraction to the moon's course — up to about 5° (KH 15:3).",
-              "The corrected course is what actually goes into the table on the next screen. The raw one would give you the wrong answer."],
-      cap: "the corrected course — what the table is read with"
-    },
-    moonMaslulCorrection: {
-      act: "moon", viz: "small6",
-      ask: "How wrong is the average moon?",
-      tl: "mnas hamaslul shel haYareach",
-      plain: ["Same move as the sun, different table (KH 15:4-6): look up the corrected course, interpolate, and get the amount to add or subtract.",
-              "Under 180° subtract, over 180° add. The moon's correction reaches about 5° — more than twice the sun's."],
-      cap: "degrees to add or subtract — up to ~5°"
-    },
-    moonTrueLongitude: {
-      act: "moon", viz: "pos",
-      ask: "So where is the moon actually?",
-      tl: "haYareach ha'amiti",
-      plain: ["Average moon, nudged for the season, plus or minus the table correction.",
-              "This is the moon you would point at — its real place along the belt of mazalos. Halfway home."],
-      cap: "the moon's true place in the mazalos"
-    },
-    nodePosition: {
-      act: "moon", viz: "pos",
-      ask: "Where does the moon's path cross the sun's?",
-      tl: "rosh (ha'tli)",
-      plain: ["The moon doesn't travel along the sun's path — it's tilted about five degrees to it. So the two paths cross at two points: the <em>rosh</em>, the head, and opposite it the <em>zanav</em>, the tail.",
-              "The crossing point slides <em>backwards</em> about 3′ 11″ a day. That slow slide is why eclipses don't happen every month."],
-      cap: "the ascending crossing point — moves backwards"
-    },
-    moonLatitude: {
-      act: "moon", viz: "lat",
-      ask: "How far off the path is the moon — north or south?",
-      tl: "rochav haYareach",
-      plain: ["From the distance between the moon and the <em>rosh</em> you get how far above or below the sun's path it currently sits. Never more than about five degrees.",
-              "This matters at the very end: a moon riding high to the north stands higher above the horizon at sunset, and is easier to catch."],
-      cap: "north (+) or south (−) of the sun's path"
-    },
-    elongation: {
-      act: "see", viz: "arc",
-      ask: "How far ahead of the sun is the moon?",
-      tl: "orech rishon",
-      plain: ["True moon minus true sun. The first real question of the visibility chapter.",
-              "If this gap is small the moon sets right behind the sun and drowns in its glare. It also tells you the phase, which is the next screen."],
-      cap: "the first longitude — the plain moon-sun gap"
-    },
-    moonPhase: {
-      act: "see", viz: "none",
-      ask: "What does it look like tonight?",
-      tl: "mofa haYareach",
-      plain: ["Read straight off that gap. These names are modern; the Rambam never names the phases.",
-              "He is after one moment only — the first thin crescent after the conjunction, the one a witness could come to court and testify to."],
-      cap: "from the moon-sun gap"
-    },
-    orechSheni: {
-      act: "see", viz: "arc",
-      ask: "You're not standing at the centre of the earth.",
-      tl: "orech sheni",
-      plain: ["Every position so far has been reckoned from the centre of the earth. You are on its surface, thousands of miles off-centre, so the moon appears shifted from where the numbers put it.",
-              "KH 17:5 gives the shift along the belt of mazalos. Subtract it."],
-      cap: "the gap again, corrected for where you stand"
-    },
-    rochavSheni: {
-      act: "see", viz: "lat",
-      ask: "The same correction, sideways.",
-      tl: "rochav sheni",
-      plain: ["The identical standing-on-the-surface shift, applied to the north-south figure instead of the along-the-belt one.",
-              "How much depends on which mazal the moon is in — the Rambam just tells you the number for each (KH 17:7-9)."],
-      cap: "north-south, corrected for where you stand"
-    },
-    orechShlishi: {
-      act: "see", viz: "arc",
-      ask: "Fold the north-south figure into the gap.",
-      tl: "orech shlishi",
-      plain: ["A moon sitting off the path doesn't turn its whole gap from the sun into usable separation.",
-              "KH 17:10-11 gives the fraction — the <em>ma'agal hayareach</em> — to add or drop for that."],
-      cap: "the gap, after the ma'agal hayareach"
-    },
-    orechRevii: {
-      act: "see", viz: "arc",
-      ask: "How steeply does this mazal set?",
-      tl: "orech revii",
-      plain: ["Some mazalos come down to the horizon standing nearly upright; others lie down at a slant.",
-              "The same gap between sun and moon buys you far more height above the horizon in a steeply-setting sign than in a slanted one — so the gap gets stretched or squeezed accordingly (KH 17:12)."],
-      cap: "the gap, adjusted for how the mazal sets"
-    },
-    mnatGovahHaMedinah: {
-      act: "see", viz: "small6",
-      ask: "Credit for how high the moon rides.",
-      tl: "mnas govah hamedinah",
-      plain: ["A moon well to the north of the sun's path sits higher in the sky at sunset, and every bit of height helps you catch it.",
-              "So the Rambam hands back a bonus for it. This one is always added, never subtracted."],
-      cap: "the height bonus — always added"
-    },
-    keshetHaReiyah: {
-      act: "see", viz: "keshet",
-      ask: "The arc of vision — the number it all comes down to.",
-      tl: "keshes hare'iyah",
-      plain: ["Every correction so far collapses into this one arc.",
-              "Nine degrees or less: <b>not seen</b>, full stop. More than fourteen: <b>seen</b>, full stop. Anything between the two, and you go to the Rambam's table in KH 17:16-21, which sets a different threshold for each stretch of the zodiac."],
-      cap: "the arc of vision"
-    },
-    moonVisibility: {
-      act: "see", viz: "verdict",
-      ask: "So — could the new moon be seen tonight?",
-      tl: "re'iyas haYareach",
-      plain: ["This is what the whole chapter was for, and the court only ever asks it on one night: ליל ל׳, the night that opens the thirtieth day. On any other night there is nothing to decide."],
-      cap: ""
-    },
-    seasonalInfo: {
-      act: "see", viz: "none",
-      ask: "And where are we in the year?",
-      tl: "tekufah",
-      plain: ["The season, on the Rambam's own reckoning, and how many days until it turns."],
-      cap: "KH 9:3"
+  function link(href, text) { return '<a href="' + href + '">' + text + "</a>"; }
+  function civil(n) {
+    return new Date(EPOCH + n * 86400000)
+      .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  }
+
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function head(name, mark) { return { l: name, s: mark, a: "", t: "", head: true }; }
+
+  function rows(n) {
+    var s = chapter15At(n), v = chapter17At(n), r = v.setRow;
+    var out = [];
+
+    out.push(head("מקום השמש האמיתי", "פרק י״ב–י״ג"));
+    out.push({ l: link("kh12-sun-mean.html", "אמצע השמש"), s: "י״ב:א", a: "", t: degMin(s.sunMean) });
+    out.push({ l: link("kh12-govah.html", "גובה השמש"), s: "י״ב:ב", a: "", t: degMin(s.sunApogee), drop: true });
+    out.push({ l: "מסלול השמש", s: "י״ג:א", a: "", t: degMin(s.sunMaslul), drop: true });
+    out.push({ l: "מנת המסלול", s: "י״ג:ד", a: (s.sunAdds ? "+ " : "− ") + degMin(s.sunMnat),
+               t: degMin(s.sunTrue) });
+    out.push({ l: "מקום השמש האמיתי", s: zodiacPosition(s.sunTrue).hebrew, a: "", t: degMin(s.sunTrue), out: true });
+
+    out.push(head("מקום הירח האמיתי", "פרק י״ד–ט״ו"));
+    out.push({ l: link("kh14-2.html", "אמצע הירח"), s: "י״ד:א–ב", a: "", t: degMin(s.moonMean) });
+    out.push({ l: link("kh14-sun.html", "לשעת הראייה"), s: "י״ד:ה–ו",
+               a: (s.season >= 0 ? "+ " : "− ") + Math.abs(Math.round(s.season * 60)) + "′",
+               t: degMin(s.moonSight) });
+    out.push({ l: link("kh14-3.html", "אמצע המסלול"), s: "י״ד:ג–ד", a: "", t: degMin(s.maslul), drop: true });
+    out.push({ l: link("kh15-1.html", "מרחק הכפול"), s: "ט״ו:א", a: "× 2", t: degMin(s.kaful), drop: true });
+    out.push({ l: link("kh15-3.html", "המסלול הנכון"), s: "ט״ו:ג", a: "+ " + s.add + "°", t: degMin(s.nachon) });
+    out.push({ l: link("kh15-6.html", "מנת המסלול"), s: "ט״ו:ו · ב־" + s.asked + "°",
+               a: (s.dir === "subtract" ? "− " : "+ ") + degMin(s.mnat), t: degMin(s.amiti) });
+    out.push({ l: "מקום הירח האמיתי", s: moonPlace(s.amiti), a: "", t: degMin(s.amiti), out: true });
+
+    out.push(head("רוחב הירח", "פרק ט״ז"));
+    out.push({ l: link("kh16-2.html", "מקום הראש"), s: "ט״ז:ב–ה", a: "", t: degMin(v.rosh), drop: true });
+    out.push({ l: link("kh16-9.html", "רוחב ראשון"), s: v.north ? "צפוני" : "דרומי", a: "",
+               t: degMin(v.rochav1), out: true });
+
+    out.push(head("חשבונות הראייה", "פרק י״ז"));
+    out.push({ l: link("kh17-1.html", "אורך ראשון"), s: "י״ז:א", a: "− " + degMin(s.sunTrue),
+               t: degMin(v.orech1) });
+    /* Past a hundred and eighty the moon is not ahead of the sun by a small arc,
+       and this is no ליל ראייה: his חשבונות take a first crescent. Say so, and
+       print nothing that would not mean anything. */
+    if (v.orech1 > 180) {
+      out.push({ l: "אין כאן ליל ראייה — הירח עדיין אחר השמש", s: "י״ז:א",
+                 a: "", t: "—", out: true });
+      return { rows: out, v: v, live: false };
     }
-  };
-
-  var SHORT = {
-    daysFromEpoch: "Days from the epoch",
-    sunDailyMotion: "Sun's daily motion",
-    sunMeanLongitude: "Average sun",
-    sunApogee: "Sun's far point",
-    sunMaslul: "Sun's course",
-    sunMaslulCorrection: "Sun's correction",
-    sunTrueLongitude: "True sun",
-    moonMeanLongitude: "Average moon",
-    moonSeasonCorrection: "Season nudge",
-    moonMaslul: "Moon's course",
-    doubleElongation: "Double distance",
-    maslulHanachon: "Corrected course",
-    moonMaslulCorrection: "Moon's correction",
-    moonTrueLongitude: "True moon",
-    nodePosition: "The rosh",
-    moonLatitude: "Moon's latitude",
-    elongation: "Moon-sun gap",
-    moonPhase: "Phase",
-    orechSheni: "Gap, from the surface",
-    rochavSheni: "Latitude, from the surface",
-    orechShlishi: "Gap, after the circle",
-    orechRevii: "Gap, after the setting angle",
-    mnatGovahHaMedinah: "Height bonus",
-    keshetHaReiyah: "Arc of vision",
-    moonVisibility: "Verdict",
-    seasonalInfo: "Season"
-  };
-
-  // ── state ──
-  var calc = null, i = 0, order = [], mode = "lil", monthIdx = 0;
-  var MOLAD = khWorking.molad;
-  var EPOCH_UTC_MS = Date.UTC(1178, 2, 30);
-
-  function dateFromDays(n) { return new Date(EPOCH_UTC_MS + n * 86400000); }
-  function daysFromDate(d) { return Math.round((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - EPOCH_UTC_MS) / 86400000); }
-  function longDate(d) {
-    return d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+    out.push({ l: link("kh17-5.html", "שינוי מראה האורך"), s: "י״ז:ה · " + v.mazal.hebrew,
+               a: "− " + chal(v.lonChalakim), t: degMin(v.orech2) });
+    out.push({ l: link("kh17-7.html", "שינוי מראה הרוחב"), s: "י״ז:ח · " + (v.north ? "תגרע" : "תוסיף"),
+               a: (v.north ? "− " : "+ ") + v.latChalakim + "′", t: degMin(v.rochav2) });
+    out.push({ l: link("kh17-10.html", v.band.fraction === 0 ? "אין נליזת מעגל" : "מעגל הירח — " + v.band.phrase),
+               s: "י״ז:י", a: "", t: degMin(v.maagal), drop: true });
+    out.push({ l: v.maagalAdds ? "תוסיף המעגל" : "תגרע המעגל", s: "י״ז:י״א",
+               a: (v.maagalAdds ? "+ " : "− ") + degMin(v.maagal), t: degMin(v.orech3) });
+    out.push({ l: link("kh17-12.html", r.operation === "none" ? "תניח כמות שהוא" : fracWord(r)),
+               s: "י״ז:י״ב · " + v.mazal.hebrew,
+               a: r.operation === "none" ? "0′"
+                  : (r.operation === "add" ? "+ " : "− ") + degMin(Math.abs(v.orech4 - v.orech3)),
+               t: degMin(v.orech4) });
+    out.push({ l: "מנת גובה המדינה", s: "שני שלישי הרוחב הראשון", a: "× ⅔", t: degMin(v.gov), drop: true });
+    out.push({ l: v.north ? "תוסיף על האורך הרביעי" : "תגרע מן האורך הרביעי", s: "י״ז:י״ב",
+               a: (v.north ? "+ " : "− ") + degMin(v.gov), t: degMin(v.keshet) });
+    out.push({ l: link("kh17-15.html", "קשת הראייה"),
+               s: Math.round(v.keshet * 4) + " דקות מן השקיעה עד שישקע הירח",
+               a: "", t: degMin(v.keshet), out: true });
+    return { rows: out, v: v, live: true };
   }
-  /* The night that opens Hebrew day N falls on the evening of the civil
-     day before it — the Hebrew day starts at nightfall. */
-  function eveningOf(dayCount) { return dateFromDays(dayCount - 1); }
 
-  function elapsedPhrase(d) {
-    var y = d.getUTCFullYear() - 1178, m = d.getUTCMonth() - 2, day = d.getUTCDate() - 30;
-    if (day < 0) {
-      m -= 1;
-      day += new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 0)).getUTCDate();
+  /* paint() knows nothing of chapter headings; give them their own class */
+  function paintAll(tbody, list) {
+    var h = "";
+    for (var i = 0; i < list.length; i++) {
+      var r = list[i];
+      var cls = r.head ? "head" : r.out ? "out" : r.drop ? "drop" : "";
+      h += "<tr" + (cls ? ' class="' + cls + '"' : "") + '><td class="l">' + r.l +
+           (r.s ? "<small>" + r.s + "</small>" : "") + '</td><td class="a">' + r.a +
+           '</td><td class="t">' + r.t + "</td></tr>";
     }
-    if (m < 0) { m += 12; y -= 1; }
-    return y + " years, " + m + " month" + (m === 1 ? "" : "s") + ", " + day + " day" + (day === 1 ? "" : "s");
+    tbody.innerHTML = h;
   }
 
-  function blocksPhrase(days) {
-    var dc = decomposeDays(days), out = [];
-    if (dc.k) out.push(dc.k + " × 10,000");
-    if (dc.j) out.push(dc.j + " × 1,000");
-    if (dc.i) out.push(dc.i + " × 100");
-    if (dc.h) out.push(dc.h + " × 10");
-    if (dc.d) out.push(dc.d + " × 1");
-    return out.join("  +  ");
+  function show(n) {
+    var got = rows(n), v = got.v, d = v.verdict;
+    paintAll(document.getElementById("led"), got.rows);
+    document.getElementById("verdict").innerHTML =
+      "<h3>ליל " + civil(n) + " — " + n.toLocaleString() + " ימים מן העיקר</h3>" +
+      '<span class="say ' + (d.seen ? "yes" : "no") + '">' + (d.seen ? "ודאי ייראה" : "אינו נראה") +
+      '</span><span class="mark">' + d.mark + "</span>" +
+      '<span class="why">' + d.says + "</span>";
+    document.getElementById("figs").hidden = !got.live;
+    if (got.live) { markSky(v); markChain(v, "keshet"); }
+    var iso = new Date(EPOCH + n * 86400000).toISOString().slice(0, 10);
+    var dt = document.getElementById("date");
+    if (document.activeElement !== dt) dt.value = iso;
+    var dn = document.getElementById("dayn");
+    if (document.activeElement !== dn) dn.value = n;
+    document.getElementById("stamp").textContent =
+      got.live ? "קשת הראייה " + degMin(v.keshet) + " · אורך ראשון " + degMin(v.orech1)
+               : "אורך ראשון " + degMin(v.orech1);
   }
 
-  /* Which month's ליל ל׳ is this day, if any? */
-  function lilIndexFor(days) {
-    var near = MOLAD.indexNear(days);
-    for (var k = near - 2; k <= near + 2; k++) if (MOLAD.lilShloshim(k) === days) return k;
-    return null;
-  }
-  function nearestLilIndex(days) {
-    var near = MOLAD.indexNear(days), best = near, bestGap = Infinity;
-    for (var k = near - 2; k <= near + 2; k++) {
-      var gap = Math.abs(MOLAD.lilShloshim(k) - days);
-      if (gap < bestGap) { bestGap = gap; best = k; }
+  function onDraw(n) { show(n); }
+
+  /* the night his own halachos are about: ליל ל׳, thirty nights on from the
+     evening the last crescent showed — built in src/lib/working.js */
+  function nextLil(from) {
+    var i = khWorking.molad.indexNear(from);
+    for (var k = -2; k < 40; k++) {
+      var d = khWorking.molad.lilShloshim(i + k);
+      if (d > from) return d;
     }
-    return best;
-  }
-  var el = {
-    card: document.getElementById("card"),
-    rail: document.getElementById("rail"),
-    date: document.getElementById("date"),
-    back: document.getElementById("back"),
-    fwd: document.getElementById("fwd"),
-    backLbl: document.getElementById("back-lbl"),
-    fwdLbl: document.getElementById("fwd-lbl"),
-    mLil: document.getElementById("m-lil"),
-    mAny: document.getElementById("m-any"),
-    ctlAny: document.getElementById("ctl-any"),
-    nightBig: document.getElementById("night-big"),
-    nightSmall: document.getElementById("night-small")
-  };
-
-  function esc(s) {
-    return String(s)
-      .replace(/[()\[\]{}<>≤≥∈∋]/g, "‎$&‎")
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  }
-  function iso(d) {
-    return d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0") +
-           "-" + String(d.getUTCDate()).padStart(2, "0");
-  }
-  function parseIso(s) {
-    var p = s.split("-").map(Number);
-    return new Date(Date.UTC(p[0], p[1] - 1, p[2]));
+    return from;
   }
 
-  // ── the dial ──
-  function polar(cx, cy, r, deg) {
-    var t = deg * Math.PI / 180;
-    return [cx + r * Math.cos(t), cy - r * Math.sin(t)];
-  }
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    document.getElementById("sky").innerHTML = skyFigure();
+    document.getElementById("chain").innerHTML = chainFigure();
 
-  function dial(deg, mode) {
-    var cx = 78, cy = 78, r = 56, s = [];
-    s.push('<svg class="figure" width="156" height="156" viewBox="0 0 156 156" role="img" aria-label="' +
-           deg.toFixed(1) + ' degrees on the circle of mazalos">');
-    if (mode === "arc") {
-      var big = deg > 180 ? 1 : 0;
-      var a = polar(cx, cy, r, 0), b = polar(cx, cy, r, deg);
-      s.push('<path d="M ' + cx + ' ' + cy + ' L ' + a[0].toFixed(2) + ' ' + a[1].toFixed(2) +
-             ' A ' + r + ' ' + r + ' 0 ' + big + ' 0 ' + b[0].toFixed(2) + ' ' + b[1].toFixed(2) + ' Z" ' +
-             'fill="var(--act)" fill-opacity="0.16" stroke="none"></path>');
-    }
-    s.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="var(--line)" stroke-width="1"></circle>');
-    for (var k = 0; k < 12; k++) {
-      var p1 = polar(cx, cy, r, k * 30), p2 = polar(cx, cy, r - 6, k * 30);
-      s.push('<line x1="' + p1[0].toFixed(2) + '" y1="' + p1[1].toFixed(2) + '" x2="' + p2[0].toFixed(2) +
-             '" y2="' + p2[1].toFixed(2) + '" stroke="var(--line)" stroke-width="1"></line>');
-    }
-    for (var q = 0; q < 4; q++) {
-      var lp = polar(cx, cy, r + 14, q * 90);
-      s.push('<text x="' + lp[0].toFixed(2) + '" y="' + (lp[1] + 3.5).toFixed(2) + '" text-anchor="middle" ' +
-             'font-size="9" font-family="var(--mono)" fill="var(--faint)">' + (q * 90) + '°</text>');
-    }
-    var m = polar(cx, cy, r, deg);
-    s.push('<line x1="' + cx + '" y1="' + cy + '" x2="' + m[0].toFixed(2) + '" y2="' + m[1].toFixed(2) +
-           '" stroke="var(--act)" stroke-width="1.75"></line>');
-    s.push('<circle cx="' + m[0].toFixed(2) + '" cy="' + m[1].toFixed(2) + '" r="4.5" fill="var(--act)"></circle>');
-    s.push('<circle cx="' + cx + '" cy="' + cy + '" r="2" fill="var(--faint)"></circle>');
-    s.push("</svg>");
-    return s.join("");
-  }
-
-  function scale(value, max, unitLabel) {
-    var w = 156, h = 56, mid = w / 2, pad = 6;
-    var v = Math.max(-max, Math.min(max, value));
-    var x = mid + (v / max) * (mid - pad);
-    var s = [];
-    s.push('<svg class="figure" width="156" height="' + h + '" viewBox="0 0 156 ' + h + '" role="img" aria-label="' +
-           value.toFixed(2) + ' of plus or minus ' + max + ' degrees">');
-    s.push('<line x1="' + pad + '" y1="30" x2="' + (w - pad) + '" y2="30" stroke="var(--line)" stroke-width="1"></line>');
-    s.push('<line x1="' + mid + '" y1="22" x2="' + mid + '" y2="38" stroke="var(--line)" stroke-width="1"></line>');
-    s.push('<rect x="' + Math.min(mid, x).toFixed(2) + '" y="27" width="' + Math.abs(x - mid).toFixed(2) +
-           '" height="6" fill="var(--act)" fill-opacity="0.3"></rect>');
-    s.push('<circle cx="' + x.toFixed(2) + '" cy="30" r="4.5" fill="var(--act)"></circle>');
-    s.push('<text x="' + pad + '" y="50" font-size="9" fill="var(--faint)">−' + max + '°</text>');
-    s.push('<text x="' + (w - pad) + '" y="50" font-size="9" text-anchor="end" fill="var(--faint)">+' + max + '°</text>');
-    if (unitLabel) s.push('<text x="' + mid + '" y="16" font-size="9" text-anchor="middle" fill="var(--faint)">' + unitLabel + '</text>');
-    s.push("</svg>");
-    return s.join("");
-  }
-
-  function keshetStrip(value) {
-    var w = 156, h = 56, pad = 6, span = 24;
-    var s = [];
-    var X = function (deg) { return pad + (Math.max(0, Math.min(span, deg)) / span) * (w - 2 * pad); };
-    s.push('<svg class="figure" width="156" height="' + h + '" viewBox="0 0 156 ' + h + '" role="img" aria-label="arc of vision against the thresholds">');
-    s.push('<rect x="' + pad + '" y="22" width="' + (X(9) - pad) + '" height="14" fill="var(--no)" fill-opacity="0.28"></rect>');
-    s.push('<rect x="' + X(9) + '" y="22" width="' + (X(14) - X(9)) + '" height="14" fill="var(--faint)" fill-opacity="0.28"></rect>');
-    s.push('<rect x="' + X(14) + '" y="22" width="' + (w - pad - X(14)) + '" height="14" fill="var(--yes)" fill-opacity="0.28"></rect>');
-    s.push('<text x="' + X(4.5) + '" y="18" font-size="8.5" text-anchor="middle" fill="var(--faint)">never</text>');
-    s.push('<text x="' + X(11.5) + '" y="18" font-size="8.5" text-anchor="middle" fill="var(--faint)">table</text>');
-    s.push('<text x="' + X(19) + '" y="18" font-size="8.5" text-anchor="middle" fill="var(--faint)">always</text>');
-    s.push('<text x="' + X(9) + '" y="48" font-size="9" text-anchor="middle" fill="var(--faint)">9°</text>');
-    s.push('<text x="' + X(14) + '" y="48" font-size="9" text-anchor="middle" fill="var(--faint)">14°</text>');
-    if (value <= span) {
-      s.push('<line x1="' + X(value) + '" y1="18" x2="' + X(value) + '" y2="40" stroke="var(--act)" stroke-width="2"></line>');
-      s.push('<circle cx="' + X(value) + '" cy="29" r="4" fill="var(--act)"></circle>');
-    } else {
-      s.push('<text x="' + (w - pad) + '" y="33" font-size="10" text-anchor="end" fill="var(--act)">off scale ▸</text>');
-    }
-    s.push("</svg>");
-    return s.join("");
-  }
-
-  function moonFace(illum, elong) {
-    var r = 38, cx = 78, cy = 78, s = [];
-    var waxing = elong < 180;
-    var k = 1 - 2 * illum;
-    s.push('<svg class="figure" width="156" height="156" viewBox="0 0 156 156" role="img" aria-label="moon face">');
-    s.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="var(--sunk)" stroke="var(--line)"></circle>');
-    var sweepOuter = waxing ? 1 : 0;
-    var sweepInner = k < 0 ? sweepOuter : 1 - sweepOuter;
-    s.push('<path d="M ' + cx + ' ' + (cy - r) +
-           ' A ' + r + ' ' + r + ' 0 0 ' + sweepOuter + ' ' + cx + ' ' + (cy + r) +
-           ' A ' + (Math.abs(k) * r).toFixed(2) + ' ' + r + ' 0 0 ' + sweepInner + ' ' + cx + ' ' + (cy - r) +
-           ' Z" fill="var(--act)" fill-opacity="0.85"></path>');
-    s.push("</svg>");
-    return s.join("");
-  }
-
-  // ── render ──
-  function stepAt(n) { return calc.steps[order[n]]; }
-
-  function shortValue(st) {
-    if (st.formatted) return st.formatted;
-    if (typeof st.result === "number") {
-      return st.unit === "days" ? st.result.toLocaleString() : st.result.toFixed(3) + "°";
-    }
-    if (typeof st.result === "boolean") return st.result ? "seen" : "not seen";
-    if (st.result && st.result.currentSeason) return st.result.currentSeason;
-    return String(st.result);
-  }
-
-  function render() {
-    var st = stepAt(i), g = GUIDE[st.id] || { act: "see", viz: "none", plain: [], ask: st.name };
-    var actName = "";
-    for (var a = 0; a < ACTS.length; a++) if (ACTS[a].key === g.act) actName = ACTS[a].name;
-
-    var h = [];
-    h.push('<div class="eyebrow"><span class="where">' + esc(actName) + " · " + esc(st.rambamRef || "") +
-           '</span><span class="idx">' + (i + 1) + " / " + order.length + "</span></div>");
-    h.push("<h1>" + esc(g.ask) + "</h1>");
-    h.push('<div class="names"><span class="heb">' + esc(st.hebrewName || "") + "</span>" +
-           (g.tl ? '<span class="tl">' + esc(g.tl) + "</span>" : "") +
-           '<span class="en">' + esc(st.name) + "</span></div>");
-
-    // readout
-    var fig = "", val = "", sub = "", cap = g.cap || "";
-    var num = typeof st.result === "number" ? st.result : null;
-
-    if (g.viz === "pos" && num !== null) {
-      fig = dial(num, "pos");
-      var z = zodiacPosition(num);
-      val = st.formatted || num.toFixed(3) + "°";
-      sub = num.toFixed(4) + "°";
-      var ord = z.ordinalDegree +
-            (z.ordinalDegree === 1 ? "st" : z.ordinalDegree === 2 ? "nd" : z.ordinalDegree === 3 ? "rd" : "th");
-      cap = "<b>" + ord + " degree of " + z.english + "</b> (<bdi>" + esc(z.hebrew) + "</bdi>)" +
-            (g.cap ? " — " + esc(g.cap) : "");
-    } else if (g.viz === "arc" && num !== null) {
-      fig = dial(num, "arc");
-      val = st.formatted || num.toFixed(3) + "°";
-      sub = num.toFixed(4) + "°";
-    } else if (g.viz === "lat" && num !== null) {
-      fig = scale(num, 6, num >= 0 ? "north" : "south");
-      val = st.formatted || num.toFixed(3) + "°";
-      sub = num.toFixed(4) + "°";
-    } else if ((g.viz === "small1" || g.viz === "small2" || g.viz === "small6") && num !== null) {
-      fig = scale(num, g.viz === "small1" ? 1 : g.viz === "small2" ? 2 : 6, "");
-      val = st.formatted || num.toFixed(3) + "°";
-      sub = num.toFixed(4) + "°";
-    } else if (g.viz === "keshet" && num !== null) {
-      fig = keshetStrip(num);
-      val = st.formatted || num.toFixed(3) + "°";
-      sub = num <= 24 ? "" : "far past the first-crescent range — this is not a new-moon evening";
-    } else if (g.viz === "verdict") {
-      var yes = st.result === true;
-      fig = moonFace(calc.moon.illumination, calc.moon.elongation);
-      val = '<span class="verdict ' + (yes ? "yes" : "no") + '">' + (yes ? "נראה — it can be seen" : "אינו נראה — not seen") + "</span>";
-      sub = Math.round(calc.moon.illumination * 100) + "% lit";
-    } else if (st.id === "moonPhase") {
-      fig = moonFace(calc.moon.illumination, calc.moon.elongation);
-      val = '<span class="value word">' + esc(st.result) + "</span>";
-      sub = esc(calc.moon.phaseHebrew || "");
-    } else if (st.id === "seasonalInfo") {
-      val = '<span class="value word">' + esc(st.result.currentSeason) + "</span>";
-      sub = st.result.daysUntilNextSeason + " days until the next tekufah";
-    } else if (num !== null) {
-      val = st.unit === "days" ? num.toLocaleString() : (st.formatted || num.toFixed(6));
-      sub = st.unit === "deg/day" ? num.toFixed(6) + "° per day" : "";
-    } else {
-      val = esc(String(st.result));
-    }
-
-    h.push('<div class="readout">' + fig + '<div class="values">' +
-           (val.indexOf("<span") === 0 ? val : '<span class="value">' + val + "</span>") +
-           (sub ? '<span class="subvalue">' + sub + "</span>" : "") +
-           (cap ? '<span class="caption">' + cap + "</span>" : "") +
-           "</div></div>");
-
-    for (var p = 0; p < g.plain.length; p++) h.push('<p class="plain">' + g.plain[p] + "</p>");
-
-    if (st.id === "moonVisibility") {
-      var lilIdx = lilIndexFor(calc.daysFromEpoch);
-      if (lilIdx !== null) {
-        h.push('<p class="consequence">' + (st.result
-          ? "It is seen, so <b>today is Rosh Chodesh</b> and the month that just ended ran 29 days — חסר."
-          : "It is not seen, so the month is <b>מעובר</b> — it runs a full thirty days, and Rosh Chodesh falls tomorrow.") + "</p>");
-      } else {
-        var near = nearestLilIndex(calc.daysFromEpoch);
-        h.push('<div class="offnight">This is not a ליל ל׳, so the verdict decides nothing — the court is not sitting tonight. ' +
-               'The nearest one is <button type="button" data-lil="' + near + '">' +
-               esc(longDate(eveningOf(MOLAD.lilShloshim(near)))) + "</button>.</div>");
-      }
-      if (st.sourceNote) h.push('<p class="plain"><em>' + esc(st.sourceNote) + "</em></p>");
-    }
-
-    // the actual arithmetic
-    var W = khWorking(st, calc);
-    if (W && W.length) {
-      var lg = "";
-      for (var w = 0; w < W.length; w++) {
-        var row = W[w];
-        if (row.rule) { lg += '<tr class="rule"><td colspan="3"></td></tr>'; continue; }
-        lg += "<tr" + (row.op === "=" ? ' class="total"' : (row.ref ? ' class="ref" data-go-id="' + row.ref + '"' : "")) + ">" +
-              '<td class="op">' + (row.op ? esc(row.op) : "") + "</td>" +
-              '<td class="l">' + esc(row.l) + (row.n ? '<span class="sub">' + esc(row.n) + "</span>" : "") + "</td>" +
-              '<td class="v">' + esc(row.v) + "</td></tr>";
-      }
-      h.push('<div class="work"><h2>The working</h2><table class="ledger">' + lg + "</table>" +
-             (st.id === "daysFromEpoch"
-               ? '<div class="daybox"><label for="dayinput">Set the day count yourself:</label>' +
-                 '<input id="dayinput" type="number" step="1" value="' + calc.daysFromEpoch + '"> days</div>'
-               : "") + "</div>");
-    }
-
-    // how it's worked out
-    var body = "";
-    if (st.formula) body += '<div class="formula">' + esc(st.formula) + "</div>";
-    if (st.sourceNote && st.id !== "moonVisibility") body += "<p>" + esc(st.sourceNote) + "</p>";
-    if (body) h.push("<details><summary>How this one is worked out</summary><div class=\"body\">" + body + "</div></details>");
-
-    if (st.teachingNote) {
-      h.push('<details><summary>The mashal</summary><div class="body"><p>' + esc(st.teachingNote) +
-             '</p><p class="attrib">Teaching note from the project corpus — Rabbi Losh via Rabbi Zajac’s classes.</p></div></details>');
-    }
-
-    if (i > 0) {
-      var rows = "";
-      for (var q = 0; q < i; q++) {
-        var pst = stepAt(q);
-        rows += '<tr class="jump" data-go="' + q + '"><td class="n">' + (q + 1) + '</td><td class="l">' +
-                esc(SHORT[pst.id] || pst.name) + '</td><td class="v">' + esc(shortValue(pst)) + "</td></tr>";
-      }
-      h.push('<details><summary>The chain so far (' + i + ')</summary><div class="body"><table class="chain">' +
-             rows + "</table></div></details>");
-    }
-
-    if (st.rambamRef) {
-      var chap = String(st.rambamRef).match(/(\d+)/);
-      if (chap) {
-        h.push('<div class="ref"><a target="_blank" rel="noopener" href="https://www.sefaria.org/Mishneh_Torah,_Sanctification_of_the_New_Month.' +
-               chap[1] + '">' + esc(st.rambamRef) + " on Sefaria ↗</a></div>");
-      }
-    }
-
-    el.card.setAttribute("data-act", g.act);
-    el.card.innerHTML = h.join("");
-
-    // rail
-    var rail = "";
-    for (var ai = 0; ai < ACTS.length; ai++) {
-      var act = ACTS[ai], ticks = "", on = false;
-      for (var n = 0; n < order.length; n++) {
-        var gg = GUIDE[stepAt(n).id];
-        if (!gg || gg.act !== act.key) continue;
-        var cls = n === i ? "here" : (n < i ? "seen" : "");
-        if (n === i) on = true;
-        ticks += '<span class="' + cls + '" data-go="' + n + '" title="' + esc(SHORT[stepAt(n).id] || "") + '"></span>';
-      }
-      rail += '<div class="act' + (on ? " on" : "") + '" data-c="' + act.c + '"><div class="ticks">' + ticks +
-              '</div><div class="cap">' + esc(act.name) + "</div></div>";
-    }
-    el.rail.innerHTML = rail;
-
-    el.back.disabled = i === 0;
-    el.fwd.disabled = i === order.length - 1;
-    el.backLbl.textContent = i > 0 ? (SHORT[stepAt(i - 1).id] || stepAt(i - 1).name) : "—";
-    el.fwdLbl.textContent = i < order.length - 1 ? (SHORT[stepAt(i + 1).id] || stepAt(i + 1).name) : "done";
-  }
-
-  function syncBar() {
-    var days = calc.daysFromEpoch;
-    if (mode === "lil") {
-      var one = MOLAD.dayOne(monthIdx), mp = MOLAD.parts(monthIdx);
-      el.nightBig.innerHTML = '<span class="heb">ליל ל׳</span> · sunset on ' +
-        esc(longDate(eveningOf(MOLAD.lilShloshim(monthIdx))));
-      el.nightSmall.textContent = "month opened " + longDate(dateFromDays(one)) +
-        " — first crescent · molad " + mp.hours + "h " + mp.parts + "p";
-    } else {
-      el.nightBig.textContent = longDate(dateFromDays(days));
-      var lx = lilIndexFor(days);
-      el.nightSmall.textContent = lx !== null
-        ? "this evening is a ליל ל׳"
-        : "not a ליל ל׳ — nothing to decide tonight";
-    }
-  }
-
-  function recompute() {
-    calc = runPipeline(parseIso(el.date.value));
-    calc._dateLong = longDate(parseIso(el.date.value));
-    calc._elapsed = elapsedPhrase(parseIso(el.date.value));
-    calc._blocksPhrase = blocksPhrase(calc.daysFromEpoch);
-    calc._eveningLong = longDate(eveningOf(calc.daysFromEpoch));
-    order = [];
-    for (var n = 0; n < calc.steps.length; n++) if (GUIDE[calc.steps[n].id]) order.push(n);
-    if (i >= order.length) i = order.length - 1;
-    syncBar();
-    render();
-  }
-
-  function setDays(n) {
-    el.date.value = iso(dateFromDays(n));
-    recompute();
-  }
-  function goMonth(n) {
-    monthIdx = n;
-    setDays(MOLAD.lilShloshim(monthIdx));
-  }
-  function setMode(m) {
-    mode = m;
-    el.mLil.classList.toggle("on", m === "lil");
-    el.mAny.classList.toggle("on", m === "any");
-    el.ctlAny.hidden = m !== "any";
-    el.nightBig.hidden = m === "any";
-    if (m === "lil") { goMonth(nearestLilIndex(calc.daysFromEpoch)); }
-    else { syncBar(); render(); }
-  }
-
-  function go(n) {
-    i = Math.max(0, Math.min(order.length - 1, n));
-    render();
-    try { history.replaceState(null, "", "#step-" + (i + 1)); } catch (err) {}
-    var top = el.card.getBoundingClientRect().top + window.scrollY - 12;
-    if (window.scrollY > top) window.scrollTo({ top: top, behavior: "smooth" });
-  }
-
-  el.fwd.addEventListener("click", function () { go(i + 1); });
-  el.back.addEventListener("click", function () { go(i - 1); });
-  el.date.addEventListener("change", recompute);
-  el.rail.addEventListener("click", function (e) {
-    var t = e.target.closest("[data-go]");
-    if (t) go(Number(t.dataset.go));
-  });
-  el.card.addEventListener("click", function (e) {
-    var t = e.target.closest("tr[data-go]");
-    if (t) { go(Number(t.dataset.go)); return; }
-    var r = e.target.closest("tr[data-go-id]");
-    if (r) {
-      for (var n = 0; n < order.length; n++) {
-        if (stepAt(n).id === r.dataset.goId) { go(n); return; }
-      }
-      return;
-    }
-    var b = e.target.closest("button[data-lil]");
-    if (b) { setMode("lil"); goMonth(Number(b.dataset.lil)); }
-  });
-  el.card.addEventListener("change", function (e) {
-    if (e.target && e.target.id === "dayinput") {
+    document.getElementById("date").addEventListener("change", function (e) {
+      var p = e.target.value.split("-");
+      if (p.length !== 3) return;
+      var n = Math.round((Date.UTC(+p[0], +p[1] - 1, +p[2]) - EPOCH) / 86400000);
+      if (n >= 0) setDay(n);
+    });
+    document.getElementById("dayn").addEventListener("change", function (e) {
       var n = parseInt(e.target.value, 10);
-      if (!isNaN(n)) { setMode("any"); setDays(n); }
-    }
-  });
-  document.getElementById("prevstep").addEventListener("click", function () { shift(-1); });
-  document.getElementById("nextstep").addEventListener("click", function () { shift(1); });
-  function shift(n) {
-    if (mode === "lil") { goMonth(monthIdx + n); }
-    else { setDays(calc.daysFromEpoch + n); }
-  }
-  el.mLil.addEventListener("click", function () { setMode("lil"); });
-  el.mAny.addEventListener("click", function () { setMode("any"); });
-  document.addEventListener("keydown", function (e) {
-    if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-    if (e.key === "ArrowRight") go(i + 1);
-    if (e.key === "ArrowLeft") go(i - 1);
-  });
+      if (!isNaN(n) && n >= 0) setDay(n);
+    });
+    document.getElementById("lil").addEventListener("click", function () {
+      setDay(nextLil(Math.floor(day)));
+    });
+    document.getElementById("his").addEventListener("click", function () { setDay(HIS_DAY); });
 
-  var now = new Date();
-  el.date.value = iso(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())));
-  var fromHash = (location.hash.match(/^#step-(\d+)$/) || [])[1];
-  recompute();
-  setMode("lil");
-  if (fromHash) { i = Math.max(0, Math.min(order.length - 1, Number(fromHash) - 1)); render(); }
+    /* Open on the night the calculation is for — the coming ליל ל׳, not on
+       whatever tonight happens to be. */
+    var t = new Date();
+    var today = Math.round((Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) - EPOCH) / 86400000);
+    setDay(nextLil(today - 1));
+  }
 })();
 </script>

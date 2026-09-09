@@ -33,6 +33,10 @@
     return {
       day: n,
       sunMean: sunMean.result,
+      sunApogee: apogee.result,
+      sunMaslul: sunMaslul.result,
+      sunMnat: sunCorr.result,
+      sunAdds: sunMaslul.result > 180,
       sunTrue: sunTrue.result,
       moonMean: moonMean.result,
       season: season.result,

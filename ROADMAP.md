@@ -4,7 +4,7 @@ Chapters 1–5 (the court, the witnesses, the procedure) are out of scope.
 What follows is one page per *thing the Rambam does*, not per numbered halacha.
 Each page names the halachos it covers and follows [CLAUDE.md](CLAUDE.md).
 
-**Done: 17 of 52.** Table lessons are now generated from a spec in `src/lessons/`
+**Done: 23 of 52.** Table lessons are now generated from a spec in `src/lessons/`
 through `src/shell.html` + `src/lib/lesson.js`, so a page is a description of
 which halachos, which table and which drill — not a bespoke file.
 
@@ -73,25 +73,29 @@ Write it, and pin it to hebcal in the tests.
 | 34 | The zanav opposite, and which side | 16:6–8 | — | **done** |
 | 35 | רוחב הירח, and the מסלול it is read from | 16:9–10 | — | **done** |
 | 36 | The latitude table, and the part for the אחדים | 16:11–12 | `MOON_LATITUDE_TABLE` | **done** |
-| 37 | Bringing a larger מסלול inside the ninety | 16:13–18 | — | **done** |
-| 38 | His worked example | 16:19 | — | **done** |
-
+| 37 | Bringing a larger מסלול inside the ninety | 16:13–18 | — | **done**  **done** |
+| 38 | His worked example | 16:19 | — | **done**  **done** |
 Chapter 16 came out seven pages rather than five: ט״ז:ט–י defines the width
 and ט״ז:י״א–י״ב gives the table it is read from, and the folding of
 ט״ז:י״ג–י״ח is a halacha of its own with three worked examples in it.
 
-## Can it be seen — KH 17 ▸
+## Can it be seen — KH 17
 
-| # | page | halachos | chart |
-|---|---|---|---|
-| 39 | אורך ראשון, and the two early exits | 17:1–4 | `EARLY_EXIT_THRESHOLDS` |
-| 40 | You are on the surface: parallax in longitude | 17:5–6 | `PARALLAX_LON_BY_MAZAL` |
-| 41 | The same, sideways | 17:7–9 | `PARALLAX_LAT_BY_MAZAL` |
-| 42 | מעגל הירח | 17:10–11 | `MOON_CIRCLE_FRACTIONS` |
-| 43 | How steeply the mazal sets | 17:12 | `SETTING_TIME_BY_MAZAL` |
-| 44 | מנת גובה המדינה | 17:12–14 | — |
-| 45 | קשת הראיה, and קיצי הראיה | 17:15–21 | `KITZEI_HAREIYAH_TABLE` |
-| 46 | His worked example, 2 Iyar | 17:22–24 | — |
+| # | page | halachos | chart | status |
+|---|---|---|---|---|
+| 39 | אורך ראשון, and the two early exits | 17:1–4 | `EARLY_EXIT_THRESHOLDS` | **done** |
+| 40 | You are on the surface: parallax in longitude | 17:5–6 | `PARALLAX_LON_BY_MAZAL` | **done** |
+| 41 | The same, sideways | 17:7–9 | `PARALLAX_LAT_BY_MAZAL` | **done** |
+| 42 | מעגל הירח | 17:10–11 | `MOON_CIRCLE_FRACTIONS` | **done** |
+| 43 | ארוכי וקצרי שקיעה, מנת גובה המדינה, קשת הראיה | 17:12 | `SETTING_TIME_BY_MAZAL` | **done** |
+| 44 | His worked example — the arc | 17:13–14 | — | **done** |
+| 45 | קיצי הראיה | 17:15–21 | `KITZEI_HAREIYAH_TABLE` | **done** |
+| 46 | His worked example — the verdict, and his closing | 17:22–24 | — | **done** |
+
+Rows 43 and 44 fell out one against the plan: 17:12 is a single halacha holding
+two doings, and splitting a halacha across two pages breaks §7 the other way,
+so the setting-time correction and מנת גובה המדינה share the page that reaches
+the קשת. The worked example got the page that freed up.
 
 ## The court and the calculation — KH 18 ▸
 
