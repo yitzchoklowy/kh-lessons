@@ -91,7 +91,8 @@
       { l: "אמצע הירח לשעת הראייה", s: "פרק י״ד", a: "", t: formatDms(v.moonSight) },
       { l: "אמצע המסלול", s: "פרק י״ד — לחשבון הבא", a: "", t: formatDms(v.maslul), drop: true },
       { l: "אמצע השמש", s: "פרק י״ב", a: "", t: formatDms(v.sunMean) },
-      { l: "ותגרע אמצע השמש מאמצע הירח", a: "− " + formatDms(v.sunMean), t: formatDms(v.merchak) },
+      { l: "ותגרע אמצע השמש מאמצע הירח",
+        a: formatDms(v.moonSight) + " − " + formatDms(v.sunMean), t: formatDms(v.merchak) },
       { l: "והנשאר תכפול אותו", a: "× 2", t: formatDms(v.kaful) },
       { l: "מרחק הכפול", a: "", t: formatDms(v.kaful), out: true }
     ]);

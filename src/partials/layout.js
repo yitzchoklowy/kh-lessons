@@ -28,7 +28,8 @@
       text.className = "said";
       text.open = true;
       var sum = document.createElement("summary");
-      sum.innerHTML = 'דבריו<span class="mark"></span>';
+      /* whose words these are — his, unless the page says otherwise */
+      sum.innerHTML = (page.dataset.said || "לשון הרמב״ם") + '<span class="mark"></span>';
       var mark = sum.querySelector(".mark");
       var eyebrow = header.querySelector(".eyebrow");
       if (eyebrow) mark.textContent = ((eyebrow.textContent || "").split(/\s+/).pop() || "");
@@ -37,6 +38,23 @@
       wrap.className = "said-in";
       for (var i = 0; i < said.length; i++) wrap.appendChild(said[i]);
       text.appendChild(wrap);
+
+      /* A page may also say why its rule works — his commentators, quoted.
+         It is folded shut: the halacha first, the reason for anyone who wants
+         it. A page that has nothing to say here simply gets no panel. */
+      var why = null, src = header.querySelector(".why-src") || page.querySelector(".why-src");
+      if (src) {
+        why = document.createElement("details");
+        why.className = "why";
+        var ws = document.createElement("summary");
+        ws.innerHTML = 'למה זה עובד<span class="mark">מן המפרשים</span>';
+        why.appendChild(ws);
+        var win = document.createElement("div");
+        win.className = "why-in";
+        while (src.firstChild) win.appendChild(src.firstChild);
+        why.appendChild(win);
+        src.parentNode.removeChild(src);
+      }
 
       var work = document.createElement("div");
       work.className = "work";
@@ -49,7 +67,11 @@
         node = next;
       }
 
-      body.appendChild(text);
+      var side = document.createElement("div");
+      side.className = "side";
+      side.appendChild(text);
+      if (why) side.appendChild(why);
+      body.appendChild(side);
       body.appendChild(work);
       page.insertBefore(body, keep[0] || null);
     }

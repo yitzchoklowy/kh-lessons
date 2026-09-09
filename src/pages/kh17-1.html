@@ -2,7 +2,7 @@
 <!--@include partials/lesson-head.html-->
 <style><!--@include partials/kh17.css--></style>
 
-<div class="page solo" data-emph="gap">
+<div class="page solo" data-emph="orech" data-fig="מקום השמש האמיתי ומקום הירח האמיתי במזלות, והקשת שביניהם — הוא האורך הראשון. הגלגלים שהוציאו אותם כבר עשו את שלהם.">
 
   <header>
     <h1 class="bigtitle">אורך ראשון ורוחב ראשון</h1>
@@ -80,9 +80,11 @@
     return base + 1;
   }
 
-  function GAP_AT(n) {
-    var v = chapter15At(n);
-    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  /* Chapter seventeen begins from the two true places — not the אמצעים. */
+  function ORECH_AT(n) {
+    var v = chapter17At(n);
+    return { sun: v.sunTrue, moon: v.amiti, orech: v.orech1,
+             rochav: v.rochav1, north: v.north };
   }
 
   function show(n) {
@@ -91,7 +93,8 @@
       { l: "מקום השמש האמיתי", s: "פרק י״ג · " + zodiacPosition(v.sunTrue).hebrew, a: "", t: degMin(v.sunTrue) },
       { l: "מקום הירח האמיתי", s: "פרק ט״ו · " + v.mazal.hebrew, a: "", t: degMin(v.amiti) },
       { l: "מקום הראש", s: "פרק ט״ז", a: "", t: degMin(v.rosh), drop: true },
-      { l: "ותגרע מקום השמש ממקום הירח", a: "− " + degMin(v.sunTrue), t: degMin(v.orech1) },
+      { l: "ותגרע מקום השמש ממקום הירח",
+        a: degMin(v.amiti) + " − " + degMin(v.sunTrue), t: degMin(v.orech1) },
       { l: "אורך ראשון", a: "", t: degMin(v.orech1), out: true },
       { l: "רוחב ראשון", s: v.north ? "צפוני" : "דרומי", a: "", t: degMin(v.rochav1), out: true }
     ]);

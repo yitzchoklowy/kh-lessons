@@ -181,6 +181,25 @@
       if (lbl) lbl.textContent = "מהלכו";
       return;
     }
+    if (EMPH === "orech") {
+      /* Chapter seventeen starts where fifteen and sixteen leave off: not the
+         two אמצעים but the two TRUE places, and the arc between them is the
+         אורך ראשון. The galgalim that produced them have done their work, so
+         they stand aside. */
+      var app17 = [el.sunCircle, el.sunBody2, el.gapRing, el.arcGap, el.gapFrom];
+      for (var w = 0; w < app17.length; w++) if (app17[w]) app17[w].setAttribute("opacity", "1");
+      var hide17 = [el.epi, el.epiC, el.arcEpi, el.farLine, el.farLbl, el.grabEpi,
+                    el.arcMean, el.defCircle, el.ptrMean];
+      for (var y = 0; y < hide17.length; y++) if (hide17[y]) hide17[y].classList.add("dimmed");
+      var dm3 = document.querySelector(".dial.m"), ds3 = document.querySelector(".dial.s");
+      if (dm3) { dm3.classList.remove("dimmed"); dm3.querySelector(".lbl").innerHTML = "<i></i>מקום הירח האמיתי"; }
+      if (ds3) { ds3.classList.remove("dimmed"); ds3.querySelector(".lbl").innerHTML = "<i></i>מקום השמש האמיתי"; }
+      var c17 = el.corner ? el.corner.querySelectorAll("text") : [];
+      if (c17[0]) c17[0].textContent = "אורך ראשון";
+      if (el.cMasLbl) el.cMasLbl.textContent = "רוחב ראשון";
+      if (el.scaleNote) el.scaleNote.textContent = "";
+      return;
+    }
     if (EMPH === "gap") {
       /* KH 15:1 works with the two אמצעים and nothing else: the sun's, and the
          moon's. The small circle waits for the next halacha, so it is dimmed. */
@@ -285,6 +304,28 @@
     }
     /* KH 15:1 — the page hands over the two אמצעים and their difference, since
        which mean, and corrected how, is the halacha, not the geometry. */
+    if (EMPH === "orech" && typeof ORECH_AT === "function") {
+      var o = ORECH_AT(n), R_S3 = 196;
+      var op = P(R_S3, o.sun);
+      put(el.sunBody2, op[0], op[1]);
+      // the moon stands where his tables put it, not where the two circles do
+      var om = P(R_DEF, o.moon);
+      put(el.moonBody, om[0], om[1]);
+      var otip = P(R_PTR, o.moon);
+      el.sightLine.setAttribute("x2", otip[0].toFixed(2));
+      el.sightLine.setAttribute("y2", otip[1].toFixed(2));
+      el.arcGap.setAttribute("d", arcPath(R_GAP, o.sun, o.moon, true));
+      var of0 = P(R_DEF - 10, o.sun), of1 = P(R_S3 + 10, o.sun);
+      el.gapFrom.setAttribute("x1", of0[0].toFixed(1)); el.gapFrom.setAttribute("y1", of0[1].toFixed(1));
+      el.gapFrom.setAttribute("x2", of1[0].toFixed(1)); el.gapFrom.setAttribute("y2", of1[1].toFixed(1));
+      el.cMean.textContent = F(o.orech);
+      el.cMas.textContent = F(o.rochav) + " " + (o.north ? "צפוני" : "דרומי");
+      el.dMean.textContent = F(o.moon);
+      el.dMas.textContent = F(o.sun);
+      var zo = zodiacPosition(o.moon);
+      el.dMeanZ.textContent = zo.ordinalDegree + "° " + zo.hebrew;
+      dialsSet = true; sectorLon = o.moon;
+    }
     if (EMPH === "gap" && typeof GAP_AT === "function") {
       var g = GAP_AT(n), R_S2 = 196;
       var gp = P(R_S2, g.sun);
@@ -434,6 +475,18 @@
     }
     art.addEventListener("pointerup", drop);
     art.addEventListener("pointercancel", drop);
+  })();
+
+  /* What the drawing shows, in a line. A page may say it in its own words with
+     data-fig; otherwise the machine of chapter fourteen is named. */
+  (function () {
+    var say = document.getElementById("figSay");
+    if (!say) return;
+    say.textContent = (PAGE.dataset && PAGE.dataset.fig) ||
+      "הגלגל הגדול נושא את הגלגל הקטן סביב הארץ, והירח מסבב בקטן — וטבעת המזלות סביב הכל.";
+    var mk = document.querySelector(".hdr .mk");
+    var eb = document.querySelector(".eyebrow");
+    if (mk && eb) mk.textContent = (eb.textContent || "").split(/\s+/).pop();
   })();
 
   var today = new Date();

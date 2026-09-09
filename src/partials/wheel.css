@@ -68,9 +68,14 @@
          border-radius:12px; box-shadow:var(--shadow); overflow:hidden; }
   .tabs { display:none; }
   .panel.p2 { display:none !important; }
+  /* the drawing says what it is showing, so a reader is never left guessing */
   .hdr { padding:.7rem .9rem; border-bottom:1px solid var(--line);
          background:var(--sunk); font-size:.8rem; color:var(--faint);
-         font-family:var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+         display:flex; align-items:baseline; gap:.8rem; }
+  .hdr #figSay { font-family:var(--serif); font-size:.95rem; color:var(--muted);
+                 direction:rtl; text-align:right; line-height:1.5; }
+  .hdr .mk { font-family:var(--mono); letter-spacing:.08em; direction:ltr;
+             margin-inline-start:auto; flex:none; }
   .tabs button { flex:1; font:inherit; cursor:pointer; background:transparent; border:0;
                  padding:.7rem .6rem .6rem; color:var(--muted); text-align:center;
                  border-right:1px solid var(--line); line-height:1.3; }

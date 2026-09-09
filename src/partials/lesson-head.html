@@ -20,17 +20,31 @@
   /* ── his words on the right, the working beside them ── */
   .body { display:grid; grid-template-columns:minmax(17rem,23rem) minmax(0,1fr);
           gap:1.5rem; align-items:start; direction:rtl; margin-top:1.2rem; }
-  .said { position:sticky; top:.8rem; max-height:calc(100vh - 1.6rem); overflow:auto;
-          background:var(--card); border:1px solid var(--line); border-radius:11px;
-          box-shadow:var(--shadow); padding:.35rem .95rem .2rem; }
-  .said > summary { cursor:pointer; list-style:none; font-family:var(--serif); font-weight:700;
+  .side { position:sticky; top:.8rem; max-height:calc(100vh - 1.6rem); overflow:auto;
+          display:grid; gap:.8rem; align-content:start; }
+  .said, .why { background:var(--card); border:1px solid var(--line); border-radius:11px;
+                box-shadow:var(--shadow); padding:.35rem .95rem .2rem; }
+  .said > summary, .why > summary {
+                    cursor:pointer; list-style:none; font-family:var(--serif); font-weight:700;
                     font-size:1.05rem; color:var(--muted); padding:.55rem 0;
                     display:flex; align-items:baseline; gap:.5rem; }
-  .said > summary::-webkit-details-marker { display:none; }
-  .said > summary::before { content:"▾"; font-size:.8rem; color:var(--faint); }
-  .said:not([open]) > summary::before { content:"▸"; }
-  .said > summary .mark { font-family:var(--mono); font-size:.68rem; letter-spacing:.05em;
+  .said > summary::-webkit-details-marker, .why > summary::-webkit-details-marker { display:none; }
+  .said > summary::before, .why > summary::before { content:"▾"; font-size:.8rem; color:var(--faint); }
+  .said:not([open]) > summary::before, .why:not([open]) > summary::before { content:"▸"; }
+  .said > summary .mark, .why > summary .mark {
+                          font-family:var(--mono); font-size:.68rem; letter-spacing:.05em;
                           color:var(--faint); direction:ltr; margin-inline-start:auto; }
+  .why > summary { color:var(--brass); }
+  .why > summary .mark { direction:rtl; font-family:var(--serif); letter-spacing:0; }
+  .why-in { direction:rtl; text-align:right; padding-bottom:.8rem; font-size:.94rem;
+            line-height:1.75; color:var(--muted); }
+  .why-in p { margin:0 0 .7rem; }
+  .why-in b { color:var(--ink); font-weight:600; }
+  .why-in .src { font-size:.78rem; color:var(--faint); font-family:var(--serif);
+                 border-top:1px solid var(--hair); padding-top:.5rem; margin-bottom:0; }
+  .why-in figure { margin:.8rem 0; }
+  .why-in svg { display:block; width:100%; height:auto; }
+  .why-in figcaption { font-size:.78rem; color:var(--faint); margin-top:.35rem; }
   .said-in { padding-bottom:.7rem; }
   .said .halacha { font-size:1.06rem; line-height:1.85; margin:.55rem 0 0; }
   .said .halacha.lead { font-size:1.12rem; margin-top:0; }
@@ -44,7 +58,7 @@
   @media (max-width:980px) {
     .body { grid-template-columns:1fr; }
     /* no columns, so the working comes first and his words after it */
-    .said { position:static; max-height:none; order:2; }
+    .side { position:static; max-height:none; order:2; }
     .work > .rchart, .work > .drill, .work > .book, .work > .verdict,
     .work > .part, .work > .pick { max-width:none; }
   }

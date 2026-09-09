@@ -27,7 +27,7 @@
   table.led td.l a:hover { color:var(--brass); border-bottom-color:var(--brass); }
 </style>
 
-<div class="page solo" data-emph="gap">
+<div class="page solo" data-emph="orech" data-fig="מקום השמש האמיתי ומקום הירח האמיתי במזלות, והקשת שביניהם — הוא האורך הראשון. הגלגלים שהוציאו אותם כבר עשו את שלהם.">
 
   <header>
     <h1 class="bigtitle">כל החשבון</h1>
@@ -83,9 +83,11 @@
       .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   }
 
-  function GAP_AT(n) {
-    var v = chapter15At(n);
-    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  /* Chapter seventeen begins from the two true places — not the אמצעים. */
+  function ORECH_AT(n) {
+    var v = chapter17At(n);
+    return { sun: v.sunTrue, moon: v.amiti, orech: v.orech1,
+             rochav: v.rochav1, north: v.north };
   }
 
   function head(name, mark) { return { l: name, s: mark, a: "", t: "", head: true }; }
@@ -120,8 +122,8 @@
                t: degMin(v.rochav1), out: true });
 
     out.push(head("חשבונות הראייה", "פרק י״ז"));
-    out.push({ l: link("kh17-1.html", "אורך ראשון"), s: "י״ז:א", a: "− " + degMin(s.sunTrue),
-               t: degMin(v.orech1) });
+    out.push({ l: link("kh17-1.html", "אורך ראשון"), s: "י״ז:א",
+               a: degMin(s.amiti) + " − " + degMin(s.sunTrue), t: degMin(v.orech1) });
     /* Past a hundred and eighty the moon is not ahead of the sun by a small arc,
        and this is no ליל ראייה: his חשבונות take a first crescent. Say so, and
        print nothing that would not mean anything. */
