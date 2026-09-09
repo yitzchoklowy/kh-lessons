@@ -38,7 +38,9 @@
      so ONE radius serves every altitude and nothing in the drawing changes size
      as the moon is raised. What moves is the moon, along its own arc — which is
      the only thing that ought to move. */
-  var FP = { w: 640, h: 476, cx: 152, cy: 414, r: 40, far: 322, moon: 208 };
+  /* his own first length, from the worked example of י״ז:י״ג */
+  var FP = { w: 640, h: 476, cx: 152, cy: 414, r: 40, far: 322, moon: 208,
+             orech: 11 + 27 / 60 };
 
   function figParallax(alt) {
     var g = "", a = alt * RD;
@@ -90,8 +92,8 @@
         g += tx(tl[0], tl[1] + 4, h2 + "°", { op: ".4", size: 9.5, mono: true });
       }
     }
-    var zen = [mx, my - ARCR - 30];
-    g += tx(zen[0], zen[1], "נכח הראש", { op: ".4", size: 10 });
+    /* clear of the readout above it and of the ninety-degree mark beside it */
+    g += tx(mx - 62, my - ARCR - 4, "נכח הראש", { anchor: "end", op: ".4", size: 10 });
 
     g += '<circle cx="' + FP.cx + '" cy="' + FP.cy + '" r="' + FP.r +
          '" fill="currentColor" fill-opacity=".07" stroke="currentColor" stroke-opacity=".3"></circle>';
@@ -128,12 +130,26 @@
             { anchor: mid > 55 ? "middle" : "start", fill: "var(--mas)", op: "1",
               size: 11.5, weight: "700" });
 
-    /* the drawing is wide so the thing can be seen; the number is the true one,
-       taken from his own sixty radii */
+    /* The correction itself, in three lines: what the אורך was, what is taken
+       off it, and what is left. The middle figure is the geometry of his own
+       sixty radii at this height; his table gives the same thing by mazal
+       instead, and lands in the same range. */
     var par = Math.asin(Math.sin((90 - alt) * RD) / 60) / RD;
-    g += tx(30, 44, Math.round(par * 60) + "′",
-            { anchor: "start", fill: "var(--mas)", op: "1", size: 21, mono: true });
-    g += tx(30, 64, "גובה הירח " + Math.round(alt) + "°", { anchor: "start", op: ".5", size: 10 });
+    var was = FP.orech, now = was - par;
+    var L = 34, R = 232, row = function (y, name, val, o) {
+      o = o || {};
+      return tx(L, y, name, { anchor: "start", op: o.dim ? ".5" : ".7", size: 11 }) +
+             tx(R, y, val, { anchor: "end", fill: o.fill || "currentColor",
+                             op: o.fill ? "1" : ".85", size: o.size || 14, mono: true,
+                             weight: o.weight || "500" });
+    };
+    g += row(44, "אורך ראשון", degMin(was), { dim: true });
+    g += row(70, "שינוי המראה", "− " + Math.round(par * 60) + "′",
+             { fill: "var(--mas)", size: 15, weight: "700" });
+    g += ln(L, 82, R, 82, "currentColor", 'stroke-opacity=".25"');
+    g += row(104, "אורך שני", degMin(now), { fill: "var(--mean)", size: 16, weight: "700" });
+    g += tx(L, 124, "בגובה " + Math.round(alt) + "° · ובטבלתו לפי המזל, בין ל״ד׳ לס׳",
+            { anchor: "start", op: ".4", size: 9.5 });
     g += tx(320, 466, "הציור מוגזם — הירח רחוק מן הארץ כפי ששים מרדיוסה, ואז הקשת קטנה בהרבה",
             { op: ".45", size: 10 });
     return svg(FP.w, FP.h, "fp",
