@@ -66,12 +66,37 @@
     var N = hitFrom(FP.cx, FP.cy, lx, ly);       // from the middle — the true place
     var M = hitFrom(mx, my, lx, ly);             // from his standing place — the seen one
 
+    /* the sky over his head: his horizon, east to west, and the height above it
+       marked off in degrees — the moon rides along this very arc */
+    g += ln(26, my, 434, my, "currentColor", 'stroke-opacity=".28" stroke-dasharray="4 3"');
+    g += tx(26, my - 9, "מזרח", { anchor: "start", op: ".5", size: 10.5 });
+    g += tx(434, my - 9, "מערב", { anchor: "end", op: ".8", size: 12, weight: "700" });
+    g += tx(252, my + 16, "האופק שלו", { anchor: "start", op: ".4", size: 9.5 });
+
+    var ARCR = FP.moon, sky = "";
+    for (var h = 0; h <= 90; h += 1.5) {
+      var sp = [mx + ARCR * Math.cos(h * RD), my - ARCR * Math.sin(h * RD)];
+      sky += (sky ? " L " : "M ") + sp[0].toFixed(1) + " " + sp[1].toFixed(1);
+    }
+    g += '<path d="' + sky + '" fill="none" stroke="currentColor" stroke-opacity=".16" ' +
+         'stroke-width="1" stroke-dasharray="2 4"></path>';
+    for (var h2 = 0; h2 <= 90; h2 += 10) {
+      var big = h2 % 30 === 0;
+      var t0 = [mx + (ARCR - (big ? 9 : 5)) * Math.cos(h2 * RD), my - (ARCR - (big ? 9 : 5)) * Math.sin(h2 * RD)];
+      var t1 = [mx + ARCR * Math.cos(h2 * RD), my - ARCR * Math.sin(h2 * RD)];
+      g += ln(t0[0], t0[1], t1[0], t1[1], "currentColor", 'stroke-opacity=".3"');
+      if (big && h2 > 0) {
+        var tl = [mx + (ARCR + 15) * Math.cos(h2 * RD), my - (ARCR + 15) * Math.sin(h2 * RD)];
+        g += tx(tl[0], tl[1] + 4, h2 + "°", { op: ".4", size: 9.5, mono: true });
+      }
+    }
+    var zen = [mx, my - ARCR - 30];
+    g += tx(zen[0], zen[1], "נכח הראש", { op: ".4", size: 10 });
+
     g += '<circle cx="' + FP.cx + '" cy="' + FP.cy + '" r="' + FP.r +
          '" fill="currentColor" fill-opacity=".07" stroke="currentColor" stroke-opacity=".3"></circle>';
     g += dot(FP.cx, FP.cy, "currentColor", 2.6);
     g += tx(FP.cx - 14, FP.cy + 4, "א", { op: ".85", weight: "700" });
-    g += ln(28, my, FP.cx + 84, my, "currentColor", 'stroke-opacity=".28" stroke-dasharray="4 3"');
-    g += tx(28, my - 8, "האופק שלו", { anchor: "start", op: ".45", size: 10 });
     g += dot(mx, my, "currentColor", 3);
     g += tx(mx - 13, my - 6, "מ", { op: ".85", weight: "700" });
 
