@@ -34,42 +34,52 @@
      arc between where they land is שינוי המראה. It is largest at the setting
      point and nothing at all overhead, "לפי שהקו היוצא ממוצק הארץ והקו היוצא
      משטח הארץ... נופלים זה על זה". */
-  var FP = { w: 640, h: 330, cx: 138, cy: 236, r: 44, far: 452, moon: 232 };
+  var FP = { w: 640, h: 330, cx: 104, cy: 246, r: 38, far: 372, moon: 166 };
 
   function figParallax(alt) {
     var g = "", a = alt * RD;
     var mx = FP.cx, my = FP.cy - FP.r;                       // the man, on top
-    // the circle of the mazalos, far off
-    var arc = "";
-    for (var d = -66; d <= 30; d += 2) {
-      var q = [FP.cx + FP.far * Math.cos(d * RD), FP.cy - FP.far * Math.sin(d * RD)];
+    var lx = mx + FP.moon * Math.cos(a), ly = my - FP.moon * Math.sin(a);
+    /* Drawn as large as the page allows and no larger — where the moon stands
+       high the circle is drawn nearer, so its landing point stays in view. The
+       size of it says nothing; the arc between the two landings is the point. */
+    var ang = Math.atan2(FP.cy - ly, lx - FP.cx);
+    var far = Math.min(FP.far, (FP.cy - 52) / Math.max(0.1, Math.sin(ang)),
+                       (608 - FP.cx) / Math.max(0.1, Math.cos(ang)));
+
+    /* where a ray lands on the circle of the mazalos */
+    function hitFrom(px, py, qx, qy) {
+      var ux = qx - px, uy = qy - py, L = Math.sqrt(ux * ux + uy * uy);
+      ux /= L; uy /= L;
+      var ex = px - FP.cx, ey = py - FP.cy;
+      var b = ex * ux + ey * uy, c = ex * ex + ey * ey - far * far;
+      return [px + ux * (-b + Math.sqrt(b * b - c)), py + uy * (-b + Math.sqrt(b * b - c))];
+    }
+    var N = hitFrom(FP.cx, FP.cy, lx, ly);       // from the middle — the true place
+    var M = hitFrom(mx, my, lx, ly);             // from his standing place — the seen one
+    var an = Math.atan2(FP.cy - N[1], N[0] - FP.cx) / RD;
+    var am = Math.atan2(FP.cy - M[1], M[0] - FP.cx) / RD;
+
+    /* only the stretch of it the two lines land on — the whole circle would run
+       off the drawing, and none of the rest of it is in question */
+    var lo = Math.min(an, am) - 15, hi = Math.max(an, am) + 13, arc = "";
+    for (var d = lo; d <= hi; d += 1.5) {
+      var q = [FP.cx + far * Math.cos(d * RD), FP.cy - far * Math.sin(d * RD)];
       arc += (arc ? " L " : "M ") + q[0].toFixed(1) + " " + q[1].toFixed(1);
     }
     g += '<path d="' + arc + '" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-width="1.2"></path>';
-    g += tx(600, 300, "גלגל המזלות", { anchor: "end", op: ".45", size: 10.5 });
+    var lbl = [FP.cx + (far + 4) * Math.cos(lo * RD), FP.cy - (far + 4) * Math.sin(lo * RD)];
+    g += tx(Math.min(626, lbl[0] + 4), Math.min(322, lbl[1] + 16), "גלגל המזלות",
+            { anchor: "end", op: ".45", size: 10.5 });
 
     g += '<circle cx="' + FP.cx + '" cy="' + FP.cy + '" r="' + FP.r +
          '" fill="currentColor" fill-opacity=".07" stroke="currentColor" stroke-opacity=".3"></circle>';
     g += dot(FP.cx, FP.cy, "currentColor", 2.6);
-    g += tx(FP.cx - 12, FP.cy + 4, "א", { op: ".85", weight: "700" });
-    g += ln(FP.cx - 74, my, FP.cx + 74, my, "currentColor", 'stroke-opacity=".28" stroke-dasharray="4 3"');
-    g += tx(FP.cx - 80, my - 5, "האופק שלו", { anchor: "end", op: ".45", size: 10 });
+    g += tx(FP.cx - 13, FP.cy + 4, "א", { op: ".85", weight: "700" });
+    g += ln(24, my, FP.cx + 62, my, "currentColor", 'stroke-opacity=".28" stroke-dasharray="4 3"');
+    g += tx(24, my - 7, "האופק שלו", { anchor: "start", op: ".45", size: 10 });
     g += dot(mx, my, "currentColor", 3);
-    g += tx(mx + 11, my - 7, "מ", { op: ".85", weight: "700" });
-
-    var lx = mx + FP.moon * Math.cos(a), ly = my - FP.moon * Math.sin(a);
-
-    /* where each line lands on the circle of the mazalos */
-    function hitFrom(px, py, qx, qy) {          // ray from p through q, out to the far circle
-      var ux = qx - px, uy = qy - py, L = Math.sqrt(ux * ux + uy * uy);
-      ux /= L; uy /= L;
-      var ex = px - FP.cx, ey = py - FP.cy;
-      var b = ex * ux + ey * uy, c = ex * ex + ey * ey - FP.far * FP.far;
-      var t = -b + Math.sqrt(b * b - c);
-      return [px + ux * t, py + uy * t];
-    }
-    var N = hitFrom(FP.cx, FP.cy, lx, ly);       // from the middle — the true place
-    var M = hitFrom(mx, my, lx, ly);             // from his standing place — the seen one
+    g += tx(mx + 12, my - 7, "מ", { op: ".85", weight: "700" });
 
     g += ln(FP.cx, FP.cy, N[0], N[1], "currentColor", 'stroke-opacity=".45" stroke-width="1.3" stroke-dasharray="5 4"');
     g += ln(mx, my, M[0], M[1], "var(--mean)", 'stroke-width="1.6"');
@@ -77,28 +87,28 @@
     g += tx(lx, ly - 18, "ל", { fill: "var(--mean)", op: "1", weight: "700" });
 
     // the arc between the two landings — that is the whole of it
-    var an = Math.atan2(FP.cy - N[1], N[0] - FP.cx) / RD;
-    var am = Math.atan2(FP.cy - M[1], M[0] - FP.cx) / RD;
-    var sweep = "";
-    var st = an > am ? -1.2 : 1.2;
+    var sweep = "", st = an > am ? -1 : 1;
     for (var u = an; st > 0 ? u < am : u > am; u += st) {
-      var p = [FP.cx + FP.far * Math.cos(u * RD), FP.cy - FP.far * Math.sin(u * RD)];
-      sweep += (sweep ? " L " : "M ") + p[0].toFixed(1) + " " + p[1].toFixed(1);
+      var pp = [FP.cx + far * Math.cos(u * RD), FP.cy - far * Math.sin(u * RD)];
+      sweep += (sweep ? " L " : "M ") + pp[0].toFixed(1) + " " + pp[1].toFixed(1);
     }
     if (sweep) g += '<path d="' + sweep + '" fill="none" stroke="var(--mas)" stroke-width="4.5" stroke-linecap="round"></path>';
     g += dot(N[0], N[1], "currentColor", 3.2) + dot(M[0], M[1], "var(--mas)", 3.6);
-    g += tx(N[0] - 16, N[1] - 8, "נ", { op: ".8", weight: "700" });
-    g += tx(M[0] - 16, M[1] + 16, "מ׳", { fill: "var(--mas)", op: "1", weight: "700" });
-    g += tx((N[0] + M[0]) / 2 + 62, (N[1] + M[1]) / 2 + 4, "שינוי המראה",
-            { fill: "var(--mas)", op: "1", size: 11.5, weight: "700" });
+    g += tx(Math.min(628, N[0] + 15), Math.max(20, N[1] - 6), "נ", { op: ".85", weight: "700" });
+    g += tx(Math.min(628, M[0] + 17), Math.min(316, M[1] + 12), "מ׳",
+            { fill: "var(--mas)", op: "1", weight: "700" });
+    /* the name sits inside the drawing, on whichever side has the room */
+    var midY = (N[1] + M[1]) / 2, midX = (N[0] + M[0]) / 2;
+    g += tx(Math.min(624, midX + 92), Math.min(300, Math.max(28, midY + 4)), "שינוי המראה",
+            { anchor: "end", fill: "var(--mas)", op: "1", size: 11.5, weight: "700" });
 
-    /* the figure is drawn wide so the thing can be seen; the number is the true
-       one, taken from his own sixty radii */
+    /* the drawing is wide so the thing can be seen; the number is the true one,
+       taken from his own sixty radii */
     var par = Math.asin(Math.sin((90 - alt) * RD) / 60) / RD;
-    g += tx(614, 40, Math.round(par * 60) + "′",
-            { anchor: "end", fill: "var(--mas)", op: "1", size: 21, mono: true });
-    g += tx(614, 60, "גובה הירח " + Math.round(alt) + "°", { anchor: "end", op: ".5", size: 10 });
-    g += tx(320, 320, "הציור מוגזם — הירח רחוק מן הארץ כפי ששים מרדיוסה, ואז הקשת קטנה בהרבה",
+    g += tx(30, 40, Math.round(par * 60) + "′",
+            { anchor: "start", fill: "var(--mas)", op: "1", size: 21, mono: true });
+    g += tx(30, 60, "גובה הירח " + Math.round(alt) + "°", { anchor: "start", op: ".5", size: 10 });
+    g += tx(320, 322, "הציור מוגזם — הירח רחוק מן הארץ כפי ששים מרדיוסה, ואז הקשת קטנה בהרבה",
             { op: ".45", size: 10 });
     return svg(FP.w, FP.h, "fp",
       "The earth, a man standing on it, the moon, and the circle of the mazalos beyond: the line " +
@@ -168,7 +178,8 @@
     g += tx(F4.x0 - 8, 104, "קשת", { anchor: "end", op: ".5", size: 10 });
     g += tx(F4.x0 - 8, 122, "דקות", { anchor: "end", op: ".5", size: 10, fill: "var(--mean)" });
     g += ln(X(keshet), 44, X(keshet), 92, "var(--ink)", 'stroke-width="2"');
-    g += tx(X(keshet), 36, formatDms(keshet) + " · " + Math.round(keshet * 4) + " דקות",
+    g += tx(Math.min(F4.x1 - 54, Math.max(F4.x0 + 54, X(keshet))), 36,
+            degMin(keshet) + " · " + Math.round(keshet * 4) + " דקות",
             { op: "1", size: 12, weight: "700", mono: true });
     return svg(F4.w, F4.h, "f4",
       "The arc of vision in degrees, and the same arc as minutes of waiting: four to the degree.", g);
@@ -228,74 +239,93 @@
       "ecliptic, which the sun and moon travel along, leaning from it by twenty-three and a half degrees.", g);
   }
 
-  /* ── 5. ארבעת האורכים, כאחד ──
-     His figure 17-8 and 17-9 together. שנ on the circle of the mazalos is the
-     second length. Drop a line from the moon ל square to the equator: where it
-     cuts the circle of mazalos is ג, and שג is the THIRD length — still on the
-     circle of the mazalos. Then draw lines parallel to the western horizon
-     through ש and through ג: where they meet the equator is א and ב, and אב is
-     the FOURTH length, the arc of the equator that sets along with שג. */
-  var F1 = { w: 640, h: 316, ox: 46, oy: 226, tilt: 19, ppd: 17, mag: 1.7 };
+  /* ── 5. חמשת האורכים, כאחד ──
+     His figures 17-8 and 17-9 together, and the whole chain on one drawing.
+
+     On the circle of the mazalos, all measured from the sun ש:
+       שנ₀  אורך ראשון   the raw gap between the two true places
+       שנ   אורך שני     less שינוי מראה האורך, which is always taken off
+       שג   אורך שלישי   less (or plus) מעגל הירח, the piece גנ
+     and then, on the equator, along lines parallel to the western horizon:
+       אב   אורך רביעי   the arc that sets together with שג
+       אב׳  קשת הראייה   plus or minus two thirds of the first width
+
+     Two handles: the width moves ג across נ and the addition becomes a
+     subtraction, and the setting slant grows and shrinks אב against שג. */
+  var F1 = { w: 640, h: 340, ox: 40, oy: 212, tilt: 18, ppd: 16, mag: 1.35 };
 
   function figLengths(rochav, slant) {
     var t = F1.tilt * RD, g = "", sl = slant * RD;
     var ex = function (d) { return F1.ox + d * F1.ppd * Math.cos(t); };
     var ey = function (d) { return F1.oy - d * F1.ppd * Math.sin(t); };
-    g += ln(20, F1.oy, 620, F1.oy, "currentColor", 'stroke-opacity=".45" stroke-width="1.4"');
-    g += tx(610, F1.oy + 17, "קו המשווה", { anchor: "end", op: ".5" });
-    g += ln(F1.ox - 40 * Math.cos(t), F1.oy + 40 * Math.sin(t), ex(33), ey(33),
-            "var(--sunc)", 'stroke-opacity=".5" stroke-width="1.4"');
-    g += tx(ex(31), ey(31) - 11, "המילקה", { fill: "var(--sunc)", op: ".8" });
+    var ux = Math.cos(t), uy = -Math.sin(t);              // along the mazalos
+    var px = -Math.sin(t), py = -Math.cos(t);             // square to them
 
-    var dS = 4, dN = 19;
-    var sx = ex(dS), sy = ey(dS), nx = ex(dN), ny = ey(dN);
-    var px = -Math.sin(t), py = -Math.cos(t);
-    /* the רוחב drawn wider than life, or ג would sit on top of נ and the
-       third length could not be told from the second */
+    g += ln(18, F1.oy, 622, F1.oy, "currentColor", 'stroke-opacity=".45" stroke-width="1.4"');
+    g += tx(618, F1.oy + 16, "קו המשווה", { anchor: "end", op: ".5", size: 10 });
+    g += ln(F1.ox - 32 * ux, F1.oy - 32 * uy, ex(31), ey(31),
+            "var(--sunc)", 'stroke-opacity=".45" stroke-width="1.3"');
+    g += tx(ex(29), ey(29) - 11, "המילקה", { fill: "var(--sunc)", op: ".7", size: 10 });
+
+    /* his own שינוי מראה האורך for שור, the mazal of his worked example */
+    var par = CONSTANTS.PARALLAX_LON_BY_MAZAL[1].chalakim / 60;
+    var dS = 3, dN0 = 20, dN = dN0 - par;
+    var sx = ex(dS), sy = ey(dS);
+    var n0x = ex(dN0), n0y = ey(dN0);                     // before the parallax
+    var nx = ex(dN), ny = ey(dN);                         // after it
     var lx = nx + px * rochav * F1.ppd * F1.mag, ly = ny + py * rochav * F1.ppd * F1.mag;
-    var gx = lx, gy = F1.oy;                                  // square to the equator
-    var dG = (gx - F1.ox) / (F1.ppd * Math.cos(t));
+    var gx = lx, dG = (gx - F1.ox) / (F1.ppd * ux);
     var cx = ex(dG), cy = ey(dG);
 
-    // parallel to the western horizon, from ש and from ג down to the equator
-    function slide(x, y) { return [x + (F1.oy - y) / Math.tan(sl), F1.oy]; }
+    function slide(x, y) { return x + (F1.oy - y) / Math.tan(sl); }
     var A = slide(sx, sy), B = slide(cx, cy);
-    g += ln(sx, sy, A[0], A[1], "currentColor", 'stroke-opacity=".3" stroke-dasharray="3 3"');
-    g += ln(cx, cy, B[0], B[1], "currentColor", 'stroke-opacity=".3" stroke-dasharray="3 3"');
+    var gov = (rochav >= 0 ? 1 : -1) * Math.abs(rochav) * (2 / 3) * F1.ppd;
+    var B2 = B + gov;
 
-    g += ln(lx, ly, gx, gy, "currentColor", 'stroke-width="1" stroke-opacity=".25" stroke-dasharray="2 3"');
-    g += ln(nx, ny, lx, ly, "var(--mas)", 'stroke-width="2"');
+    // the constructions, faint
+    g += ln(sx, sy, A, F1.oy, "currentColor", 'stroke-opacity=".26" stroke-dasharray="3 3"');
+    g += ln(cx, cy, B, F1.oy, "currentColor", 'stroke-opacity=".26" stroke-dasharray="3 3"');
+    g += ln(lx, ly, gx, F1.oy, "currentColor", 'stroke-width="1" stroke-opacity=".22" stroke-dasharray="2 3"');
+    g += ln(nx, ny, lx, ly, "var(--mas)", 'stroke-width="1.8"');
+    g += tx(620, F1.oy - 9, "המקווקוים — מקבילים לאופק המערבי", { anchor: "end", op: ".34", size: 9 });
 
-    // the four lengths
-    g += ln(sx, sy, nx, ny, "var(--sunc)", 'stroke-width="4" stroke-linecap="round"');
-    g += ln(sx, sy - 9, cx, cy - 9, "var(--mean)", 'stroke-width="3.4" stroke-linecap="round"');
-    g += ln(A[0], F1.oy + 9, B[0], F1.oy + 9, "var(--ink)", 'stroke-width="4" stroke-linecap="round"');
+    // the five lengths, each on its own rail
+    function rail(x1, y1, x2, y2, off, col) {
+      return ln(x1 + px * off, y1 + py * off, x2 + px * off, y2 + py * off, col,
+                'stroke-width="4" stroke-linecap="round"');
+    }
+    g += rail(sx, sy, n0x, n0y, 20, "var(--faint)");
+    g += rail(sx, sy, nx, ny, 11, "var(--sunc)");
+    g += rail(sx, sy, cx, cy, 2, "var(--mean)");
+    g += ln(A, F1.oy + 10, B, F1.oy + 10, "var(--ink)", 'stroke-width="4" stroke-linecap="round"');
+    g += ln(A, F1.oy + 21, B2, F1.oy + 21, "var(--mas)", 'stroke-width="4" stroke-linecap="round"');
 
-    g += dot(sx, sy, "var(--sunc)") + dot(nx, ny, "currentColor") +
-         dot(lx, ly, "var(--mas)") + dot(cx, cy, "var(--mean)") +
-         dot(A[0], A[1], "currentColor", 2.6) + dot(B[0], B[1], "currentColor", 2.6);
-    g += tx(sx - 4, sy + 18, "ש", { op: ".9", weight: "700" });
-    g += tx(nx + 6, ny + 17, "נ", { op: ".9", weight: "700" });
-    g += tx(lx + (rochav >= 0 ? 15 : -15), ly + 5, "ל", { fill: "var(--mas)", op: "1", weight: "700" });
-    g += tx(cx - 9, cy - 24, "ג", { fill: "var(--mean)", op: "1", weight: "700" });
-    g += tx(A[0], F1.oy + 41, "א", { op: ".8", weight: "700" });
-    g += tx(B[0], F1.oy + 41, "ב", { op: ".8", weight: "700" });
-
-    g += tx((sx + nx) / 2 - 2, (sy + ny) / 2 + 24, "אורך שני", { fill: "var(--sunc)", op: "1", size: 11.5 });
-    g += tx((sx + cx) / 2 - 4, (sy + cy) / 2 - 26, "אורך שלישי", { fill: "var(--mean)", op: "1", size: 11.5 });
-    g += tx((A[0] + B[0]) / 2, F1.oy + 26, "אורך רביעי", { op: ".95", size: 11.5, weight: "700" });
-    g += tx((nx + lx) / 2 + 20, (ny + ly) / 2 + 3, "רוחב", { fill: "var(--mas)", op: ".9", size: 10 });
+    ly = Math.min(F1.h - 44, Math.max(16, ly));
+    g += dot(sx, sy, "var(--sunc)") + dot(n0x, n0y, "currentColor", 2.6) +
+         dot(nx, ny, "currentColor") + dot(lx, ly, "var(--mas)") + dot(cx, cy, "var(--mean)");
+    g += tx(sx - 3, sy + 17, "ש", { op: ".9", weight: "700" });
+    g += tx(nx + 7, ny + 17, "נ", { op: ".9", weight: "700" });
+    g += tx(Math.min(628, lx + 15), Math.max(22, ly + 4), "ל",
+            { fill: "var(--mas)", op: "1", weight: "700" });
+    g += tx(cx - 10, cy - 21, "ג", { fill: "var(--mean)", op: "1", weight: "700" });
+    g += tx(A, F1.oy + 40, "א", { op: ".8", weight: "700" });
+    g += tx(B, F1.oy + 40, "ב", { op: ".8", weight: "700" });
 
     var word = Math.abs(cx - nx) < 2 ? "ג עומד על נ — אין מעגל"
       : cx > nx ? "ג אחר נ — תוסיף המעגל" : "ג לפני נ — תגרע המעגל";
-    g += tx(320, 288, word, { fill: "var(--mas)", op: "1", size: 12.5, weight: "700" });
-    var d34 = Math.abs(B[0] - A[0]) - Math.abs(cx - sx);
-    g += tx(320, 307, "והרביעי " + (d34 >= 0 ? "ארוך" : "קצר") + " מן השלישי — לפי נטיית השקיעה",
-            { op: ".55", size: 10.5 });
-    g += tx(620, F1.oy - 10, "הקוים המקווקוים — מקבילים לאופק המערבי",
-            { anchor: "end", op: ".38", size: 9.5 });
+    g += tx(320, 22, word, { fill: "var(--mas)", op: "1", size: 12.5, weight: "700" });
 
+    /* the key, along the foot — five names for one distance */
+    var key = [["אורך ראשון", "var(--faint)", "י״ז:א"], ["אורך שני", "var(--sunc)", "י״ז:ה"],
+               ["אורך שלישי", "var(--mean)", "י״ז:י״א"], ["אורך רביעי", "var(--ink)", "י״ז:י״ב"],
+               ["קשת הראייה", "var(--mas)", "י״ז:י״ב"]];
+    var kx = 30, ky = 310;
+    for (var i = 0; i < key.length; i++) {
+      var x = kx + i * 120;
+      g += ln(x, ky - 4, x + 20, ky - 4, key[i][1], 'stroke-width="4" stroke-linecap="round"');
+      g += tx(x + 26, ky, key[i][0], { anchor: "start", op: ".85", size: 10.5 });
+      g += tx(x + 26, ky + 13, key[i][2], { anchor: "start", op: ".4", size: 8.5, mono: true });
+    }
     return svg(F1.w, F1.h, "f1",
-      "The second, third and fourth lengths on one drawing: two on the circle of the mazalos, " +
-      "and the fourth on the equator.", g);
+      "One distance measured five times: three on the circle of the mazalos, and two on the equator.", g);
   }
