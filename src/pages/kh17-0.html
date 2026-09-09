@@ -30,18 +30,6 @@
   .why-fig .goes a { color:var(--brass); text-decoration:none;
                      border-bottom:1px dotted var(--brass); }
 
-  /* the correction, said as a sum — above the handle, clear of the drawing */
-  table.sum3 { border-collapse:collapse; margin:.2rem 0 .6rem auto; direction:rtl; }
-  table.sum3 td { padding:.16rem .5rem; }
-  table.sum3 td.n { font-family:var(--serif); font-size:.95rem; color:var(--muted); }
-  table.sum3 td.v { font-family:var(--mono); font-variant-numeric:tabular-nums;
-                    text-align:left; font-size:1.05rem; color:var(--ink); min-width:6.5rem; }
-  table.sum3 tr.cut td { border-top:1px solid var(--line); padding-top:.34rem; }
-  table.sum3 tr.d td.v { color:var(--mas); font-weight:700; }
-  table.sum3 tr.out td.v { color:var(--mean); font-weight:700; font-size:1.16rem; }
-  table.sum3 tr.out td.n { color:var(--ink); }
-  table.sum3 td.note { font-size:.76rem; color:var(--faint); font-family:var(--serif);
-                       padding-top:.3rem; }
 </style>
 
 <!-- the sun, the moon and the earth as drawn everywhere else; this page has no
@@ -78,24 +66,13 @@
     <p class="ask">כל החשבון עד כאן נמדד ממרכז הארץ. הצופה עומד על פניה.</p>
     <p class="cap">י״ז:ה–ט</p>
     <div id="fp"></div>
-    <table class="sum3" id="opsum"></table>
     <div class="grip">
-      <label>גובה הירח מעל האופק</label>
-      <input type="range" id="rp" min="0" max="90" step="1" value="10">
+      <label>הולך את הירח סביב</label>
+      <input type="range" id="rp" min="0" max="360" step="2" value="18">
       <span class="out" id="op">—</span>
     </div>
-    <div class="grip">
-      <label>מרחק הירח, ברדיוסי הארץ</label>
-      <input type="range" id="rpd" min="56" max="64" step="0.5" value="60">
-      <span class="out" id="opd">—</span>
-    </div>
-    <p class="note">הקו היוצא ממרכז הארץ א אל הירח פוגע בגלגל המזלות בנקודה נ — <b>שם הירח באמת</b>. הקו היוצא ממקום עמידתו של הצופה מ פוגע בו בנקודה מ׳ — <b>שם הוא נראה</b>. הקשת שביניהן היא שינוי המראה, וככל שהירח נמוך יותר היא גדולה יותר. ובנכח הראש אין שינוי מראה כלל.</p>
-    <p class="note">ומה זה עושה למשך הזמן? <b>ההפרש מראה את הירח קרוב יותר לאופק, ומשום כך קרוב יותר לשמש.</b> נניח שהאורך הראשון נתן שהירח ישקע ארבעים דקות אחר החמה — למעשה הוא ישקע בפחות מזה. ובמקרה גבולי, סטייה של כמה דקות מכריעה.</p>
-    <p class="note"><b>ולמה אינו מגיע כאן למעלה שלמה?</b> מפני שהציור עומד על מרחק של פי ששים מרדיוס הארץ — והוא מספרו של יד פשוטה, לא של רבינו — ובמרחק זה אין השינוי עולה על <b>נ״ז חלקים</b> אפילו באופק ממש. ובטבלתו של רבינו מגיע שינוי מראה האורך במזל שור עד <b>מעלה אחת</b>. הזז את המרחק: <b>בפי נ״ז ומשהו יוצא בדיוק מעלה אחת</b> — שהירח באותו מעמד שעליו ערך את טבלאותיו קרוב מששים רדיוסים, וכל שהוא קרוב יותר, השינוי גדול יותר.</p>
-    <p class="note">ובמרחק הזה יוצא <b>כל חשבונו שבהלכה י״ג במדוייק</b>: האורך הראשון י״א כ״ז, שינוי המראה מעלה אחת, והאורך השני <b>יכ״ז</b> — הם הם המספרים שכתב. וזו ראיה יפה להנחתו של ר׳ רפאל הנובר, שכל הטבלאות ערוכות למעמד אחד ידוע.</p>
-    <p class="note">ולכן ״בשעת הראייה <b>לעולם גורעין</b>״ — ודקדק ר׳ לוי אבן חביב: ״וכן תמיד אחר חצי היום, <b>אבל קודם חצי יום הוא בהפך שמוסיפין</b>״.</p>
-    <p class="src">הרמב״ם המבואר, מבוא סי׳ ס״ח — ציורים 147–150 · ר׳ לוי אבן חביב, י״ז:ה · המפרש, י״ז:ו</p>
-    <p class="goes"><a href="kh17-5.html">אל השיעור: שינוי המראה לאורך</a> · <a href="kh17-7.html">ולרוחב</a></p>
+    <p class="note">בשני האופקים ההפרש בתכלית גדלו, בנכח הראש אינו כלום, ותחת הארץ אין ראייה כלל. ובשעת הראייה הירח נמוך במערב — שם דוקא.</p>
+    <p class="goes"><a href="kh17-5.html">אל השיעור: שינוי המראה לאורך — ודרכו הקצרה של רבינו לידע גובה הירח</a></p>
   </div>
 
   <div class="why-fig" id="fgbox" style="--c:var(--mean)">
@@ -255,27 +232,7 @@
   function ns(v) { return (v >= 0 ? "צפוני " : "דרומי ") + Math.abs(v).toFixed(2) + "°"; }
   var deg = function (v) { return v + "°"; };
 
-  /* his own first length, from the worked example of י״ז:י״ג */
-  var ORECH1 = 11 + 27 / 60;
-  function sumRows(alt, dist) {
-    var par = parallaxAt(alt, dist), now = ORECH1 - par;
-    return '<tr><td class="n">אורך ראשון</td><td class="v">' + degMin(ORECH1) + "</td></tr>" +
-      '<tr class="d"><td class="n">שינוי המראה</td><td class="v">− ' +
-      Math.round(par * 60) + "′</td></tr>" +
-      '<tr class="out cut"><td class="n">אורך שני</td><td class="v">' + degMin(now) + "</td></tr>" +
-      '<tr><td class="note" colspan="2">בגובה ' + Math.round(alt) + "° ובמרחק פי " + dist +
-      " · ובטבלתו לפי המזל, בין ל״ד׳ לס׳</td></tr>";
-  }
-  wire("fp", figParallax, ["rp", "rpd"], ["op", "opd"],
-       [deg, function (v) { return "פי " + v; }]);
-  function redraw() {
-    document.getElementById("opsum").innerHTML =
-      sumRows(Number(document.getElementById("rp").value),
-              Number(document.getElementById("rpd").value));
-  }
-  document.getElementById("rp").addEventListener("input", redraw);
-  document.getElementById("rpd").addEventListener("input", redraw);
-  redraw();
+  wire("fp", figParallax, ["rp"], ["op"], [deg]);
   wire("f3", figGovah, ["r3"], ["o3"], [ns]);
   wire("f4", figTime, ["r4"], ["o4"], [function (v) { return Math.round(v * 4) + " דקות"; }]);
   wire("fg", figGlobe, ["rg"], ["og"], [deg]);
