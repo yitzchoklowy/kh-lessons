@@ -136,6 +136,10 @@
        instead, and lands in the same range. */
     var par = Math.asin(Math.sin((90 - alt) * RD) / 60) / RD;
     var was = FP.orech, now = was - par;
+    /* on its own ground, the way the wheel's corner readout sits — the circle of
+       the mazalos passes behind it rather than through the figures */
+    g += '<rect x="20" y="24" width="256" height="124" rx="10" fill="var(--card)" ' +
+         'stroke="currentColor" stroke-opacity=".16"></rect>';
     var L = 34, R = 232, row = function (y, name, val, o) {
       o = o || {};
       return tx(L, y, name, { anchor: "start", op: o.dim ? ".5" : ".7", size: 11 }) +
@@ -148,8 +152,8 @@
              { fill: "var(--mas)", size: 15, weight: "700" });
     g += ln(L, 82, R, 82, "currentColor", 'stroke-opacity=".25"');
     g += row(104, "אורך שני", degMin(now), { fill: "var(--mean)", size: 16, weight: "700" });
-    g += tx(L, 124, "בגובה " + Math.round(alt) + "° · ובטבלתו לפי המזל, בין ל״ד׳ לס׳",
-            { anchor: "start", op: ".4", size: 9.5 });
+    g += tx(L, 122, "בגובה " + Math.round(alt) + "° מעל האופק", { anchor: "start", op: ".42", size: 9.5 });
+    g += tx(L, 137, "ובטבלתו לפי המזל — בין ל״ד׳ לס׳", { anchor: "start", op: ".42", size: 9.5 });
     g += tx(320, 466, "הציור מוגזם — הירח רחוק מן הארץ כפי ששים מרדיוסה, ואז הקשת קטנה בהרבה",
             { op: ".45", size: 10 });
     return svg(FP.w, FP.h, "fp",

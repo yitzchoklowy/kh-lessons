@@ -1,0 +1,349 @@
+<title>חלוקת הגלגל</title>
+<!--@include partials/lesson-head.html-->
+<style>
+  /* Chapter eleven has no body travelling yet — the colour on this page belongs
+     to the place being read, and the circle it is read off. */
+  .halacha b.pl { color:var(--mas); }
+  .page.solo > .rig { max-width:none; }
+  .rig .art svg .grab { cursor:grab; touch-action:none; }
+  .rig .art svg.dragging, .rig .art svg.dragging .grab { cursor:grabbing; }
+  .dial.p { --c:var(--mas); }
+  .dial .mz { font-family:var(--serif); font-size:1.5rem; direction:rtl; color:var(--mas); }
+  .dial .mz .gl { font-family:'Segoe UI Symbol','Noto Sans Symbols 2',serif; font-size:1.2rem; }
+  .rchart td.moves small { direction:rtl; text-align:right; }
+  /* what a row gives up sits over what is left of the place after it */
+  .rchart td.use small { display:block; font-size:.7rem; color:var(--faint);
+                         direction:rtl; text-align:right; margin-top:.1rem; }
+</style>
+
+<div class="page solo">
+
+  <header>
+    <h1 class="bigtitle">חלוקת הגלגל</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/11" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״א:ז–ט</a></div>
+
+    <p class="halacha lead">העיקרים שצריך אדם לידע אותן תחילה לכל חשבונות האצטגנינות, בין לדרכי חשבון הראייה בין לשאר הדברים, אלו הן,<br>
+      הגלגל מוחלק ב<b class="pl">שלש מאות ושישים מעלות</b>,<br>
+      כל מזל ומזל <b class="pl">שלשים מעלות</b>, וההתחלה מתחילת מזל טלה.<br>
+      וכל מעלה ומעלה <b class="pl">שישים חלקים</b>, וכל חלק וחלק שישים שניות, וכל שניה ושניה שישים שלישיות.<br>
+      וכן תדקדק החשבון ותחלק כל זמן שתרצה:</p>
+
+    <p class="halacha">לפיכך אם יצא לך בחשבון שכוכב פלוני מקומו בגלגל בשבעים מעלות ושלשים חלקים וארבעים שניות,<br>
+      תדע שכוכב זה הוא במזל תאומים, <b class="pl">בחצי מעלת אחת עשרה</b> ממזל זה.<br>
+      לפי שמזל טלה שלשים מעלות, ומזל שור שלשים, נשאר עשר מעלות ומחצה ממזל תאומים, וארבעים שניות מחצי המעלה האחרון:</p>
+
+    <p class="halacha">וכן אם יצא מקומו בגלגל בשלש מאות ועשרים מעלות, תדע שכוכב זה במזל דלי, <b class="pl">בעשרים מעלה בו</b>.<br>
+      ועל דרך זו בכל המנינות.<br>
+      וסדר המזלות כך הוא, טלה, שור, תאומים, סרטן, אריה, בתולה, מאזנים, עקרב, קשת, גדי, דלי, דגים:</p>
+  </header>
+
+  <div class="rig" id="rig">
+    <div class="hdr"><span id="figSay"></span><span class="mk">י״א:ז–ט</span></div>
+
+    <div class="stage">
+      <div class="art">
+        <svg viewBox="0 0 620 640" role="img" id="art"
+             aria-label="The circle of the mazalos, three hundred and sixty degrees round, twelve sectors of thirty, with a place marked on it that can be taken hold of and turned.">
+        </svg>
+      </div>
+
+      <div class="dials">
+        <div class="dial p">
+          <span class="lbl"><i></i>מקומו בגלגל</span>
+          <span class="val" id="dLon">—</span>
+          <span class="en">מראש טלה</span>
+        </div>
+        <div class="dial p">
+          <span class="lbl">המזל</span>
+          <span class="mz" id="dMazal">—</span>
+          <span class="in" id="dPassed">—</span>
+        </div>
+        <div class="dial p">
+          <span class="lbl">המעלה</span>
+          <span class="val" id="dOrd">—</span>
+          <span class="in" id="dInto">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button type="button" id="toHead">⏮ ראש טלה</button>
+      <button type="button" id="mMazal">‹ מזל</button>
+      <button type="button" id="mDeg">−1°</button>
+      <button type="button" id="mMin">−1′</button>
+      <button type="button" class="play" id="play">▶ Turn</button>
+      <button type="button" id="pMin">+1′</button>
+      <button type="button" id="pDeg">+1°</button>
+      <button type="button" id="pMazal">מזל ›</button>
+      <span class="gap"></span>
+      <label>degree <input type="number" id="degIn" step="1"></label>
+    </div>
+    <div class="transport second">
+      <span class="tag">watch</span>
+      <button type="button" class="run" data-run="deg">one degree</button>
+      <button type="button" class="run" data-run="mazal">one mazal</button>
+      <button type="button" class="run" data-run="round">the whole round</button>
+    </div>
+  </div>
+
+  <div class="rcharts">
+    <div class="rchart" id="cMaz" style="--c:var(--mas)">
+      <div class="rc-head"><h4>וסדר המזלות כך הוא</h4><span class="rc-ref">י״א:ז, ט</span></div>
+      <p class="rc-note">ההתחלה מתחילת מזל טלה</p>
+      <div class="rc-scroll">
+        <table>
+          <thead><tr><th>מזל</th><th>מן</th><th>מה נוטל ממקום זה</th></tr></thead>
+          <tbody id="tMaz"></tbody>
+        </table>
+      </div>
+      <div class="rc-sum" id="sMaz"></div>
+    </div>
+
+    <div class="rchart" id="cLadder" style="--c:var(--mas)">
+      <div class="rc-head"><h4>וכן תדקדק החשבון</h4><span class="rc-ref">י״א:ז</span></div>
+      <p class="rc-note">כל אחד שישים של זה שתחתיו</p>
+      <table>
+        <thead><tr><th>שם</th><th>כמה בו</th><th>מקומו כאן</th></tr></thead>
+        <tbody id="tLad"></tbody>
+      </table>
+      <div class="rc-sum" id="sLad"></div>
+    </div>
+  </div>
+
+  <div class="book" id="work">
+    <h3>לפי שמזל טלה שלשים מעלות, ומזל שור שלשים</h3>
+    <p class="cap">י״א:ח</p>
+    <table class="led"><tbody id="led"></tbody></table>
+    <div class="agree">
+      <h4>ושני המקומות שהוא עצמו מוציא</h4>
+      <table class="cmp"><tbody id="his"></tbody></table>
+    </div>
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh11.js-->
+
+  var art = document.getElementById("art");
+  var place = 0, playing = false, last = 0, run = null, runFrom = 0, runSpan = 0;
+
+  function el(id) { return document.getElementById(id); }
+
+  /* ── his subtraction, checked against the engine before it is shown ── */
+  function ledgerRows(p) {
+    var rows = [], left = p.lon, k;
+    rows.push({ l: "מקומו בגלגל", a: "", t: formatDms(p.lon) });
+    for (k = 0; k < p.passed; k++) {
+      left -= ARC;
+      rows.push({
+        l: "מזל " + CONSTANTS.CONSTELLATIONS[k],
+        s: degStr(ARC),
+        a: "− " + degStr(ARC),
+        t: formatDms(left)
+      });
+    }
+    if (Math.abs(left - p.into) > 1e-9) return null;
+    rows.push({
+      l: "נשאר במזל " + p.mazal,
+      s: "מעלה " + gem(p.ordinal) + " ממזל זה",
+      a: "",
+      t: formatDms(p.into),
+      out: true
+    });
+    return rows;
+  }
+
+  /* ── the twelve, and what this place takes from each ── */
+  function paintMazal(p) {
+    var rows = mazalRows(), h = "", left = p.lon, i;
+    for (i = 0; i < rows.length; i++) {
+      var r = rows[i], use = "", cls = "";
+      if (i < p.passed) { left -= ARC; use = "− " + degStr(ARC) + "<small>נשאר " + formatDms(left) + "</small>"; }
+      else if (i === p.index) { cls = " class=\"on\""; use = "נשאר <b>" + formatDms(p.into) + "</b>"; }
+      h += "<tr" + cls + '><td class="in">' + r.name +
+           ' <span style="font-family:\'Segoe UI Symbol\',serif">' + r.glyph + "</span></td>" +
+           '<td class="moves">' + r.from + "°</td>" +
+           '<td class="use">' + use + "</td></tr>";
+    }
+    el("tMaz").innerHTML = h;
+    el("sMaz").innerHTML = "שנים עשר מזלות, <b>" + degStr(ARC) + "</b> כל אחד — <b>" +
+      degStr(ROUND) + "</b> הגלגל כולו." +
+      '<span class="eq">' + p.passed + " × " + ARC + "° + " + formatDms(p.into) +
+      " = " + formatDms(p.lon) + "</span>";
+  }
+
+  /* ── the ladder of י״א:ז, and where this place sits on each rung ── */
+  function paintLadder(p) {
+    var d = decimalToDms(p.into);
+    var rungs = [
+      { n: "הגלגל", in: ROUND + " מעלות", at: formatDms(p.lon) + " מראש טלה" },
+      { n: "מזל", in: ARC + " מעלות", at: "מזל " + p.mazal + " — " + gem(p.index + 1) + " במנין" },
+      { n: "מעלה", in: PER + " חלקים", at: "מעלה " + gem(p.ordinal) + " במזל" },
+      { n: "חלק", in: PER + " שניות", at: d.minutes + "′ במעלה" },
+      { n: "שניה", in: PER + " שלישיות", at: Math.floor(d.seconds) + "″ בחלק" }
+    ];
+    var h = "", i;
+    for (i = 0; i < rungs.length; i++) {
+      h += '<tr><td class="in">' + rungs[i].n + "</td>" +
+           '<td class="moves">' + rungs[i].in + "</td>" +
+           '<td class="use">' + rungs[i].at + "</td></tr>";
+    }
+    el("tLad").innerHTML = h;
+    el("sLad").innerHTML = "ותחלק כל זמן שתרצה — <b>" + PER + "</b> בכל מדרגה.";
+  }
+
+  /* ── the two places he works out himself ── */
+  function paintHis() {
+    var his = [
+      { lon: dmsToDecimal({ degrees: 70, minutes: 30, seconds: 40 }),
+        said: "במזל תאומים, בחצי מעלת אחת עשרה", ref: "י״א:ח" },
+      { lon: dmsToDecimal({ degrees: 320 }),
+        said: "במזל דלי, בעשרים מעלה בו", ref: "י״א:ט" }
+    ];
+    var h = "", i;
+    for (i = 0; i < his.length; i++) {
+      var p = readPlace(his[i].lon);
+      h += '<tr><td class="t">' + formatDms(p.lon) + "</td>" +
+           '<td class="a">' + his[i].said + "</td>" +
+           '<td class="l">מזל ' + p.mazal + ", מעלה " + gem(p.ordinal) +
+           " — " + formatDms(p.into) + " ממנו</td>" +
+           '<td class="o">' + his[i].ref + "</td></tr>";
+    }
+    el("his").innerHTML = h;
+  }
+
+  /* ── show one place ── */
+  function show(deg) {
+    place = normalizeDegrees(deg);
+    var p = readPlace(place);
+    paintWheel(place);
+    el("dLon").textContent = formatDms(p.lon);
+    el("dMazal").innerHTML = '<span class="gl">' + p.glyph + "</span> " + p.mazal;
+    el("dPassed").textContent = p.passed + " מזלות שלמים לפניו";
+    el("dOrd").textContent = gem(p.ordinal);
+    el("dInto").textContent = formatDms(p.into) + " מן המזל";
+    el("figSay").textContent = "מקומו בגלגל " + formatDms(p.lon) +
+      " — במזל " + p.mazal + ", מעלה " + gem(p.ordinal) + " בו.";
+    if (document.activeElement !== el("degIn")) el("degIn").value = Math.floor(place);
+    paintLed(el("led"), ledgerRows(p));
+    paintMazal(p);
+    paintLadder(p);
+  }
+
+  function setPlace(deg) { stopRun(); show(deg); }
+
+  /* ── the transport, in the same place and the same shape as every page ── */
+  function stopRun() { run = null; }
+  function stopPlay() { playing = false; el("play").textContent = "▶ Turn"; }
+
+  var SPANS = { deg: 1, mazal: ARC, round: ROUND };
+
+  function frame(t) {
+    if (!last) last = t;
+    var dt = (t - last) / 1000;
+    last = t;
+    if (run) {
+      runFrom += dt * run.rate;
+      if (runFrom >= runSpan) { show(run.start + runSpan); run = null; }
+      else show(run.start + runFrom);
+    } else if (playing) {
+      show(place + dt * 12);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function startRun(kind) {
+    stopPlay();
+    runSpan = SPANS[kind];
+    runFrom = 0;
+    run = { start: place, rate: kind === "deg" ? 0.4 : kind === "mazal" ? 8 : 60 };
+  }
+
+  el("toHead").addEventListener("click", function () { stopPlay(); setPlace(0); });
+  el("mDeg").addEventListener("click", function () { stopPlay(); setPlace(Math.floor(place) - 1); });
+  el("pDeg").addEventListener("click", function () { stopPlay(); setPlace(Math.floor(place) + 1); });
+  el("mMin").addEventListener("click", function () { stopPlay(); setPlace(place - 1 / PER); });
+  el("pMin").addEventListener("click", function () { stopPlay(); setPlace(place + 1 / PER); });
+  el("mMazal").addEventListener("click", function () {
+    stopPlay();
+    var i = readPlace(place).index;
+    setPlace((readPlace(place).into < 1e-9 ? i - 1 : i) * ARC);
+  });
+  el("pMazal").addEventListener("click", function () {
+    stopPlay(); setPlace((readPlace(place).index + 1) * ARC);
+  });
+  el("play").addEventListener("click", function () {
+    stopRun(); playing = !playing; last = 0;
+    el("play").textContent = playing ? "❙❙ Pause" : "▶ Turn";
+  });
+  var runBtns = document.querySelectorAll(".run");
+  for (var r = 0; r < runBtns.length; r++) {
+    runBtns[r].addEventListener("click", function (e) { startRun(e.currentTarget.dataset.run); });
+  }
+  el("degIn").addEventListener("change", function () {
+    var n = parseFloat(el("degIn").value);
+    if (!isNaN(n)) { stopPlay(); setPlace(n); }
+  });
+
+  art.innerHTML = wheelMarkup();
+  grabWheel(art, function (deg) { stopPlay(); setPlace(deg); });
+  paintHis();
+  show(dmsToDecimal({ degrees: 70, minutes: 30, seconds: 40 }));
+  requestAnimationFrame(frame);
+
+  /* ── work it yourself ── */
+  drill(document.getElementById("drill"), {
+    title: "עשה אתה", ref: "י״א:ז–ט",
+    note: "מקום בגלגל נתון לך. אמור אותו כדרכו.",
+    newCase: function () {
+      var deg = Math.random() * ROUND;
+      var p = readPlace(deg);
+      return { lon: p.lon, p: p };
+    },
+    caseLine: function (c) {
+      return "יצא לך בחשבון שכוכב פלוני מקומו בגלגל <b>" + formatDms(c.lon) + "</b>.";
+    },
+    steps: [
+      { ask: function () { return "כמה מזלות שלמים עברו לפניו?"; },
+        type: "int", unit: "מזלות",
+        answer: function (c) { return c.p.passed; },
+        hint: function () { return "כל מזל " + degStr(ARC) + "."; },
+        after: function (c) { return degStr(c.p.passed * ARC) + " עד ראש המזל שהוא בו."; } },
+
+      { ask: function () { return "באיזה מזל הוא?"; },
+        type: "pick",
+        choices: function (c) {
+          var i = c.p.index, pick = [i, (i + 1) % 12, (i + 5) % 12, (i + 8) % 12];
+          pick.sort(function (a, b) { return a - b; });
+          return pick.map(function (k) {
+            return { label: CONSTANTS.CONSTELLATIONS[k], value: k };
+          });
+        },
+        answer: function (c) { return c.p.index; },
+        hint: function () { return "וההתחלה מתחילת מזל טלה."; },
+        after: function (c) { return "טלה, שור, תאומים, סרטן, אריה, בתולה, מאזנים, עקרב, קשת, גדי, דלי, דגים — והוא " + gem(c.p.index + 1) + " בהם."; } },
+
+      { ask: function () { return "וכמה נשאר לו מן המזל?"; },
+        type: "dms",
+        answer: function (c) { return c.p.into; },
+        hint: function () { return "גרע " + degStr(ARC) + " לכל מזל שעבר."; },
+        after: function (c) { return degStr(c.p.passed * ARC) + " + " + formatDms(c.p.into) + " = " + formatDms(c.lon) + "."; } },
+
+      { ask: function () { return "ובאיזו מעלה מן המזל הוא עומד?"; },
+        type: "int", unit: "המעלה",
+        answer: function (c) { return c.p.ordinal; },
+        hint: function () { return "מקום שעבר עשר מעלות ומחצה — בחצי מעלת אחת עשרה הוא."; },
+        after: function (c) { return "מעלה " + gem(c.p.ordinal) + " במזל " + c.p.mazal + "."; } }
+    ]
+  });
+})();
+</script>
