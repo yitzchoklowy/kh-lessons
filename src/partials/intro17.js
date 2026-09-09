@@ -42,10 +42,11 @@
   var FP = { w: 640, h: 476, cx: 152, cy: 414, r: 40, far: 322, moon: 208,
              orech: 11 + 27 / 60 };
 
-  function figParallax(alt) {
+  function figParallax(alt, dist) {
     var g = "", a = alt * RD;
     var mx = FP.cx, my = FP.cy - FP.r;                       // the man, on top
-    var lx = mx + FP.moon * Math.cos(a), ly = my - FP.moon * Math.sin(a);
+    var reach = FP.moon * ((dist || 60) / 60);               // nearer moon, nearer drawn
+    var lx = mx + reach * Math.cos(a), ly = my - reach * Math.sin(a);
 
     /* the circle of the mazalos — a quarter of it, drawn once and for all */
     var arc = "";
@@ -75,7 +76,7 @@
     g += tx(434, my - 9, "מערב", { anchor: "end", op: ".8", size: 12, weight: "700" });
     g += tx(252, my + 16, "האופק שלו", { anchor: "start", op: ".4", size: 9.5 });
 
-    var ARCR = FP.moon, sky = "";
+    var ARCR = reach, sky = "";
     for (var h = 0; h <= 90; h += 1.5) {
       var sp = [mx + ARCR * Math.cos(h * RD), my - ARCR * Math.sin(h * RD)];
       sky += (sky ? " L " : "M ") + sp[0].toFixed(1) + " " + sp[1].toFixed(1);
@@ -136,24 +137,10 @@
        instead, and lands in the same range. */
     var par = Math.asin(Math.sin((90 - alt) * RD) / 60) / RD;
     var was = FP.orech, now = was - par;
-    /* on its own ground, the way the wheel's corner readout sits — the circle of
-       the mazalos passes behind it rather than through the figures */
-    g += '<rect x="20" y="24" width="256" height="124" rx="10" fill="var(--card)" ' +
-         'stroke="currentColor" stroke-opacity=".16"></rect>';
-    var L = 34, R = 232, row = function (y, name, val, o) {
-      o = o || {};
-      return tx(L, y, name, { anchor: "start", op: o.dim ? ".5" : ".7", size: 11 }) +
-             tx(R, y, val, { anchor: "end", fill: o.fill || "currentColor",
-                             op: o.fill ? "1" : ".85", size: o.size || 14, mono: true,
-                             weight: o.weight || "500" });
-    };
-    g += row(44, "אורך ראשון", degMin(was), { dim: true });
-    g += row(70, "שינוי המראה", "− " + Math.round(par * 60) + "′",
-             { fill: "var(--mas)", size: 15, weight: "700" });
-    g += ln(L, 82, R, 82, "currentColor", 'stroke-opacity=".25"');
-    g += row(104, "אורך שני", degMin(now), { fill: "var(--mean)", size: 16, weight: "700" });
-    g += tx(L, 122, "בגובה " + Math.round(alt) + "° מעל האופק", { anchor: "start", op: ".42", size: 9.5 });
-    g += tx(L, 137, "ובטבלתו לפי המזל — בין ל״ד׳ לס׳", { anchor: "start", op: ".42", size: 9.5 });
+    /* The three figures do not live in the drawing at all. Wherever they were
+       put inside it, the moon or its two landings came to sit on them at some
+       height of the slider — so they are page text above it, where nothing can
+       collide with them and the real fonts can be used. */
     g += tx(320, 466, "הציור מוגזם — הירח רחוק מן הארץ כפי ששים מרדיוסה, ואז הקשת קטנה בהרבה",
             { op: ".45", size: 10 });
     return svg(FP.w, FP.h, "fp",
@@ -433,4 +420,13 @@
     return svg(FM.w, FM.h, "fm",
       "Ten degrees of the circle of the mazalos, and the arc of the equator that comes down " +
       "with them: longer in some mazalos, shorter in others.", g);
+  }
+
+  /* The shift at a given height and distance — plain geometry, not his table.
+     Sixty earth-radii is יד פשוטה's round figure for the moon's distance, not
+     the Rambam's own; at sixty the shift can never pass fifty-seven minutes,
+     while his table reaches a full degree at שור. The distance is what closes
+     that gap: a full degree wants the moon at about fifty-seven radii. */
+  function parallaxAt(alt, dist) {
+    return Math.asin(Math.sin((90 - alt) * RD) / (dist || 60)) / RD;
   }
