@@ -1,0 +1,148 @@
+<title>כיצד — ייראה הלילה</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh17.css--></style>
+
+<div class="page solo" data-emph="gap">
+
+  <header>
+    <h1 class="bigtitle">כיצד — ייראה הלילה</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/17" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ז:כ״ב–כ״ד</a></div>
+    <p class="halacha lead">כיצד, באנו להתבונן בקשת הראייה של ליל ערב שבת שני לחודש אייר משנה זו.<br>
+      יצא לנו בחשבון קשת הראייה <b class="mas">אחת עשרה מעלות ואחד עשר חלקים</b>, כמו שידעתה.<br>
+      ולפי שהיתה קשת הראייה בין עשר עד ארבע עשרה, ערכנו אותה אל האורך הראשון.<br>
+      וכבר ידעת שהאורך היה בליל זה <b class="mean">אחת עשרה מעלות ושבעה ועשרים חלקים</b>.<br>
+      ולפי שהיתה קשת הראייה יתר על אחת עשרה מעלות, והיה האורך הראשון יתר על אחת עשרה, <b class="mean">ייודע שודאי ייראה בליל זה</b>, לפי הקיצין הקצובות.<br>
+      וכן תעשה בכל קשת וקשת עם האורך הראשון שלה:</p>
+    <p class="halacha">וכבר ראיתה מן המעשים האלו כמה חשבונות יש בו, וכמה תוספות, וכמה גירועין, אחר שיגענו הרבה עד שהמציאנו דרכים קרובים שאין בחשבונם עומק גדול:</p>
+    <p class="halacha">שהירח, <b class="mas">עקלקלות גדולות יש במעגלותיו</b>. ולפיכך אמרו חכמים, ״שמש ידע מבואו״, ירח לא ידע מבואו. ואמרו חכמים, פעמים בא בארוכה פעמים בא בקצרה, כמו שתראה מחשבונות אלו, שפעמים תוסיף ופעמים תגרע עד שתצא קשת הראייה, ופעמים תהיה קשת הראייה ארוכה ופעמים קצרה, כמו שביארנו:</p>
+    <p class="halacha">וטעם כל אלו החשבונות, ומפני מה מוסיפין מנין זה ומפני מה גורעין, והיאך נודע כל דבר ודבר מאלו הדברים, והראיה על כל דבר ודבר, היא חכמת התקופות והגימטריאות שחיברו בה חכמי יון ספרים הרבה, והם המצויין עכשיו ביד החכמים.<br>
+      אבל הספרים שחיברו חכמי ישראל שהיו בימי הנביאים מבני יששכר, לא הגיעו אלינו.<br>
+      ומאחר שכל אלו הדברים בראיות ברורות הן, שאין בהן דופי ואי אפשר לאדם להרהר אחריהן, אין חוששין למחבר, בין שחיברו אותם נביאים בין שחיברו אותם גויים.<br>
+      <b class="mean">שכל דבר שנתגלה טעמו ונודעה אמיתתו בראיות שאין בהן דופי, אין סומכין על זה האיש שאמרו או שלימדו, אלא על הראיה שנתגלתה והטעם שנודע</b>:</p>
+  </header>
+
+  <div class="verdict" id="verdict" style="--c:var(--mean)"></div>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="book m" id="work">
+        <h3><i></i>הקשת, והאורך, והקץ</h3>
+        <p class="cap">י״ז:כ״ב</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div class="agree" id="agree"></div>
+      </div>
+      <div class="book s" id="figs">
+        <h3><i></i>פעמים בא בארוכה, פעמים בקצרה</h3>
+        <div id="sky"></div>
+        <div id="chain"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mean)"></div>
+
+  <p class="note"><a href="kh17-15.html">קיצי הראייה</a> · <a href="calculator.html">כל החשבון</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/wheel.js-->
+
+  var HIS_DAY = 29;
+
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function show(n) {
+    var v = chapter17At(n), d = v.verdict;
+    paint(document.getElementById("led"), [
+      { l: "קשת הראייה", s: "י״ז:י״ב", a: "", t: degMin(v.keshet) },
+      { l: "אורך ראשון", s: "י״ז:א", a: "", t: degMin(v.orech1) },
+      { l: d.row ? "והקץ מבקש אורך ראשון" : "והקשת מכריעה לבדה", s: d.mark,
+        a: "", t: d.row ? d.row.orechMin + "°" : "—", drop: true },
+      { l: "כמה תמתין אחר השקיעה", s: "מעלה אחת — ארבע דקות", a: "× 4",
+        t: Math.round(v.keshet * 4) + " דקות", drop: true },
+      { l: d.seen ? "ודאי ייראה" : "אינו נראה", a: "", t: "", out: true }
+    ]);
+    document.getElementById("verdict").innerHTML =
+      "<h3>ליל " + (n === HIS_DAY ? "ערב שבת, שני לחודש אייר" : n.toLocaleString() + " מן העיקר") + "</h3>" +
+      '<span class="say ' + (d.seen ? "yes" : "no") + '">' + (d.seen ? "ודאי ייראה" : "אינו נראה") +
+      '</span><span class="mark">' + d.mark + "</span>" +
+      '<span class="why">' + d.says + "</span>";
+    agree(n, v);
+    markSky(v);
+    markChain(v, "keshet");
+  }
+
+  /* His own three figures for this night, and his verdict, quoted from י״ז:כ״ב. */
+  function agree(n, v) {
+    var host = document.getElementById("agree");
+    if (n !== HIS_DAY) {
+      host.innerHTML = '<p class="cap">חשבונו שלו הוא לתשעה ועשרים יום מן העיקר.</p>';
+      return;
+    }
+    var rows = [
+      ["קשת הראייה", "י״א י״א", v.keshet, 11 + 11 / 60],
+      ["אורך ראשון", "י״א כ״ז", v.orech1, 11 + 27 / 60]
+    ];
+    var h = '<h4>אצלו · וכאן</h4><table class="cmp"><tbody>';
+    for (var i = 0; i < rows.length; i++) {
+      var off = Math.round(Math.abs(rows[i][2] - rows[i][3]) * 60);
+      h += '<tr><td class="l">' + rows[i][0] + '</td><td class="a">' + rows[i][1] + "</td>" +
+           '<td class="t">' + degMin(rows[i][2]) + '</td><td class="o">' +
+           (off === 0 ? "—" : off + "′") + "</td></tr>";
+    }
+    h += '<tr><td class="l">הכרעתו</td><td class="a">ודאי ייראה</td><td class="t">' +
+         (v.verdict.seen ? "ודאי ייראה" : "אינו נראה") + '</td><td class="o">' +
+         (v.verdict.seen ? "—" : "≠") + "</td></tr>";
+    host.innerHTML = h + "</tbody></table>";
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    document.getElementById("sky").innerHTML = skyFigure();
+    document.getElementById("chain").innerHTML = chainFigure();
+    setDay(HIS_DAY);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה, לליל אחר", ref: "י״ז:כ״ב",
+      note: "ערוך קשת וקשת עם האורך הראשון שלה.", fmt: degMin,
+      newCase: function () { return investigateDay(); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>קשת הראייה <b>" + degMin(c.keshet) + "</b>" +
+          " · אורך ראשון <b>" + degMin(c.orech1) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "ייראה הירח בליל זה?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "ודאי ייראה", value: true }, { label: "אינו נראה", value: false }];
+          },
+          answer: function (c) { return c.verdict.seen; },
+          hint: function (c) { return "הקשת " + degMin(c.keshet) + " — מצא את קצה, וראה מה אורך הוא מבקש."; },
+          after: function (c) { return c.verdict.says; } },
+
+        { ask: function () { return "וכמה דקות תמתין אחר שקיעת החמה עד שישקע הירח?"; },
+          type: "int", unit: "דקות",
+          answer: function (c) { return Math.round(c.keshet * 4); },
+          hint: function () { return "מעלה אחת של קשת הראייה — ארבע דקות."; },
+          after: function () { return "ובאותה שעה קלה צריך להבחין בחרמש הדק."; } }
+      ]
+    });
+  }
+})();
+</script>

@@ -1,0 +1,152 @@
+<title>מעגל הירח</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh17.css--></style>
+
+<div class="page solo" data-emph="gap">
+
+  <header>
+    <h1 class="bigtitle">מעגל הירח</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/17" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ז:י–י״א</a></div>
+    <p class="halacha lead">ואחר כך תחזור ותקח מן הרוחב השני הזה <b class="mas">מקצתו</b>, מפני שהירח <b class="mas">נלוז מעט במעגלו</b>.<br>
+      וכמה היא המקצת שתקח ממנו — לפי מקום הירח, ושני מזלות מכוונין זה כנגד זה בכל שורה:</p>
+    <p class="halacha">ואחר כך תחזור ותתבונן ברוחב הירח, ותראה אם הוא צפוני או דרומי.<br>
+      אם היה <b class="mean">צפוני, תגרע</b> מעגל הירח הזה מן האורך השני, ואם היה רוחב הירח <b class="mas">דרומי, תוסיף</b> המעגל הזה על האורך השני:</p>
+    <p class="halacha">במה דברים אמורים, בשהיה מקום הירח <b class="mean">מתחילת מזל גדי עד סוף מזל תאומים</b>.<br>
+      אבל אם היה הירח <b class="mean">מתחילת מזל סרטן עד סוף מזל קשת, יהיה הדבר הפך</b>, שאם יהיה רוחב הירח צפוני, תוסיף המעגל על האורך השני, ואם היה רוחב הירח דרומי, תגרע המעגל מן האורך השני.<br>
+      ומה שיהיה האורך השני אחר שתוסיף עליו או תגרע ממנו הוא הנקרא <b class="mean">אורך שלישי</b>:</p>
+    <p class="halacha">ודע שאם לא יהיה שם <b class="mas">נליזת מעגל</b>, ולא נתן החשבון לקחת מן הרוחב השני כלום, יהיה האורך השני עצמו הוא האורך השלישי בלא פחות ולא יתר:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="rchart" id="chart" style="--c:var(--mas)"></div>
+      <div class="book m" id="work">
+        <h3><i></i>מן האורך השני אל השלישי</h3>
+        <p class="cap">י״ז:י–י״א</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div id="chain"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh17-7.html">מהיכן בא הרוחב השני</a> · <a href="kh17-12.html">אורך רביעי וקשת הראייה</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/wheel.js-->
+
+  var ROWS = circleRows();
+
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function show(n) {
+    var v = chapter17At(n), i = bandIndex(v.amiti);
+    var none = v.band.fraction === 0;
+    paint(document.getElementById("led"), [
+      { l: "רוחב שני", s: v.north2 ? "צפוני" : "דרומי", a: "", t: degMin(v.rochav2) },
+      { l: none ? "אין כאן נליזת מעגל" : "תקח ממנו " + v.band.phrase, s: "י״ז:י",
+        a: none ? "—" : "× " + v.band.phrase, t: degMin(v.maagal), drop: none },
+      { l: "אורך שני", s: "י״ז:ה", a: "", t: degMin(v.orech2) },
+      { l: none ? "האורך השני עצמו הוא השלישי"
+                : (v.maagalAdds ? "תוסיף המעגל" : "תגרע המעגל"), s: "י״ז:י״א",
+        a: none ? "0′" : (v.maagalAdds ? "+ " : "− ") + degMin(v.maagal), t: degMin(v.orech3) },
+      { l: "אורך שלישי", a: "", t: degMin(v.orech3), out: true }
+    ]);
+
+    var sum = "הירח ב<b>" + moonPlace(v.amiti) + "</b>";
+    if (none) {
+      sum += " — אין כאן נליזת מעגל." +
+             '<span class="eq">' + degMin(v.orech2) + "   →   " + degMin(v.orech3) + "</span>";
+    } else {
+      sum += ", ותקח <b>" + v.band.phrase + "</b> מן הרוחב השני. והרוחב " +
+             (v.north2 ? "צפוני" : "דרומי") + ", והירח " +
+             (v.half ? "מגדי עד תאומים" : "מסרטן עד קשת") + " — " +
+             (v.maagalAdds ? "תוסיף" : "תגרע") + "." +
+             '<span class="eq">' + degMin(v.orech2) + "   " + (v.maagalAdds ? "+" : "−") + "   " +
+             degMin(v.maagal) + "   →   " + degMin(v.orech3) + "</span>";
+    }
+    traceListChart(document.getElementById("chart"), i < 0 ? [] : [{ i: i, tag: "← כאן" }], sum);
+    markChain(v, "orech3");
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "מעגל הירח", ref: "י״ז:י",
+      heads: ["מקום הירח", "תקח מן הרוחב השני"],
+      rows: ROWS.map(function (r) {
+        return { in: bandLabel(r), sub: bandLabel2(r),
+                 out: r.fraction === 0 ? "לא תקח כלום" : r.phrase };
+      })
+    });
+    document.getElementById("chain").innerHTML = chainFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ז:י–י״א",
+      note: "מקצת מן הרוחב, ולאיזה צד.", fmt: degMin,
+      newCase: function () { return investigateDay(); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>הירח ב<b>" + moonPlace(c.amiti) + "</b>" +
+          "<br>הרוחב השני <b>" + degMin(c.rochav2) + "</b> — " + (c.north2 ? "צפוני" : "דרומי") +
+          " · האורך השני <b>" + degMin(c.orech2) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "איזו מקצת תקח מן הרוחב השני?"; },
+          type: "pick",
+          choices: function () {
+            var seen = {}, out = [];
+            ROWS.forEach(function (r) {
+              if (seen[r.phrase]) return;
+              seen[r.phrase] = 1;
+              out.push({ label: r.fraction === 0 ? "לא תקח כלום" : r.phrase, value: r.phrase });
+            });
+            return out;
+          },
+          answer: function (c) { return c.band.phrase; },
+          hint: function (c) { return "מצא בטבלה את " + moonPlace(c.amiti) + "."; },
+          after: function (c) { return c.band.fraction === 0
+            ? "ואז האורך השני עצמו הוא השלישי." : "והוא מעגל הירח: " + degMin(c.maagal) + "."; } },
+
+        { ask: function () { return "תגרע אותו מן האורך השני, או תוסיף עליו?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "תגרע", value: false }, { label: "תוסיף", value: true }];
+          },
+          answer: function (c) { return c.maagalAdds; },
+          hint: function (c) { return "הרוחב " + (c.north2 ? "צפוני" : "דרומי") + ", והירח " +
+            (c.half ? "מגדי עד תאומים" : "מסרטן עד קשת — ויהיה הדבר הפך") + "."; },
+          after: function (c) { return c.half
+            ? "מגדי עד תאומים: צפוני גורע, דרומי מוסיף."
+            : "מסרטן עד קשת, והדבר הפך: צפוני מוסיף, דרומי גורע."; } },
+
+        { ask: function () { return "עשה. כמה הוא <b>האורך השלישי</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.orech3; },
+          hint: function (c) { return degMin(c.orech2) + (c.maagalAdds ? " ועוד " : " פחות ") +
+            degMin(c.maagal) + "."; },
+          after: function () { return "וממנו אל האורך הרביעי."; } }
+      ]
+    });
+  }
+})();
+</script>

@@ -1,0 +1,181 @@
+<title>אורך ראשון ורוחב ראשון</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh17.css--></style>
+
+<div class="page solo" data-emph="gap">
+
+  <header>
+    <h1 class="bigtitle">אורך ראשון ורוחב ראשון</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/17" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ז:א–ד</a></div>
+    <p class="halacha lead">כל הדברים שהקדמנו כדי שיהיו עתידים ומוכנים לידיעת הראייה.<br>
+      וכשתרצה לדעת זאת, תתחיל ותחשב, ותוציא <b class="sun">מקום השמש האמיתי</b> ו<b class="mean">מקום הירח האמיתי</b> ומקום הראש לשעת הראייה,<br>
+      ותגרע מקום השמש האמיתי ממקום הירח האמיתי, והנשאר הוא הנקרא <b class="mean">אורך ראשון</b>:</p>
+    <p class="halacha">ומאחר שתדע מקום הראש ומקום הירח, תדע רוחב הירח כמה הוא, ואם הוא רוחב צפוני או דרומי, והוא הנקרא <b class="mas">רוחב ראשון</b>.<br>
+      והיזהר באורך הזה הראשון וברוחב הראשון, ויהיו שניהן מוכנין לפניך:</p>
+    <p class="halacha">והתבונן באורך הזה הראשון,<br>
+      אם יצא לך <b class="mas">תשע מעלות בשוה או פחות</b>, תדע בודאי שאי אפשר לעולם שייראה הירח באותו הלילה בכל ארץ ישראל, ואין אתה צריך חשבון אחר.<br>
+      ואם יהיה האורך הראשון <b class="mas">יתר על חמש עשרה מעלות</b>, תדע בודאי שהירח ייראה בכל ארץ ישראל, ואין אתה צריך חשבון אחר.<br>
+      ואם יהיה האורך הראשון מתשע מעלות ועד חמש עשרה, תצטרך לדרוש ולחקור בחשבונות הראייה עד שתדע אם ייראה או לא ייראה:</p>
+    <p class="halacha">במה דברים אמורים, בשהיה מקום הירח האמיתי <b class="mean">מתחילת מזל גדי עד סוף מזל תאומים</b>.<br>
+      אבל אם היה מקום הירח <b class="mean">מתחילת מזל סרטן עד סוף מזל קשת</b>,<br>
+      והיה האורך הראשון <b class="mas">עשר מעלות בשוה או פחות</b>, תדע שאין הירח נראה כלל באותה הלילה בכל ארץ ישראל.<br>
+      ואם היה האורך הראשון <b class="mas">יתר על ארבע ועשרים מעלות</b>, ודאי ייראה בכל גבול ישראל.<br>
+      ואם יהיה האורך הראשון מעשר מעלות עד ארבע ועשרים, תצטרך לדרוש ולחקור בחשבונות הראייה עד שתדע אם ייראה או לא ייראה:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="rchart" id="chart" style="--c:var(--mas)"></div>
+      <div class="book m" id="work">
+        <h3><i></i>מן המקומות אל האורך</h3>
+        <p class="cap">י״ז:א–ב</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div id="sky"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="verdict" id="verdict" style="--c:var(--mean)"></div>
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh15-6.html">מקום הירח האמיתי</a> · <a href="kh16-9.html">רוחב הירח</a> · <a href="kh17-5.html">חשבונות הראייה</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/wheel.js-->
+
+  var T = CONSTANTS.EARLY_EXIT_THRESHOLDS;
+  /* his two halves, each with the three things the אורך ראשון alone can settle */
+  var HALVES = [
+    { key: "capricornGemini", where: "מתחילת מזל גדי עד סוף מזל תאומים", mark: "י״ז:ג", t: T.capricornGemini },
+    { key: "cancerSagittarius", where: "מתחילת מזל סרטן עד סוף מזל קשת", mark: "י״ז:ד", t: T.cancerSagittarius }
+  ];
+  function rowsFor() {
+    var out = [];
+    for (var i = 0; i < HALVES.length; i++) {
+      var h = HALVES[i];
+      out.push({ in: h.where, sub: h.mark,
+                 out: '<span dir="ltr">≤ ' + h.t.invisibleMax + "°</span> אינו נראה" });
+      out.push({ in: "", sub: "",
+                 out: '<span dir="ltr">' + h.t.invisibleMax + "° – " + h.t.visibleMin + "°</span> תדרוש ותחקור" });
+      out.push({ in: "", sub: "",
+                 out: '<span dir="ltr">&gt; ' + h.t.visibleMin + "°</span> ודאי ייראה" });
+    }
+    return out;
+  }
+
+  function rowHit(v) {
+    var base = v.half ? 0 : 3, t = v.half ? T.capricornGemini : T.cancerSagittarius;
+    if (v.orech1 <= t.invisibleMax) return base;
+    if (v.orech1 > t.visibleMin) return base + 2;
+    return base + 1;
+  }
+
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function show(n) {
+    var v = chapter17At(n);
+    paint(document.getElementById("led"), [
+      { l: "מקום השמש האמיתי", s: "פרק י״ג · " + zodiacPosition(v.sunTrue).hebrew, a: "", t: degMin(v.sunTrue) },
+      { l: "מקום הירח האמיתי", s: "פרק ט״ו · " + v.mazal.hebrew, a: "", t: degMin(v.amiti) },
+      { l: "מקום הראש", s: "פרק ט״ז", a: "", t: degMin(v.rosh), drop: true },
+      { l: "ותגרע מקום השמש ממקום הירח", a: "− " + degMin(v.sunTrue), t: degMin(v.orech1) },
+      { l: "אורך ראשון", a: "", t: degMin(v.orech1), out: true },
+      { l: "רוחב ראשון", s: v.north ? "צפוני" : "דרומי", a: "", t: degMin(v.rochav1), out: true }
+    ]);
+
+    var i = rowHit(v);
+    traceListChart(document.getElementById("chart"), [{ i: i, tag: "← כאן" }],
+      "האורך הראשון <b>" + degMin(v.orech1) + "</b> — והירח " +
+      (v.half ? "מגדי עד תאומים" : "מסרטן עד קשת") + "." +
+      '<span class="eq">' + (i % 3 === 1 ? "תצטרך לדרוש ולחקור בחשבונות הראייה"
+        : i % 3 === 0 ? "אי אפשר שייראה" : "ודאי ייראה") + "</span>");
+
+    markSky(v);
+    var d = v.verdict;
+    document.getElementById("verdict").innerHTML =
+      "<h3>ייראה הלילה?</h3>" +
+      '<span class="say ' + (d.seen ? "yes" : "no") + '">' + (d.seen ? "ודאי ייראה" : "אינו נראה") +
+      '</span><span class="mark">' + d.mark + "</span>" +
+      '<span class="why">' + d.says + "</span>";
+  }
+
+  function onDraw(n) { show(n); }
+
+  /* a night the אורך ראשון alone settles — the two קצין of these halachos */
+  function decidedDay() {
+    for (var t = 0; t < 800; t++) {
+      var d = 280000 + Math.floor(Math.random() * 60000), v = chapter17At(d);
+      if (v.orech1 <= 180 && (v.verdict.gate === "קץ קצר" || v.verdict.gate === "קץ ארוך")) return v;
+    }
+    return chapter17At(29);
+  }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "מה שהאורך הראשון לבדו מכריע", ref: "י״ז:ג–ד",
+      heads: ["מקום הירח", "האורך הראשון"],
+      rows: rowsFor()
+    });
+    document.getElementById("sky").innerHTML = skyFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ז:א–ד",
+      note: "שני מקומות, והמרחק שביניהם.", fmt: degMin,
+      newCase: function () { return decidedDay(); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מקום הירח האמיתי <b>" + degMin(c.amiti) + "</b> — במזל " + c.mazal.hebrew +
+          "<br>מקום השמש האמיתי <b>" + degMin(c.sunTrue) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "תגרע מקום השמש ממקום הירח. כמה הוא <b>האורך הראשון</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.orech1; },
+          hint: function () { return "חיסור פשוט, ואין מדקדקין בשניות."; },
+          after: function (c) { return "והרוחב הראשון " + degMin(c.rochav1) + " " +
+            (c.north ? "צפוני" : "דרומי") + "."; } },
+
+        { ask: function () { return "באיזו מחצית עומד הירח?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "מגדי עד סוף תאומים", value: true },
+                    { label: "מסרטן עד סוף קשת", value: false }];
+          },
+          answer: function (c) { return c.half; },
+          hint: function (c) { return "הירח במזל " + c.mazal.hebrew + "."; },
+          after: function (c) { var t = c.half ? T.capricornGemini : T.cancerSagittarius;
+            return "וקציה " + t.invisibleMax + "° ו־" + t.visibleMin + "°."; } },
+
+        { ask: function () { return "ובכן — ייראה, לא ייראה, או תצטרך לדרוש ולחקור?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "אי אפשר שייראה", value: 0 },
+                    { label: "תדרוש ותחקור", value: 1 },
+                    { label: "ודאי ייראה", value: 2 }];
+          },
+          answer: function (c) { return rowHit(c) % 3; },
+          hint: function (c) { var t = c.half ? T.capricornGemini : T.cancerSagittarius;
+            return "האורך " + degMin(c.orech1) + ", והקצין " + t.invisibleMax + "° ו־" + t.visibleMin + "°."; },
+          after: function (c) { return c.verdict.says; } }
+      ]
+    });
+  }
+})();
+</script>

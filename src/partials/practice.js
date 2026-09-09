@@ -5,6 +5,7 @@
 
        drill(host, {
          title, ref, note,
+         fmt                → optional: how a dms figure is printed (default formatDms)
          newCase()          → an object describing a fresh case (usually { day })
          caseLine(c)        → the html shown above the questions
          steps: [{
@@ -20,6 +21,9 @@
   */
   function drill(host, spec) {
     var c = null, settled = 0, right = 0, asked = 0;
+    /* a lesson may print its figures at its own precision: chapter 17 keeps
+       to degrees and minutes, because "אין מדקדקין בשניות" (י"ז:י"ג). */
+    var FMT = spec.fmt || formatDms;
 
     function dmsInputs(i) {
       return '<input id="a' + i + 'd" type="number" step="1" placeholder="מעלות"><span class="unit">°</span>' +
@@ -117,13 +121,13 @@
       }
       if (s.type === "dms") {
         var off = Math.abs(mine - want);
-        if (off < 1 / 60) { say(i, "ok", "יפה — <b>" + formatDms(want) + "</b>." + tail); settle(i, true); }
+        if (off < 1 / 60) { say(i, "ok", "יפה — <b>" + FMT(want) + "</b>." + tail); settle(i, true); }
         else if (off < 0.5) {
-          say(i, "near", "קרוב מאד. והוא <b>" + formatDms(want) + "</b> — טעית ב־" +
+          say(i, "near", "קרוב מאד. והוא <b>" + FMT(want) + "</b> — טעית ב־" +
               formatDms(off) + "." + tail);
           settle(i, true);
         } else {
-          say(i, "no", "והוא <b>" + formatDms(want) + "</b> — טעית ב־" + formatDms(off) + "." + tail);
+          say(i, "no", "והוא <b>" + FMT(want) + "</b> — טעית ב־" + formatDms(off) + "." + tail);
           settle(i, false);
         }
         return;
@@ -137,7 +141,7 @@
       if (el.dataset.state === "done") return;
       if (s.hint && !el.dataset.hinted) { el.dataset.hinted = "1"; say(i, "told", s.hint(c)); return; }
       var want = s.answer(c);
-      var shown = s.type === "dms" ? formatDms(want)
+      var shown = s.type === "dms" ? FMT(want)
         : s.type === "pick" ? (s.choices(c).filter(function (x) { return x.value === want; })[0] || {}).label
         : want.toLocaleString();
       say(i, "told", "והוא <b>" + shown + "</b>." +

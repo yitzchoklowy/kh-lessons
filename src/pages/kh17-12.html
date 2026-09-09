@@ -1,0 +1,151 @@
+<title>קשת הראייה</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh17.css--></style>
+
+<div class="page solo" data-emph="gap">
+
+  <header>
+    <h1 class="bigtitle">קשת הראייה</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/17" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ז:י״ב</a></div>
+    <p class="halacha lead">ואחר כך תחזור ותראה האורך השלישי הזה, <b class="mean">והוא המעלות שבין הירח והשמש</b>, באי זה מזל הוא.<br>
+      אם יהיה במזל דגים או במזל טלה, <b class="mas">תוסיף</b> על האורך השלישי <b class="mas">שתותו</b>:<br>
+      ואם יהיה האורך במזל דלי או במזל שור, <b class="mas">תוסיף</b> על האורך השלישי <b class="mas">חמישיתו</b>:<br>
+      ואם יהיה האורך במזל גדי או במזל תאומים, <b class="mas">תוסיף</b> על האורך השלישי <b class="mas">שתותו</b>:<br>
+      ואם יהיה האורך במזל קשת או במזל סרטן, <b class="mas">תניח האורך השלישי כמות שהוא</b>, ולא תוסיף עליו ולא תגרע ממנו:<br>
+      ואם היה האורך במזל עקרב או במזל אריה, <b class="mas">תגרע</b> מן האורך השלישי <b class="mas">חמישיתו</b>:<br>
+      ואם יהיה האורך במזל מאזנים או במזל בתולה, <b class="mas">תגרע</b> מן האורך השלישי <b class="mas">שלישיתו</b>:<br>
+      ומה שיהיה האורך השלישי אחר שתוסיף עליו או תגרע ממנו או תניח אותו כמות שהוא הוא הנקרא <b class="mean">אורך רביעי</b>.</p>
+    <p class="halacha">ואחר כך תחזור אצל <b class="mas">רוחב הירח הראשון</b>, ותקח ממנו <b class="mas">שני שלישיו לעולם</b>, וזה הוא הנקרא <b class="mas">מנת גובה המדינה</b>.<br>
+      ותתבונן ותראה, אם יהיה רוחב הירח <b class="mean">צפוני, תוסיף</b> מנת גובה המדינה על האורך הרביעי, ואם יהיה רוחב הירח <b class="mas">דרומי, תגרע</b> מנת גובה המדינה מן האורך הרביעי.<br>
+      ומה שיהיה האורך הרביעי אחר שגורעין ממנו או מוסיפין עליו הוא הנקרא <b class="mas">קשת הראייה</b>:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="rchart" id="chart" style="--c:var(--mas)"></div>
+      <div class="book m" id="work">
+        <h3><i></i>מן האורך השלישי אל הקשת</h3>
+        <p class="cap">י״ז:י״ב</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div id="chain"></div>
+        <div id="sky"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh17-10.html">מהיכן בא האורך השלישי</a> · <a href="kh17-13.html">כיצד</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/wheel.js-->
+
+  var ROWS = settingRows();
+
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function show(n) {
+    var v = chapter17At(n), i = settingRowIndex(v.amiti), r = v.setRow;
+    paint(document.getElementById("led"), [
+      { l: "אורך שלישי", s: "י״ז:י״א", a: "", t: degMin(v.orech3) },
+      { l: r.operation === "none" ? "תניח כמות שהוא" : fracWord(r),
+        s: "י״ז:י״ב · במזל " + v.mazal.hebrew,
+        a: r.operation === "none" ? "0′"
+           : (r.operation === "add" ? "+ " : "− ") + degMin(Math.abs(v.orech4 - v.orech3)),
+        t: degMin(v.orech4) },
+      { l: "אורך רביעי", a: "", t: degMin(v.orech4), out: true },
+      { l: "רוחב ראשון", s: v.north ? "צפוני" : "דרומי", a: "", t: degMin(v.rochav1), drop: true },
+      { l: "שני שלישיו לעולם", s: "מנת גובה המדינה", a: "× ⅔", t: degMin(v.gov) },
+      { l: v.north ? "תוסיף על האורך הרביעי" : "תגרע מן האורך הרביעי",
+        a: (v.north ? "+ " : "− ") + degMin(v.gov), t: degMin(v.keshet) },
+      { l: "קשת הראייה", a: "", t: degMin(v.keshet), out: true }
+    ]);
+
+    traceListChart(document.getElementById("chart"), [{ i: i, tag: "← כאן" }],
+      "הירח במזל <b>" + v.mazal.hebrew + "</b>, ו" + fracWord(r) + "." +
+      '<span class="eq">' + degMin(v.orech3) + "   →   " + degMin(v.orech4) + "   " +
+      (v.north ? "+" : "−") + "   " + degMin(v.gov) + "   →   " + degMin(v.keshet) + "</span>");
+    markChain(v, "keshet");
+    markSky(v);
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "ארוכי וקצרי שקיעה", ref: "י״ז:י״ב",
+      heads: ["באי זה מזל", "על האורך השלישי"],
+      rows: ROWS.map(function (p) {
+        return { in: p.a.hebrew + " · " + p.b.hebrew, out: fracWord(p.b) };
+      })
+    });
+    document.getElementById("chain").innerHTML = chainFigure();
+    document.getElementById("sky").innerHTML = skyFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ז:י״ב",
+      note: "שתי פעולות, וקשת הראייה בסופן.", fmt: degMin,
+      newCase: function () { return investigateDay(); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>הירח במזל <b>" + c.mazal.hebrew + "</b>" +
+          "<br>האורך השלישי <b>" + degMin(c.orech3) + "</b>" +
+          " · הרוחב הראשון <b>" + degMin(c.rochav1) + "</b> " + (c.north ? "צפוני" : "דרומי") + ".";
+      },
+      steps: [
+        { ask: function () { return "מה תעשה לאורך השלישי?"; },
+          type: "pick",
+          choices: function () {
+            var seen = {}, out = [];
+            ROWS.forEach(function (p) {
+              var w = fracWord(p.b);
+              if (seen[w]) return;
+              seen[w] = 1; out.push({ label: w, value: w });
+            });
+            return out;
+          },
+          answer: function (c) { return fracWord(c.setRow); },
+          hint: function (c) { return "מצא בטבלה את מזל " + c.mazal.hebrew + "."; },
+          after: function () { return "לפי כמה נוטה המזל לשקוע — ארוכי שקיעה וקצרי שקיעה."; } },
+
+        { ask: function () { return "כמה הוא <b>האורך הרביעי</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.orech4; },
+          hint: function (c) { return degMin(c.orech3) + " ו" + fracWord(c.setRow) + "."; },
+          after: function () { return "ועכשיו חזור אצל הרוחב הראשון."; } },
+
+        { ask: function () { return "כמה היא <b>מנת גובה המדינה</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.gov; },
+          hint: function (c) { return "שני שלישי " + degMin(c.rochav1) + " — לעולם."; },
+          after: function () { return "והיא מפני שירושלים נוטה מקו השווה שתים ושלשים מעלות."; } },
+
+        { ask: function () { return "ובכן, כמה היא <b>קשת הראייה</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.keshet; },
+          hint: function (c) { return degMin(c.orech4) + (c.north ? " ועוד " : " פחות ") +
+            degMin(c.gov) + "."; },
+          after: function (c) { return "וכנגדה " + Math.round(c.keshet * 4) +
+            " דקות מן השקיעה עד שישקע הירח."; } }
+      ]
+    });
+  }
+})();
+</script>

@@ -1,0 +1,133 @@
+<title>שינוי המראה לרוחב</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh17.css--></style>
+
+<div class="page solo" data-emph="gap">
+
+  <header>
+    <h1 class="bigtitle">שינוי המראה לרוחב</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/17" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ז:ז–ט</a></div>
+    <p class="halacha lead">אבל שינוי מראה הרוחב,<br>
+      אם היה רוחב הירח <b class="mean">צפוני — גורעין</b> חלקים של שינוי מראה הרוחב מן הרוחב הראשון,<br>
+      ואם היה רוחב הירח <b class="mas">דרומי — מוסיפין</b> החלקים של שינוי מראה הרוחב על הרוחב הראשון.<br>
+      ומה שיהיה הרוחב הראשון אחר שמוסיפין עליו או גורעין ממנו אותם החלקים הוא הנקרא <b class="mas">רוחב שני</b>:</p>
+    <p class="halacha">וכמה הם החלקים שמוסיפין או גורעין אותם,<br>
+      אם יהיה הירח במזל טלה, <b class="mas">תשעה חלקים</b>:<br>
+      ואם יהיה במזל שור, <b class="mas">עשרה חלקים</b>:<br>
+      ואם יהיה במזל תאומים, <b class="mas">שישה עשר חלקים</b>:<br>
+      ואם יהיה במזל סרטן, <b class="mas">שבעה ועשרים חלקים</b>:<br>
+      ואם יהיה במזל אריה, <b class="mas">שמונה ושלשים חלקים</b>:<br>
+      ואם יהיה במזל בתולה, <b class="mas">ארבעה וארבעים חלקים</b>:<br>
+      ואם יהיה במזל מאזנים, <b class="mas">שישה וארבעים חלקים</b>:<br>
+      ואם יהיה במזל עקרב, <b class="mas">חמישה וארבעים חלקים</b>:<br>
+      ואם יהיה במזל קשת, <b class="mas">ארבעה וארבעים חלקים</b>:<br>
+      ואם יהיה במזל גדי, <b class="mas">שישה ושלשים חלקים</b>:<br>
+      ואם יהיה במזל דלי, <b class="mas">שבעה ועשרים חלקים</b>:<br>
+      ואם יהיה במזל דגים, <b class="mas">שנים עשר חלקים</b>:</p>
+    <p class="halacha">ומאחר שתדע חלקים אלו, תגרע אותן מן הרוחב הראשון או תוסיף אותם עליו, כמו שהודענוך, ויצא לך <b class="mas">הרוחב השני</b>.<br>
+      וכבר ידעת אם הוא צפוני או דרומי, ותדע כמה מעלות וכמה חלקים נעשה זה הרוחב השני, ותכין אותו לפניך ויהיה עתיד:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="rchart" id="chart" style="--c:var(--mas)"></div>
+      <div class="book m" id="work">
+        <h3><i></i>מן הרוחב הראשון אל השני</h3>
+        <p class="cap">י״ז:ז–ט</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div id="sky"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh17-5.html">שינוי המראה לאורך</a> · <a href="kh17-10.html">מעגל הירח</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/wheel.js-->
+
+  var ROWS = parallaxLatRows();
+
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function show(n) {
+    var v = chapter17At(n), i = v.mazal.index;
+    paint(document.getElementById("led"), [
+      { l: "רוחב ראשון", s: "י״ז:ב · " + (v.north ? "צפוני" : "דרומי"), a: "", t: degMin(v.rochav1) },
+      { l: "הירח במזל " + v.mazal.hebrew, s: v.north ? "צפוני — תגרע" : "דרומי — תוסיף",
+        a: (v.north ? "− " : "+ ") + v.latChalakim + "′", t: degMin(v.rochav2) },
+      { l: "רוחב שני", s: v.north2 ? "צפוני" : "דרומי", a: "", t: degMin(v.rochav2), out: true }
+    ]);
+    traceListChart(document.getElementById("chart"), [{ i: i, tag: "← כאן" }],
+      "הרוחב הראשון <b>" + degMin(v.rochav1) + "</b> " + (v.north ? "צפוני" : "דרומי") +
+      ", והירח במזל <b>" + v.mazal.hebrew + "</b>." +
+      '<span class="eq">' + degMin(v.rochav1) + "   " + (v.north ? "−" : "+") + "   " +
+      v.latChalakim + "′   →   " + degMin(v.rochav2) + "</span>");
+    markSky(v);
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "שינוי מראה הרוחב", ref: "י״ז:ח",
+      heads: ["הירח במזל", "חלקים"],
+      rows: ROWS.map(function (r) { return { in: r.hebrew, out: r.chalakim + "′" }; })
+    });
+    document.getElementById("sky").innerHTML = skyFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ז:ז–ט",
+      note: "החלקים מן הטבלה, והצד מן הרוחב.", fmt: degMin,
+      newCase: function () { return investigateDay(); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>הירח במזל <b>" + c.mazal.hebrew + "</b>" +
+          "<br>הרוחב הראשון <b>" + degMin(c.rochav1) + "</b> — " + (c.north ? "צפוני" : "דרומי") + ".";
+      },
+      steps: [
+        { ask: function () { return "כמה חלקים של שינוי מראה הרוחב?"; },
+          type: "int", unit: "′",
+          answer: function (c) { return c.latChalakim; },
+          hint: function (c) { return "רד בטבלה עד מזל " + c.mazal.hebrew + "."; },
+          after: function () { return "והם החלקים שמוסיפין או גורעין."; } },
+
+        { ask: function () { return "תגרע אותם או תוסיף אותם?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "תגרע", value: true }, { label: "תוסיף", value: false }];
+          },
+          answer: function (c) { return c.north; },
+          hint: function () { return "צפוני — גורעין; דרומי — מוסיפין."; },
+          after: function (c) { return "שהרוחב " + (c.north ? "צפוני" : "דרומי") + "."; } },
+
+        { ask: function () { return "עשה. כמה הוא <b>הרוחב השני</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.rochav2; },
+          hint: function (c) { return degMin(c.rochav1) + (c.north ? " פחות " : " ועוד ") +
+            c.latChalakim + " חלקים."; },
+          after: function (c) { return "והוא " + (c.north2 ? "צפוני" : "דרומי") +
+            ", ותכין אותו לפניך."; } }
+      ]
+    });
+  }
+})();
+</script>

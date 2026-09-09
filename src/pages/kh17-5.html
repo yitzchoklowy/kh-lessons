@@ -1,0 +1,117 @@
+<title>שינוי המראה לאורך</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh17.css--></style>
+
+<div class="page solo" data-emph="gap">
+
+  <header>
+    <h1 class="bigtitle">שינוי המראה לאורך</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/17" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ז:ה–ו</a></div>
+    <p class="halacha lead">ואלו הם חשבונות הראייה. התבונן וראה הירח באיזה מזל הוא,<br>
+      אם יהיה במזל טלה, תגרע מן האורך הראשון <b class="sun">תשעה וחמישים חלקים</b>:<br>
+      ואם יהיה במזל שור, תגרע מן האורך <b class="sun">מעלה אחת</b>:<br>
+      ואם יהיה במזל תאומים, תגרע מן האורך <b class="sun">שמונה וחמישים חלקים</b>:<br>
+      ואם יהיה במזל סרטן, תגרע מן האורך <b class="sun">שנים וחמישים חלקים</b>:<br>
+      ואם יהיה במזל אריה, תגרע מן האורך <b class="sun">שלשה וארבעים חלקים</b>:<br>
+      ואם יהיה במזל בתולה, תגרע מן האורך <b class="sun">שבעה ושלשים חלקים</b>:<br>
+      ואם יהיה במזל מאזנים, תגרע מן האורך <b class="sun">ארבעה ושלשים חלקים</b>:<br>
+      ואם יהיה במזל עקרב, תגרע מן האורך <b class="sun">ארבעה ושלשים חלקים</b>:<br>
+      ואם יהיה במזל קשת, תגרע מן האורך <b class="sun">שישה ושלשים חלקים</b>:<br>
+      ואם יהיה במזל גדי, תגרע מן האורך <b class="sun">ארבעה וארבעים חלקים</b>:<br>
+      ואם יהיה במזל דלי, תגרע מן האורך <b class="sun">שלשה וחמישים חלקים</b>:<br>
+      ואם יהיה במזל דגים, תגרע מן האורך <b class="sun">שמונה וחמישים חלקים</b>.<br>
+      והנשאר מן האורך אחר שתגרע ממנו אלו החלקים הוא הנקרא <b class="mean">אורך שני</b>:</p>
+    <p class="halacha">ולמה גורעין חלקים אלו, לפי שמקום הירח האמיתי אינו המקום שייראה בו, אלא שינוי יש ביניהן באורך וברוחב, והוא הנקרא <b class="sun">שינוי המראה</b>.<br>
+      ושינוי מראה האורך בשעת הראייה <b class="sun">לעולם גורעין אותו</b> מן האורך, כמו שאמרנו:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="rchart" id="chart" style="--c:var(--sunc)"></div>
+      <div class="book m" id="work">
+        <h3><i></i>מן האורך הראשון אל השני</h3>
+        <p class="cap">י״ז:ה</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div id="chain"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--sunc)"></div>
+
+  <p class="note"><a href="kh17-1.html">מהיכן בא האורך הראשון</a> · <a href="kh17-7.html">והרוחב</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/wheel.js-->
+
+  var ROWS = parallaxLonRows();
+
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function show(n) {
+    var v = chapter17At(n), i = v.mazal.index;
+    paint(document.getElementById("led"), [
+      { l: "אורך ראשון", s: "י״ז:א", a: "", t: degMin(v.orech1) },
+      { l: "הירח במזל " + v.mazal.hebrew, s: "י״ז:ה", a: "− " + chal(v.lonChalakim), t: degMin(v.orech2) },
+      { l: "אורך שני", a: "", t: degMin(v.orech2), out: true }
+    ]);
+    traceListChart(document.getElementById("chart"), [{ i: i, tag: "← כאן" }],
+      "הירח במזל <b>" + v.mazal.hebrew + "</b>, ולעולם גורעין." +
+      '<span class="eq">' + degMin(v.orech1) + "   −   " + chal(v.lonChalakim) + "   →   " +
+      degMin(v.orech2) + "</span>");
+    markChain(v, "orech2");
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "שינוי מראה האורך", ref: "י״ז:ה",
+      heads: ["הירח במזל", "תגרע מן האורך"],
+      rows: ROWS.map(function (r) { return { in: r.hebrew, out: chal(r.chalakim) }; })
+    });
+    document.getElementById("chain").innerHTML = chainFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ז:ה–ו",
+      note: "מזל אחד, שורה אחת, וגריעה.", fmt: degMin,
+      newCase: function () { return investigateDay(); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>הירח במזל <b>" + c.mazal.hebrew + "</b>" +
+          "<br>האורך הראשון <b>" + degMin(c.orech1) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "כמה חלקים תגרע?"; },
+          type: "int", unit: "′",
+          answer: function (c) { return c.lonChalakim; },
+          hint: function (c) { return "רד בטבלה עד מזל " + c.mazal.hebrew + "."; },
+          after: function () { return "ולעולם גורעין אותו, שאין מקום הירח האמיתי המקום שייראה בו."; } },
+
+        { ask: function () { return "עשה. כמה הוא <b>האורך השני</b>?"; },
+          type: "dms",
+          answer: function (c) { return c.orech2; },
+          hint: function (c) { return degMin(c.orech1) + " פחות " + c.lonChalakim + " חלקים."; },
+          after: function () { return "וממנו תמשיך אל האורך השלישי."; } }
+      ]
+    });
+  }
+})();
+</script>

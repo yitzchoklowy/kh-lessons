@@ -1,0 +1,159 @@
+<title>קיצי הראייה</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh17.css--></style>
+
+<div class="page solo" data-emph="gap">
+
+  <header>
+    <h1 class="bigtitle">קיצי הראייה</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/17" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ז:ט״ו–כ״א</a></div>
+    <p class="halacha lead">ואחר שתצא קשת זו, תבין בה, ודע<br>
+      שאם תהיה קשת הראייה <b class="mas">תשע מעלות או פחות</b>, אי אפשר שייראה בכל ארץ ישראל.<br>
+      ואם תהיה קשת הראייה <b class="mean">יתר על ארבע עשרה מעלות</b>, אי אפשר שלא ייראה ויהיה גלוי לכל ארץ ישראל:</p>
+    <p class="halacha">ואם תהיה קשת הראייה <b class="mas">מתחילת מעלה עשירית עד סוף מעלת ארבע עשרה</b>, תערוך קשת הראייה אל האורך הראשון, ותדע אם ייראה הירח או לא ייראה מן הקיצין שיש לו, והן הנקראין <b class="mas">קיצי הראייה</b>:</p>
+    <p class="halacha">ואלו הן קיצי הראייה,<br>
+      אם תהיה קשת הראייה מיתר על תשע מעלות עד סוף עשר מעלות או יתר על עשר, ויהיה האורך הראשון <b class="mean">שלש עשרה מעלות או יתר</b>, ודאי ייראה. ואם תהיה הקשת פחות מזה, או יהיה האורך פחות מזה, לא ייראה:<br>
+      ואם תהיה קשת הראייה מיתר על עשר מעלות עד סוף אחת עשרה מעלות, או יתר על אחת עשרה, ויהיה האורך הראשון <b class="mean">שתים עשרה מעלות או יתר</b>, ודאי ייראה. ואם תהיה הקשת פחות מזה, או יהיה האורך פחות מזה, לא ייראה:<br>
+      ואם תהיה קשת הראייה מיתר על אחת עשרה עד סוף שתים עשרה מעלות, או יתר על שתים עשרה, ויהיה האורך הראשון <b class="mean">אחת עשרה מעלות או יתר</b>, ודאי ייראה. ואם תהיה הקשת פחות מזה, או יהיה האורך פחות מזה, לא ייראה:<br>
+      ואם תהיה קשת הראייה מיתר על שתים עשרה מעלות עד סוף שלש עשרה מעלות, או יתר על שלש עשרה, ויהיה האורך הראשון <b class="mean">עשר מעלות או יתר</b>, ודאי ייראה. ואם תהיה הקשת פחות מזה, או יהיה האורך פחות מזה, לא ייראה:<br>
+      ואם תהיה קשת הראייה מיתר על שלש עשרה מעלות עד סוף ארבע עשרה מעלות, או יתר על ארבע עשרה, ויהיה האורך הראשון <b class="mean">תשע מעלות או יתר</b>, ודאי ייראה. ואם תהיה הקשת פחות מזה, או יהיה האורך פחות מזה, לא ייראה. <b class="mas">ועד כאן סוף הקיצים</b>:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack">
+      <div class="rchart" id="chart" style="--c:var(--mas)"></div>
+      <div class="book m" id="work">
+        <h3><i></i>הקשת, והאורך שכנגדה</h3>
+        <p class="cap">י״ז:ט״ז</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div id="chain"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="verdict" id="verdict" style="--c:var(--mean)"></div>
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh17-13.html">מהיכן באה הקשת</a> · <a href="kh17-22.html">כיצד</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/wheel.js-->
+
+  var K = CONSTANTS.KITZEI_HAREIYAH_TABLE;
+
+  /* his two outer rules, and the five קצין between them — one chart */
+  function rows() {
+    var out = [{ in: '<span dir="ltr">≤ 9°</span>', sub: "י״ז:ט״ו", out: "אי אפשר שייראה" }];
+    for (var i = 0; i < K.length; i++) {
+      out.push({ in: '<span dir="ltr">' + K[i].kashtFromExclusive + "° – " + K[i].kashtUpTo + "°</span>",
+                 sub: KITZ_MARK[i],
+                 out: "אורך ראשון <span dir=\"ltr\">" + K[i].orechMin + "°</span> או יתר" });
+    }
+    out.push({ in: '<span dir="ltr">&gt; 14°</span>', sub: "י״ז:ט״ו", out: "אי אפשר שלא ייראה" });
+    return out;
+  }
+
+  function rowOf(v) {
+    if (v.keshet <= 9) return 0;
+    if (v.keshet > 14) return K.length + 1;
+    for (var i = 0; i < K.length; i++) {
+      if (v.keshet > K[i].kashtFromExclusive && v.keshet <= K[i].kashtUpTo) return i + 1;
+    }
+    return -1;
+  }
+
+  function GAP_AT(n) {
+    var v = chapter15At(n);
+    return { sun: v.sunMean, moon: v.moonSight, merchak: v.merchak, kaful: v.kaful };
+  }
+
+  function show(n) {
+    var v = chapter17At(n), i = rowOf(v), d = v.verdict;
+    paint(document.getElementById("led"), [
+      { l: "קשת הראייה", s: "י״ז:י״ב", a: "", t: degMin(v.keshet) },
+      { l: "אורך ראשון", s: "י״ז:א", a: "", t: degMin(v.orech1) },
+      { l: d.row ? "וצריך אורך ראשון" : "והכרעה בקשת לבדה", s: d.mark,
+        a: "", t: d.row ? d.row.orechMin + "°" : "—", drop: true },
+      { l: d.seen ? "ודאי ייראה" : "אינו נראה", a: "", t: "", out: true }
+    ]);
+    traceListChart(document.getElementById("chart"), i < 0 ? [] : [{ i: i, tag: "← כאן" }],
+      "קשת הראייה <b>" + degMin(v.keshet) + "</b> · אורך ראשון <b>" + degMin(v.orech1) + "</b>." +
+      '<span class="eq">' + d.says + "</span>");
+    markChain(v, "keshet");
+    document.getElementById("verdict").innerHTML =
+      "<h3>ייראה הלילה?</h3>" +
+      '<span class="say ' + (d.seen ? "yes" : "no") + '">' + (d.seen ? "ודאי ייראה" : "אינו נראה") +
+      '</span><span class="mark">' + d.mark + "</span>" +
+      '<span class="why">' + d.says + "</span>";
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "קיצי הראייה", ref: "י״ז:ט״ו–כ״א",
+      heads: ["קשת הראייה", "ומה שצריך עמה"],
+      rows: rows()
+    });
+    document.getElementById("chain").innerHTML = chainFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ז:ט״ו–כ״א",
+      note: "ערוך את הקשת אל האורך הראשון.", fmt: degMin,
+      newCase: function () { return investigateDay(); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>קשת הראייה <b>" + degMin(c.keshet) + "</b>" +
+          "<br>האורך הראשון <b>" + degMin(c.orech1) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "באיזה קץ נופלת הקשת?"; },
+          type: "pick",
+          choices: function () {
+            var out = [{ label: '<span dir="ltr">≤ 9°</span>', value: 0 }];
+            for (var i = 0; i < K.length; i++) {
+              out.push({ label: '<span dir="ltr">' + K[i].kashtFromExclusive + "° – " +
+                                K[i].kashtUpTo + "°</span>", value: i + 1 });
+            }
+            out.push({ label: '<span dir="ltr">&gt; 14°</span>', value: K.length + 1 });
+            return out;
+          },
+          answer: function (c) { return rowOf(c); },
+          hint: function (c) { return "הקשת " + degMin(c.keshet) + "."; },
+          after: function (c) { return c.verdict.says; } },
+
+        { ask: function () { return "כמה אורך ראשון צריך עמה?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return c.verdict.row ? c.verdict.row.orechMin : 0; },
+          hint: function () { return "אם הקשת מכריעה לבדה — אין צריך אורך, וכתוב 0."; },
+          after: function (c) { return c.verdict.row
+            ? "וכל שהקשת ארוכה יותר, די באורך קצר יותר."
+            : "שהקשת מכריעה לבדה — בין למטה מתשע ובין למעלה מארבע עשרה."; } },
+
+        { ask: function () { return "ובכן — ייראה הירח הלילה?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "ודאי ייראה", value: true }, { label: "אינו נראה", value: false }];
+          },
+          answer: function (c) { return c.verdict.seen; },
+          hint: function (c) { return "ערוך " + degMin(c.keshet) + " אל " + degMin(c.orech1) + "."; },
+          after: function (c) { return c.verdict.says; } }
+      ]
+    });
+  }
+})();
+</script>

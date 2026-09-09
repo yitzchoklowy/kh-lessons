@@ -1,0 +1,27 @@
+  /* ── chapter seventeen: the western horizon, and the chain of lengths ── */
+  .sky, .chain { margin-top:.9rem; padding-top:.7rem; border-top:1px solid var(--hair); }
+  .sky svg, .chain svg { display:block; width:100%; height:auto; }
+  .sky { background:linear-gradient(to bottom,
+           color-mix(in srgb, var(--sunc) 6%, transparent), transparent 62%); border-radius:8px; }
+
+  /* the two figures stand under the chart, in the same column */
+  .stack { display:grid; gap:1rem; align-content:start; }
+
+  /* the verdict, said once and plainly */
+  .verdict { margin-top:1.1rem; background:var(--card); border:1px solid var(--line);
+             border-radius:11px; box-shadow:var(--shadow); padding:1rem 1.1rem;
+             direction:rtl; text-align:right; }
+  .verdict h3 { margin:0 0 .35rem; font-family:var(--serif); font-size:1.16rem; color:var(--c); }
+  .verdict .say { font-family:var(--serif); font-size:1.5rem; font-weight:700; }
+  .verdict .say.yes { color:var(--yes, #2f6a45); }
+  .verdict .say.no { color:var(--no, #8c3a3a); }
+  .verdict .why { display:block; font-size:.85rem; color:var(--muted); margin-top:.3rem; }
+  .verdict .mark { font-family:var(--mono); font-size:.72rem; color:var(--faint);
+                   direction:ltr; display:inline-block; margin-inline-start:.5rem; }
+  :root { --yes:#2f6a45; --no:#8c3a3a; }
+  @media (prefers-color-scheme:dark) { :root:not([data-theme="light"]) {
+    --yes:#5fb083; --no:#d97a7a; } }
+  :root[data-theme="dark"] { --yes:#5fb083; --no:#d97a7a; }
+
+  /* a mazal table is twelve short rows; let it sit tight */
+  .rchart td.in small { line-height:1.35; }
