@@ -712,7 +712,12 @@
      fitted to the shape; it is his nine figures, four times over. */
   var WV = { w: 460, h: 176, x0: 30, x1: 436, mid: 92, amp: 62 };
 
-  function wvX(deg) { return WV.x0 + (normalizeDegrees(deg) / 360) * (WV.x1 - WV.x0); }
+  /* 360 is the far end of the strip, not its start again — normalizing it sent
+     the wave's last point back along the axis to the start */
+  function wvX(deg) {
+    var d = deg >= 360 ? 360 : normalizeDegrees(deg);
+    return WV.x0 + (d / 360) * (WV.x1 - WV.x0);
+  }
   function wvY(lat) {
     var top = CONSTANTS.MOON_LATITUDE_TABLE[CONSTANTS.MOON_LATITUDE_TABLE.length - 1].latitude;
     return WV.mid - (lat / top) * WV.amp;
