@@ -76,10 +76,15 @@
   }
 
   /* ── the drawing ─────────────────────────────────────────────────────────
-     One circle, in one colour: light for the whole round, dark for the part
-     already swept from ראש טלה, an arrowhead at the leading end. */
+     Nothing travels here yet. There is the earth, the ring of the mazalos, and
+     the graduation between them, and a place is a direction from the one to the
+     other: the circle is drawn light for the whole round and dark for how far
+     round from ראש טלה the place lies. That dark part is a measurement, not a
+     journey — no body has been named yet, so nothing carries an arrowhead and
+     nothing has a path of its own. */
   var CX11 = 310, CY11 = 320,
-      R_CIRC = 172, R_PTR = 192, R_IN11 = 206, R_OUT11 = 270,
+      R_CIRC = 196, R_PTR = 196, R_IN11 = 206, R_OUT11 = 270,
+      R_SUB = 9, R_MAG_IN = 104, R_MAG_OUT = 132, MAG_SPAN = 150,
       R_NAME11 = 218, R_STAR11 = 248, R_TICK = 286;
 
   function P11(r, deg) {
@@ -148,6 +153,104 @@
     return s.join("");
   }
 
+  function annulus(r0, r1, a0, a1) {
+    var big = normalizeDegrees(a1 - a0) > 180 ? 1 : 0;
+    var o0 = P11(r1, a0), o1 = P11(r1, a1), i1 = P11(r0, a1), i0 = P11(r0, a0);
+    return "M " + o0[0].toFixed(1) + " " + o0[1].toFixed(1) +
+           " A " + r1 + " " + r1 + " 0 " + big + " 0 " + o1[0].toFixed(1) + " " + o1[1].toFixed(1) +
+           " L " + i1[0].toFixed(1) + " " + i1[1].toFixed(1) +
+           " A " + r0 + " " + r0 + " 0 " + big + " 1 " + i0[0].toFixed(1) + " " + i0[1].toFixed(1) + " Z";
+  }
+
+  /* Which piece of the circle a clause opens, and into how many. Each one is a
+     piece of the piece above it: a mazal out of the round, a מעלה out of the
+     mazal, a חלק out of the מעלה, a שניה out of the חלק. */
+  function magSource(mode, p) {
+    var d = decimalToDms(p.into), sec = Math.floor(d.seconds);
+    var degAt = p.index * ARC + Math.floor(p.into);
+    var chelekAt = degAt + d.minutes / PER;
+    var shniyaAt = chelekAt + sec / (PER * PER);
+    if (mode === "sign")
+      return { a0: p.index * ARC, w: ARC, n: ARC, hit: Math.floor(p.into),
+               name: "מזל " + p.mazal, holds: ARC + " מעלות" };
+    if (mode === "maalah")
+      return { a0: degAt, w: 1, n: PER, hit: d.minutes,
+               name: "מעלה " + gem(p.ordinal), holds: PER + " חלקים" };
+    if (mode === "chelek")
+      return { a0: chelekAt, w: 1 / PER, n: PER, hit: sec,
+               name: "חלק " + gem(d.minutes || PER), holds: PER + " שניות" };
+    if (mode === "shniya")
+      return { a0: shniyaAt, w: 1 / (PER * PER), n: PER,
+               hit: Math.round((d.seconds - sec) * PER),
+               name: "שניה " + gem(sec || PER), holds: PER + " שלישיות" };
+    return null;
+  }
+
+  /* One piece of the circle, opened out inside the circle it came off — with
+     the two lines that say which piece it is. A חלק of a מעלה is a sixtieth of
+     a thirtieth of a twelfth of the round; it cannot be drawn where it lies, so
+     it is drawn beside itself, and the two lines carry the eye between them. */
+  function magMarkup(mode, p) {
+    var s = magSource(mode, p);
+    if (!s) return "";
+    var mid = s.a0 + s.w / 2, half = MAG_SPAN / 2;
+    var b0 = mid - half, b1 = mid + half, cw = MAG_SPAN / s.n, g = "", k;
+
+    // the two lines out of the piece it came from
+    var e0 = P11(R_CIRC, s.a0), e1 = P11(R_CIRC, s.a0 + s.w);
+    var f0 = P11(R_MAG_OUT, b0), f1 = P11(R_MAG_OUT, b1);
+    g += '<path d="M ' + e0[0].toFixed(1) + " " + e0[1].toFixed(1) + " L " + f0[0].toFixed(1) +
+         " " + f0[1].toFixed(1) + " M " + e1[0].toFixed(1) + " " + e1[1].toFixed(1) + " L " +
+         f1[0].toFixed(1) + " " + f1[1].toFixed(1) + '" stroke="var(--mas)" ' +
+         'stroke-opacity=".45" stroke-width="1" stroke-dasharray="4 3" fill="none"></path>';
+
+    // the piece itself on the circle, marked however small it is
+    g += '<path d="' + annulus(R_CIRC, R_CIRC + R_SUB, s.a0, s.a0 + Math.max(s.w, 0.45)) +
+         '" fill="var(--mas)" fill-opacity=".85"></path>';
+
+    // opened out
+    g += '<path d="' + annulus(R_MAG_IN, R_MAG_OUT, b0, b1) + '" fill="var(--sunk)" ' +
+         'stroke="currentColor" stroke-opacity=".25"></path>';
+    g += '<path d="' + annulus(R_MAG_IN, R_MAG_OUT, b0 + s.hit * cw, b0 + (s.hit + 1) * cw) +
+         '" fill="var(--mas)" fill-opacity=".45"></path>';
+    for (k = 0; k <= s.n; k++) {
+      var a = b0 + k * cw, ten = k % 10 === 0;
+      var t0 = P11(ten ? R_MAG_IN : R_MAG_OUT - 8, a), t1 = P11(R_MAG_OUT, a);
+      g += '<line x1="' + t0[0].toFixed(1) + '" y1="' + t0[1].toFixed(1) + '" x2="' +
+           t1[0].toFixed(1) + '" y2="' + t1[1].toFixed(1) + '" stroke="currentColor" ' +
+           'stroke-opacity="' + (ten ? ".45" : ".2") + '" stroke-width="1"></line>';
+      if (ten && k < s.n) {
+        var nl = P11(R_MAG_OUT + 11, a + cw / 2);
+        g += '<text x="' + nl[0].toFixed(1) + '" y="' + (nl[1] + 3.5).toFixed(1) +
+             '" font-size="9" text-anchor="middle" fill="currentColor" fill-opacity=".4" ' +
+             'font-family="IBM Plex Mono, monospace">' + k + "</text>";
+      }
+    }
+
+    var lb = P11(R_MAG_IN - 16, mid);
+    g += '<text x="' + lb[0].toFixed(1) + '" y="' + lb[1].toFixed(1) + '" font-size="12.5" ' +
+         'text-anchor="middle" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" ' +
+         'stroke-linejoin="round" fill="var(--mas)">' + s.name + "</text>";
+    g += '<text x="' + lb[0].toFixed(1) + '" y="' + (lb[1] + 15).toFixed(1) + '" font-size="10.5" ' +
+         'text-anchor="middle" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" ' +
+         'stroke-linejoin="round" fill="currentColor" fill-opacity=".5">' + s.holds + "</text>";
+    return g;
+  }
+
+  /* A mazal divided into its thirty, drawn where it lies — at this size the
+     degrees still have room to be told apart, and the finer parts do not. */
+  function subMarkup(mode, p) {
+    if (mode !== "sign" && mode !== "maalah") return "";
+    var g = "", k, a0 = p.index * ARC;
+    for (k = 0; k <= ARC; k++) {
+      var t0 = P11(R_CIRC, a0 + k), t1 = P11(R_CIRC + R_SUB, a0 + k);
+      g += '<line x1="' + t0[0].toFixed(1) + '" y1="' + t0[1].toFixed(1) + '" x2="' +
+           t1[0].toFixed(1) + '" y2="' + t1[1].toFixed(1) + '" stroke="var(--mas)" ' +
+           'stroke-opacity=".55" stroke-width="1"></line>';
+    }
+    return g;
+  }
+
   function wheelMarkup() {
     return '' +
       '<defs><marker id="zTip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" ' +
@@ -155,17 +258,20 @@
       '<g id="zEarth"><circle r="9" fill="#2f6fae"></circle>' +
       '<circle r="9" fill="none" stroke="#0d2b45" stroke-opacity=".55" stroke-width="1"></circle></g></defs>' +
       '<g id="zring">' + ringMarkup() + "</g>" +
-      // the whole round, light
+      /* The circle he is dividing. Nothing travels on it on this page — there is
+         the earth, the mazalos, and the three hundred and sixty degrees between
+         them — so it is drawn as a graduation, not as anybody's path. */
       '<circle cx="' + CX11 + '" cy="' + CY11 + '" r="' + R_CIRC + '" fill="none" ' +
-      'stroke="var(--mas)" stroke-width="1.6" stroke-opacity=".3"></circle>' +
+      'stroke="currentColor" stroke-width="1.4" stroke-opacity=".3"></circle>' +
+      '<g id="zsub"></g><g id="zmag" opacity="0"></g>' +
       // ראש טלה, where the count opens
       '<line x1="' + CX11 + '" y1="' + CY11 + '" x2="' + (CX11 + R_OUT11) + '" y2="' + CY11 +
       '" stroke="currentColor" stroke-opacity=".22" stroke-width="1"></line>' +
       '<text id="zHeadLbl" x="' + (CX11 + R_CIRC - 4) + '" y="' + (CY11 - 8) +
       '" font-size="10" text-anchor="end" fill="currentColor" fill-opacity=".45">ראש טלה</text>' +
-      // the part already swept, dark, with the head at the leading end
-      '<path id="zarc" fill="none" stroke="var(--mas)" stroke-width="2.8" ' +
-      'marker-end="url(#zTip)"></path>' +
+      /* how far round from ראש טלה the place lies — a measurement along the
+         graduation, not a journey, so it carries no arrowhead */
+      '<path id="zarc" fill="none" stroke="var(--mas)" stroke-width="2.8"></path>' +
       // a fat transparent stroke on the circle is the handle
       '<circle id="zgrab" class="grab" cx="' + CX11 + '" cy="' + CY11 + '" r="' + R_CIRC +
       '" fill="none" stroke="transparent" stroke-width="26" pointer-events="stroke"></circle>' +
@@ -223,7 +329,16 @@
     /* the bright marker says ראש טלה itself; two of them on the same spot is one too many */
     document.getElementById("zHeadLbl").setAttribute("opacity", mode === "start" ? "0" : "1");
 
-    var onSector = mode === "sign" || mode === "start";
+    /* the finer parts, on the circle itself: the mazal cut into its thirty
+       where that can still be seen, and the piece opened out where it cannot */
+    document.getElementById("zsub").innerHTML = subMarkup(mode, p);
+    var mag = document.getElementById("zmag");
+    mag.innerHTML = magMarkup(mode, p);
+    mag.setAttribute("opacity", mag.innerHTML ? "1" : "0");
+    /* the pointer would run straight through what is being looked at */
+    document.getElementById("zptr").setAttribute("opacity", mag.innerHTML ? ".25" : "1");
+
+    var onSector = mode === "sign" || mode === "start" || mode === "maalah";
     var band = mode === "start" ? 0 : p.index;
     if (onSector) {
       arc.setAttribute("d", arc11(R_CIRC + 30, band * ARC, (band + 1) * ARC));
