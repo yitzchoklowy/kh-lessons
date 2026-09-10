@@ -398,7 +398,9 @@
   art.innerHTML = wheelMarkup();
   grabWheel(art, function (deg) { stopPlay(); setPlace(deg); });
   paintHis();
-  show(HIS[0].lon);
+  /* The count opens at ראש טלה, so the page does too — nothing swept, nothing
+     read yet. His own two places are a press away in the halacha. */
+  show(0);
   requestAnimationFrame(frame);
 
   /* Each clause can be linked to — #round, #sign, #start, #maalah, #chelek,
