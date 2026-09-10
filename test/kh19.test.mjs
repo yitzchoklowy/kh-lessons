@@ -21,7 +21,7 @@ const K = new Function(
   + '\n' + read('src/lib/kh19-local.js')
   + '\n' + read('src/partials/kh15.js')
   + '\n' + read('src/partials/kh19.js')
-  + '\nreturn { KH19, calculateInclination, calculateEquatorDistance, chapter19At,'
+  + '\nreturn { KH19, calculateInclination, calculateEquatorDistance, chapter19At, chapter19Live,'
   + ' inclinationRows, bearingOf, CONSTANTS, normalizeDegrees, zodiacPosition };')();
 
 const { KH19: T, CONSTANTS: C } = K;
@@ -115,6 +115,27 @@ test('KH 19:12–14 — which way it is seen, by his three cases', () => {
   assert.equal(K.bearingOf(14, true).notch, 'south');
   assert.equal(K.bearingOf(14, false).notch, 'north');
   assert.equal(K.bearingOf(1, true).notch, 'east');
+});
+
+test('the moon can be moved between his nights, and the engine still stands behind it', () => {
+  // on a whole day the moment is the day's own figure
+  for (const d of [29, 300000]) {
+    const whole = K.chapter19At(d), live = K.chapter19Live(d);
+    assert.equal(live.amiti, whole.amiti, `day ${d}`);
+    assert.equal(live.inclDeg, whole.inclDeg, `day ${d} נטייה`);
+    assert.equal(live.distDeg, whole.distDeg, `day ${d} מרחק`);
+  }
+  // between them the moon goes the short way round, a little at a time
+  let prev = K.chapter19Live(300000);
+  for (let f = 0.05; f <= 1.0001; f += 0.05) {
+    const live = K.chapter19Live(300000 + f);
+    const step = Math.abs(((live.amiti - prev.amiti + 540) % 360) - 180);
+    assert.ok(step < 2, `the moon jumped ${step}° in a twentieth of a day`);
+    // and its lean is his table's, for the degree it is in at that moment
+    near(live.incl, K.calculateInclination(live.amiti).result, 1e-9, `lean at ${f.toFixed(2)}`);
+    assert.ok(live.incl <= 23.5 + 1e-9, 'never past three and twenty and a half');
+    prev = live;
+  }
 });
 
 test('no chapter-19 page or partial types a figure of his into itself', () => {

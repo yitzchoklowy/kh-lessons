@@ -8,7 +8,7 @@
   <header>
     <h1 class="bigtitle">להיכן היה נוטה</h1>
     <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/19" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ט:י״ב–ט״ז</a></div>
-    <p class="halacha lead">אם תרצה לידע לאי זו רוח מרוחות העולם ייראה הירח נוטה, תחשוב ותדע מרחקו מעל הקו השוה.<br>
+    <p class="halacha lead">אם תרצה לידע לאי זו רוח מרוחות העולם ייראה הירח נוטה, <b class="mas">תחשוב ותדע מרחקו מעל הקו השוה</b>.<br>
       אם יהיה על הקו השוה, או <b class="line">קרוב ממנו בשתים שלש מעלות</b> בצפון או בדרום,<br>
       ייראה <b class="mean">מכוון כנגד אמצע מערב</b>, ותיראה <b class="mas">פגמתו</b> מכוונת כנגד מזרח העולם בשוה:</p>
     <p class="halacha">ואם היה רחוק מעל הקו השוה לצפון העולם, ייראה <b class="mean">בין מערב העולם ובין צפונו</b>,<br>
@@ -27,18 +27,40 @@
   </header>
 
   <div class="pair">
-    <div class="rchart first19" id="fig" style="--c:var(--mean)">
-      <div class="rc-head"><h4>המערב, בשעת הראייה</h4><span class="rc-ref">י״ט:י״ב–ט״ו</span></div>
-      <div class="sky19" id="sky"></div>
-      <div class="cases" id="cases"></div>
-      <div class="rc-sum" id="say"></div>
+    <div class="stack first19">
+      <div class="verdict" id="verdict" style="--c:var(--mean)"></div>
+
+      <div class="rchart" id="wavebox" style="--c:var(--sunc)">
+        <div class="rc-head"><h4>מקום הירח, ונטיית מעלתו</h4><span class="rc-ref">י״ט:ז–י</span></div>
+        <div id="wave19"></div>
+        <div class="rc-sum" id="wsay"></div>
+      </div>
+
+      <div class="rchart" id="fig" style="--c:var(--mean)">
+        <div class="rc-head"><h4>המערב, בשעת הראייה</h4><span class="rc-ref">י״ט:י״ב–ט״ו</span></div>
+        <div class="sky19" id="sky"></div>
+        <div class="cases" id="cases"></div>
+      </div>
+
+      <div class="book n" id="work">
+        <h3><i></i>כל החשבון, ליל זה</h3>
+        <p class="cap">מן מקום הירח עד מה שיאמרו העדים</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div class="agree" id="agree"></div>
+      </div>
+
+      <div class="rchart" id="height" style="--c:var(--mas)">
+        <div class="rc-head"><h4>וכמה היה גבוה — מאין הקשת</h4><span class="rc-ref">י״ז:א–י״ב</span></div>
+        <div id="chain"></div>
+        <div class="rc-sum" id="hsay"></div>
+      </div>
     </div>
     <!--@include partials/wheel.html-->
   </div>
 
   <div class="drill" id="drill" style="--c:var(--mean)"></div>
 
-  <p class="note"><a href="kh19-10.html">מרחק הירח מעל הקו השוה</a> · <a href="kh17-12.html">קשת הראייה</a> · <a href="index.html">כל השיעורים</a></p>
+  <p class="note"><a href="kh19-7.html">שיעורי הנטייה</a> · <a href="kh19-10.html">מרחק הירח מעל הקו השוה</a> · <a href="kh17-12.html">קשת הראייה</a> · <a href="index.html">כל השיעורים</a></p>
 </div>
 
 <!--ENGINE-->
@@ -53,8 +75,25 @@
   <!--@include partials/kh19.js-->
   <!--@include partials/wheel.js-->
 
+  var HIS_DAY = 29, T = KH19.INCLINATION_TABLE, K = CONSTANTS.KITZEI_HAREIYAH_TABLE;
+
   /* his three cases, one each, in his order */
   var CASES = [bearingOf(0, true), bearingOf(10, true), bearingOf(10, false)];
+
+  /* his bounds of י״ז:ט״ו — the קשת below which no קץ is short enough and above
+     which none is needed — to say whether tonight's is short or long by his own
+     measure, not one made up here */
+  var SHORT = K[0].kashtFromExclusive, LONG = K[K.length - 1].kashtUpTo;
+
+  /* His own figures for that night: the four of י״ט:י״א, and the קשת of י״ז:כ״ב. */
+  var HIS = [
+    { name: "מעלת הירח",          sign: "תשע עשרה ממזל שור" },
+    { name: "נטיית המעלה",        sign: "שמונה עשרה בצפון", k: "incl" },
+    { name: "רוחב הירח",          sign: "ארבע בדרום",       k: "roch" },
+    { name: "מרחק מעל הקו השוה", sign: "ארבע עשרה לצפון",  k: "dist" },
+    { name: "קשת הראייה",         sign: "י״א י״א",          k: "kesh", d: 11, m: 11 }
+  ];
+  var HIS_WANT = { incl: [18, true], roch: [4, false], dist: [14, true] };
 
   function ORECH_AT(n) {
     var v = chapter19At(n);
@@ -65,29 +104,131 @@
 
   function side(north) { return north ? "צפון" : "דרום"; }
 
+  function heightOf(k) {
+    if (k <= SHORT) return "קצרה מכל הקיצים — ייראה כאילו הוא קרוב מן הארץ";
+    if (k > LONG) return "ארוכה מכל הקיצים — ייראה גבוה מעל הארץ";
+    return "בתוך הקיצים, " + Math.round((k - SHORT) / (LONG - SHORT) * 100) +
+           "% מן הקצרה אל הארוכה — ולפי אורכה לפי גבהו";
+  }
+
+  /* Every step of his method, in his order, each from the one before it. The
+     lean is recomputed here from his table and hidden if it disagrees with the
+     step the page was built on. */
+  function workRows(v, v17) {
+    var f = inclFold(v.amiti), b = inclBracket(f.eff);
+    var mine = T[b.lo].inclination + b.part * b.gap;
+    if (Math.abs(mine - v.incl) > 1e-9) {
+      return [{ l: "החשבון אינו מסכים עם הטבלה — נסתר", a: "", t: "" }];
+    }
+    var same = v.inclNorth === v.rochavNorth, bb = v.bearing;
+    var rows = [
+      { l: "מקום הירח האמיתי", s: v.mazal.ordinalDegree + " ממזל " + v.mazal.hebrew + " · פרק ט״ו",
+        a: "", t: formatDms(v.amiti) }
+    ];
+    /* his precision in this chapter is the degree, and the minute on the way
+       to it; seconds are not his here. A figure inside Hebrew says it is LTR. */
+    if (f.q > 0) {
+      rows.push({ l: INCL_FOLD[f.q - 1].says, s: "י״ט:ט", a: INCL_FOLD[f.q - 1].op,
+                  t: degMin(f.eff), drop: true });
+    }
+    rows.push({ l: "בין שורת " + L(T[b.lo].degrees + "°") + " לשורת " + L(T[b.hi].degrees + "°"),
+                s: "י״ט:ז", a: L(degIncl(T[b.lo].inclination) + " … " + degIncl(T[b.hi].inclination)),
+                t: "", drop: true });
+    rows.push({ l: "תקח להם מנתם מבין שתי הנטייות",
+                s: "י״ט:ח · " + L(Math.round(b.part * 100) + "%") + " מן היתר",
+                a: L("+ " + degMin(b.part * b.gap)), t: degMin(v.incl), drop: true });
+    rows.push({ l: "נטיית המעלה", s: "בקירוב, י״ט:י״א", a: side(v.inclNorth),
+                t: degIncl(v.inclDeg), out: true });
+    rows.push({ l: "רוחב הירח הראשון", s: L(degMin(v.rochav)) + " · פרק ט״ז", a: side(v.rochavNorth),
+                t: degIncl(v.rochavDeg) });
+    rows.push({ l: same ? "ברוח אחת — תקבץ שניהן" : "בשתי רוחות — תגרע המעט מן הרב", s: "י״ט:י",
+                a: degIncl(v.inclDeg) + (same ? " + " : " − ") + degIncl(v.rochavDeg),
+                t: degIncl(v.distDeg), drop: true });
+    rows.push({ l: "מרחק הירח מעל הקו השוה", s: same ? "י״ט:י" : "ברוח שהיה בה הרב · י״ט:י",
+                a: side(v.distNorth), t: degIncl(v.distDeg), out: true });
+    rows.push({ l: v.distDeg <= 3 ? "על הקו השוה, או קרוב ממנו בשתים שלש מעלות"
+                                  : "רחוק מעל הקו השוה ל" + side(v.distNorth) + " העולם",
+                s: bb.mark, a: "", t: "", drop: true });
+    rows.push({ l: "ייראה " + bb.where, s: bb.mark, a: "", t: "", out: true });
+    rows.push({ l: bb.says, s: bb.mark, a: "", t: "", drop: true });
+    rows.push({ l: "קשת הראייה", s: "פרק י״ז", a: "", t: degMin(v17.keshet) });
+    rows.push({ l: "וכמה היה גבוה", s: heightOf(v17.keshet) + " · י״ט:ט״ו", a: "", t: "", out: true });
+    return rows;
+  }
+  function L(x) { return '<span dir="ltr">' + x + "</span>"; }
+
   function dials19(v, keshet) {
     var cl = el.corner ? el.corner.querySelectorAll("text") : [];
     if (cl[0]) cl[0].textContent = "מרחק מעל הקו השוה";
     if (el.cMasLbl) el.cMasLbl.textContent = "קשת הראייה";
     if (el.cMean) el.cMean.textContent = degIncl(v.distDeg) + " " + side(v.distNorth);
-    if (el.cMas) el.cMas.textContent = degIncl(Math.round(keshet));
+    if (el.cMas) el.cMas.textContent = degMin(keshet);
   }
 
   function show(n) {
-    var v = chapter19At(n), keshet = chapter17At(n).keshet, b = v.bearing;
-    markSky(v, keshet);
-    dials19(v, keshet);
+    var v = chapter19At(n), v17 = chapter17At(n), b = v.bearing;
+    /* the drawings take the moment — held in the hand, or turning — and the
+       working below keeps to the whole day */
+    var live = chapter19Live(day);
+    markInclWave(live);
+    markSky(live, v17.keshet);
+    dials19(v, v17.keshet);
+    document.getElementById("wsay").innerHTML =
+      "הירח " + live.mazal.ordinalDegree + " ממזל <b>" + live.mazal.hebrew + "</b>" +
+      " · נטיית מעלתו <b>" + degIncl(live.inclDeg) + "</b> " + side(live.inclNorth) +
+      " · רוחבו <b>" + degIncl(live.rochavDeg) + "</b> " + side(live.rochavNorth) + "." +
+      '<span class="eq">↔ אחוז בירח והזז אותו במזלות</span>';
     var h = "";
     for (var i = 0; i < CASES.length; i++) {
       var c = CASES[i];
-      h += '<div class="case' + (c.id === b.id ? " on" : "") + '"><span class="mark">' + c.mark +
+      h += '<div class="case' + (c.id === live.bearing.id ? " on" : "") + '"><span class="mark">' + c.mark +
            "</span><b>" + c.where + "</b><br>" + c.says + "</div>";
     }
     document.getElementById("cases").innerHTML = h;
-    document.getElementById("say").innerHTML =
-      "מרחקו מעל הקו השוה <b>" + degIncl(v.distDeg) + "</b> " + side(v.distNorth) +
-      " · קשת הראייה <b>" + degIncl(Math.round(keshet)) + "</b>." +
-      '<span class="eq">' + b.where + "</span>";
+    paint(document.getElementById("led"), workRows(v, v17));
+    markChain(v17, "keshet");
+    document.getElementById("hsay").innerHTML =
+      "מן האורך הראשון, בתיקוני פרק י״ז, עד <b>קשת הראייה " + degMin(v17.keshet) + "</b>." +
+      '<span class="eq">' + heightOf(v17.keshet) + "</span>";
+    document.getElementById("verdict").innerHTML =
+      "<h3>ליל " + (n === HIS_DAY ? "הראייה, שני לחודש אייר"
+        : '<span dir="ltr">' + n.toLocaleString() + "</span> מן העיקר") + " — מה יאמרו העדים</h3>" +
+      '<span class="say">' + b.where + '</span><span class="mark">' + b.mark + "</span>" +
+      '<span class="why">' + b.says + " · קשת הראייה " + degMin(v17.keshet) + ", " +
+      heightOf(v17.keshet) + "</span>";
+    agree(n, v, v17);
+  }
+
+  function agree(n, v, v17) {
+    var host = document.getElementById("agree");
+    if (n !== HIS_DAY) {
+      host.innerHTML = '<p class="cap">חשבונו שלו הוא לליל הראייה, שני לחודש אייר — תשעה ועשרים יום מן העיקר.</p>';
+      return;
+    }
+    var got = {
+      incl: [v.inclDeg, v.inclNorth], roch: [v.rochavDeg, v.rochavNorth],
+      dist: [v.distDeg, v.distNorth]
+    };
+    var h = '<h4>אצלו · וכאן</h4><table class="cmp"><tbody>';
+    for (var i = 0; i < HIS.length; i++) {
+      var r = HIS[i], here, ok = true;
+      if (!r.k) here = v.mazal.ordinalDegree + " " + v.mazal.hebrew;
+      else if (r.k === "kesh") {
+        here = degMin(v17.keshet);
+        var off = Math.round(Math.abs(v17.keshet - (r.d + r.m / 60)) * 60);
+        ok = off === 0;
+        if (!ok) { h += row(r, here, off + "′"); continue; }
+      } else {
+        here = degIncl(got[r.k][0]) + " " + side(got[r.k][1]);
+        ok = got[r.k][0] === HIS_WANT[r.k][0] && got[r.k][1] === HIS_WANT[r.k][1];
+      }
+      h += row(r, here, ok ? "—" : "≠");
+    }
+    host.innerHTML = h + "</tbody></table>";
+  }
+  function row(r, here, mark) {
+    return '<tr><td class="l">' + r.name + '</td><td class="a">' + r.sign + "</td>" +
+           '<td class="t">' + here + '</td><td class="o">' + mark + "</td></tr>";
   }
 
   function onDraw(n) { show(n); }
@@ -96,11 +237,14 @@
     playing = false;
     if (el.play) el.play.textContent = "▶ Turn";
     document.getElementById("sky").innerHTML = skyFigure();
-    setDay(29);
+    document.getElementById("chain").innerHTML = chainFigure();
+    document.getElementById("wave19").innerHTML = inclWaveFigure(true);
+    grabInclWave();
+    setDay(HIS_DAY);
 
     drill(document.getElementById("drill"), {
-      title: "עשה אתה", ref: "י״ט:י״ב–ט״ו",
-      note: "מן המרחק — לאי זו רוח, ומן הקשת — כמה גבוה.",
+      title: "עשה אתה, לליל אחר", ref: "י״ט:ז–ט״ו",
+      note: "כל הדרך: מן מקום הירח, עד להיכן היה נוטה וכמה היה גבוה.",
       newCase: function () {
         var d = 280000 + Math.floor(Math.random() * 60000), c = chapter19At(d);
         c.keshet = chapter17At(d).keshet;
@@ -108,11 +252,50 @@
       },
       caseLine: function (c) {
         return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
-          "<br>מרחק הירח מעל הקו השוה <b>" + degIncl(c.distDeg) + " " + side(c.distNorth) + "</b>" +
-          "<br>קשת הראייה <b>" + degIncl(Math.round(c.keshet)) + "</b>.";
+          "<br>מקום הירח האמיתי <b>" + formatDms(c.amiti) + "</b> — " + c.mazal.ordinalDegree +
+          " ממזל " + c.mazal.hebrew +
+          "<br>רוחב הירח <b>" + degIncl(c.rochavDeg) + " " + side(c.rochavNorth) + "</b>" +
+          " · קשת הראייה <b>" + degMin(c.keshet) + "</b>.";
       },
       steps: [
-        { ask: function () { return "לאי זו רוח ייראה?"; },
+        { ask: function () { return "כמה היא <b>נטיית המעלה</b> שהיא מקום הירח?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return c.inclDeg; },
+          hint: function (c) {
+            var f = inclFold(c.amiti), b = inclBracket(f.eff);
+            return (f.q ? INCL_FOLD[f.q - 1].says + " — נשאר " + Math.floor(f.eff) + "°; " : "") +
+                   "בין " + degIncl(T[b.lo].inclination) + " לבין " + degIncl(T[b.hi].inclination) + ".";
+          },
+          after: function () { return "בקירוב, במעלות שלמות."; } },
+
+        { ask: function () { return "ולאי זו רוח היא נוטה?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "לצפון", value: true }, { label: "לדרום", value: false }];
+          },
+          answer: function (c) { return c.inclNorth; },
+          hint: function () { return "מטלה עד סוף בתולה — צפון; ממאזנים עד סוף דגים — דרום."; },
+          after: function () { return "וזה י״ט:ג."; } },
+
+        { ask: function () { return "הנטייה והרוחב — ברוח אחת, או בשתי רוחות?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "ברוח אחת — תקבץ שניהן", value: true },
+                    { label: "בשתי רוחות — תגרע המעט מן הרב", value: false }];
+          },
+          answer: function (c) { return c.inclNorth === c.rochavNorth; },
+          hint: function (c) { return "הנטייה " + side(c.inclNorth) + ", והרוחב " + side(c.rochavNorth) + "."; },
+          after: function () { return "י״ט:י."; } },
+
+        { ask: function () { return "כמה הוא <b>מרחק הירח מעל הקו השוה</b>, ולאי זו רוח?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return c.distDeg; },
+          hint: function (c) { return degIncl(c.inclDeg) +
+            (c.inclNorth === c.rochavNorth ? " ועוד " : " פחות ") + degIncl(c.rochavDeg) + "."; },
+          after: function (c) { return "ל" + side(c.distNorth) + " העולם" +
+            (c.inclNorth === c.rochavNorth ? "." : " — ברוח שהיה בה הרב משניהם."); } },
+
+        { ask: function () { return "ובכן, לאי זו רוח ייראה?"; },
           type: "pick",
           choices: function () {
             return CASES.map(function (k) { return { label: k.where, value: k.id }; });
@@ -132,15 +315,16 @@
           hint: function () { return "לצד שכנגד הרוח שהוא נוטה אליה."; },
           after: function () { return "ולפי רוב המרחק לפי רוב הנטייה."; } },
 
-        { ask: function (c) { return "אילו היתה הקשת ארוכה מ־" + degIncl(Math.round(c.keshet)) +
-            " — כיצד ייראה?"; },
+        { ask: function () { return "וכמה היה גבוה — הקשת קצרה או ארוכה?"; },
           type: "pick",
           choices: function () {
-            return [{ label: "גבוה יותר מעל הארץ", value: "high" },
-                    { label: "קרוב יותר מן הארץ", value: "low" }];
+            return [{ label: "קצרה מכל הקיצים — כאילו קרוב מן הארץ", value: "short" },
+                    { label: "בתוך הקיצים", value: "mid" },
+                    { label: "ארוכה מכל הקיצים — גבוה מעל הארץ", value: "long" }];
           },
-          answer: function () { return "high"; },
-          hint: function () { return "קצרה — כאילו הוא קרוב מן הארץ; ארוכה — גבוה."; },
+          answer: function (c) { return c.keshet <= SHORT ? "short" : c.keshet > LONG ? "long" : "mid"; },
+          hint: function (c) { return "הקשת " + degMin(c.keshet) + "; והקיצים מן " + SHORT +
+            "° עד " + LONG + "°, י״ז:ט״ו."; },
           after: function () { return "ולפי אורך קשת הראייה לפי גבהו מעל הארץ בראיית העינים."; } }
       ]
     });

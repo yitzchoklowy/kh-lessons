@@ -96,7 +96,7 @@
            '<span class="eq">' + degIncl(v.inclDeg) + "   " + (v.inclNorth ? "צפון" : "דרום") + "</span>";
 
     traceListChart(document.getElementById("chart"), hits, sum);
-    markInclWave(v);
+    markInclWave(chapter19Live(day));
     dials19(v);
   }
 
@@ -125,6 +125,7 @@
     });
     document.getElementById("chart").insertAdjacentHTML("beforeend", '<div id="wave19"></div>');
     document.getElementById("wave19").innerHTML = inclWaveFigure(false);
+    grabInclWave();
     agree();
     setDay(29);
 

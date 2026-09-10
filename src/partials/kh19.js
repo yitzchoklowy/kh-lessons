@@ -13,8 +13,14 @@
   */
   function chapter19At(n) {
     var v = chapter15At(n);
-    var node = calculateNodePosition(n);
-    var lat = calculateMoonLatitude(v.amiti, node.result);
+    return build19(n, v.amiti, v.sunTrue, calculateNodePosition(n).result);
+  }
+
+  /* One night's figures from its three places — the moon's true place, the
+     sun's, and the ראש. Every stage is the engine's own step. */
+  function build19(day, amiti, sunTrue, rosh) {
+    var v = { amiti: amiti, sunTrue: sunTrue };
+    var lat = calculateMoonLatitude(amiti, rosh);
 
     var incl = calculateInclination(v.amiti);
     var inclDeg = Math.round(incl.result);
@@ -23,7 +29,7 @@
     var dist = calculateEquatorDistance(inclDeg, incl.direction === 'north', rochavDeg, rochavNorth);
 
     return {
-      day: n,
+      day: day, rosh: rosh,
       amiti: v.amiti, sunTrue: v.sunTrue, mazal: zodiacPosition(v.amiti),
       incl: incl.result, inclDeg: inclDeg, inclNorth: incl.direction === 'north', inclStep: incl,
       rochav: Math.abs(lat.result), rochavDeg: rochavDeg, rochavNorth: rochavNorth,
@@ -31,6 +37,27 @@
       distNorth: dist.direction === 'north', distStep: dist,
       bearing: bearingOf(Math.round(dist.result), dist.direction === 'north')
     };
+  }
+
+  /* The drawings move the way the instrument moves — between whole days, not
+     in jumps. The three places are carried forward between two whole days and
+     handed back to the engine, so every in-between figure is still its own.
+     The ledgers keep to whole days, the way he counts them. */
+  var C19 = {}, C19N = 0;
+  function chapter19Cached(n) {
+    if (!C19[n]) {
+      if (C19N > 24) { C19 = {}; C19N = 0; }
+      C19[n] = chapter19At(n); C19N++;
+    }
+    return C19[n];
+  }
+  function tw19(x, y, f) { return normalizeDegrees(x + (((y - x + 540) % 360) - 180) * f); }
+  function chapter19Live(dayFloat) {
+    var n = Math.floor(dayFloat), f = dayFloat - n, a = chapter19Cached(n);
+    if (f <= 0) return a;
+    var b = chapter19Cached(n + 1);
+    return build19(dayFloat, tw19(a.amiti, b.amiti, f), tw19(a.sunTrue, b.sunTrue, f),
+                   tw19(a.rosh, b.rosh, f));
   }
 
   /* The nine rows he lists in י״ט:ז. The nought row is the table's own — ראש
@@ -344,6 +371,8 @@
            '<text id="iwTotalVal" x="-9" y="-9" font-size="12.5" ' + halo + 'text-anchor="middle" ' +
            'fill="var(--mas)" font-family="IBM Plex Mono, monospace">—</text>';
     }
+    g += '<circle id="iwGrab" cx="-99" cy="-99" r="17" fill="transparent" ' +
+         'style="cursor:grab;touch-action:none"></circle>';
     return '<div class="curve"><svg viewBox="0 0 ' + IW.w + " " + IW.h + '" role="img" ' +
       'aria-label="The line straight across, and the mazalos leaning off it: north to three and twenty and a half degrees at the head of Cancer, back to nothing at the head of Libra, and as far south at the head of Capricorn.">' +
       g + "</svg></div>";
@@ -353,7 +382,7 @@
     var dot = document.getElementById("iwDot");
     if (!dot) return;
     var lon = normalizeDegrees(v.amiti);
-    var signed = v.inclNorth ? v.inclDeg : -v.inclDeg;
+    var signed = v.inclNorth ? v.incl : -v.incl;   // placed exactly; read in whole degrees
     var x = iwX(lon), y = iwY(signed);
     dot.setAttribute("cx", x.toFixed(1)); dot.setAttribute("cy", y.toFixed(1));
     var drop = document.getElementById("iwDrop");
@@ -366,11 +395,13 @@
     val.setAttribute("y", ((IW.mid + y) / 2 + 4).toFixed(1));
     val.textContent = degIncl(v.inclDeg);
 
-    var moon = document.getElementById("iwMoon");
+    var grab = document.getElementById("iwGrab"), moon = document.getElementById("iwMoon");
+    if (grab) { grab.setAttribute("cx", x.toFixed(1)); grab.setAttribute("cy", y.toFixed(1)); }
     if (!moon) return;
-    var top = signed + (v.rochavNorth ? v.rochavDeg : -v.rochavDeg);
+    var top = signed + (v.rochavNorth ? v.rochav : -v.rochav);
     var my = iwY(top);
     moon.setAttribute("cx", x.toFixed(1)); moon.setAttribute("cy", my.toFixed(1));
+    if (grab) grab.setAttribute("cy", my.toFixed(1));
     var r = document.getElementById("iwRochav");
     r.setAttribute("x1", x.toFixed(1)); r.setAttribute("y1", y.toFixed(1));
     r.setAttribute("x2", x.toFixed(1)); r.setAttribute("y2", my.toFixed(1));
@@ -381,6 +412,49 @@
     tv.setAttribute("x", (x + 46).toFixed(1));
     tv.setAttribute("y", ((IW.mid + my) / 2 + 4).toFixed(1));
     tv.textContent = degIncl(v.distDeg);
+  }
+
+  /* Rule eight: take hold of the moon and move it through the mazalos. What
+     really moves is the day count, so the sun, the ראש — and with it the
+     רוחב — and the קשת come round at their own rates, and every figure on the
+     page is the engine's for that moment. Let go and it settles on a whole
+     day, because he counts whole days. */
+  function grabInclWave() {
+    var h = document.getElementById("iwGrab");
+    if (!h) return;
+    var svg = h.ownerSVGElement, holding = false;
+    var RATE = dmsToDecimal(CONSTANTS.MOON.MEAN_MOTION_PER_DAY);
+    function lonAt(e) {
+      var b = svg.getBoundingClientRect();
+      var x = (e.clientX - b.left) * IW.w / b.width;
+      return Math.max(0, Math.min(359.9, (x - IW.x0) / (IW.x1 - IW.x0) * 360));
+    }
+    function shortest(a) { return ((a + 540) % 360) - 180; }
+    h.addEventListener("pointerdown", function (e) {
+      holding = true;
+      playing = false; el.play.textContent = "▶ Turn"; stopRun();
+      svg.classList.add("dragging");
+      h.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    h.addEventListener("pointermove", function (e) {
+      if (!holding) return;
+      var want = lonAt(e);
+      /* the moon's own motion is uneven, so ask twice: the mean rate carries
+         the first step, and the engine's place on that moment corrects it */
+      for (var i = 0; i < 2; i++) {
+        day = Math.max(0, day + shortest(want - chapter19Live(day).amiti) / RATE);
+      }
+      drawAt(day);
+    });
+    function drop() {
+      if (!holding) return;
+      holding = false;
+      svg.classList.remove("dragging");
+      setDay(Math.round(day));
+    }
+    h.addEventListener("pointerup", drop);
+    h.addEventListener("pointercancel", drop);
   }
 
   // ═══ י״ט:י״ב–ט״ו — where it is seen, and how high ════════════════════

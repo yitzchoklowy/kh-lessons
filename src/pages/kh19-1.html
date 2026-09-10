@@ -81,7 +81,7 @@
 
   function show(n) {
     var v = chapter19At(n);
-    markZodiacTilt(v);
+    markZodiacTilt(chapter19Live(day));
     dials19(v);
     var s = calculateInclination(v.sunTrue), z = zodiacPosition(v.sunTrue);
     document.getElementById("say").innerHTML =

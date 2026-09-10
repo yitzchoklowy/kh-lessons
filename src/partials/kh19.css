@@ -17,3 +17,6 @@
   .cases .case b { font-family:var(--serif); font-size:1.02rem; color:var(--c); font-weight:700; }
   .cases .case .mark { font-family:var(--mono); font-size:.68rem; color:var(--faint);
                        direction:ltr; float:left; }
+  /* In the working column's stack every box takes the whole width. An auto
+     margin shrinks a box to its content, and an svg brings no width of its own. */
+  .stack.first19 > * { width:100%; max-width:none; margin-left:0; margin-right:0; }

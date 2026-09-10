@@ -83,7 +83,7 @@
   function show(n) {
     var v = chapter19At(n), z = v.mazal;
     var same = v.inclNorth === v.rochavNorth;
-    markInclWave(v);
+    markInclWave(chapter19Live(day));
     dials19(v);
     paint(document.getElementById("led"), [
       { l: "מעלת הירח", s: z.ordinalDegree + " ממזל " + z.hebrew + " · פרק ט״ו", a: "",
@@ -133,6 +133,7 @@
     playing = false;
     if (el.play) el.play.textContent = "▶ Turn";
     document.getElementById("wave19").innerHTML = inclWaveFigure(true);
+    grabInclWave();
     setDay(HIS_DAY);
 
     drill(document.getElementById("drill"), {
