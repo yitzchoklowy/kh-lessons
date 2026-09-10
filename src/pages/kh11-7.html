@@ -18,7 +18,10 @@
   /* ── the sentence the section hangs from ── */
   .preamble { display:flex; align-items:flex-start; gap:1rem; flex-wrap:wrap;
               border-bottom:1px solid var(--hair); padding-bottom:.7rem; margin-bottom:.9rem; }
-  .pre-said { flex:1; min-width:16rem; margin:0; font-family:var(--serif);
+  .pre-head { flex:1; min-width:16rem; }
+  .section { margin:0 0 .25rem; font-family:var(--serif); direction:rtl; text-align:right;
+             font-size:1.35rem; font-weight:700; color:var(--brass); letter-spacing:.01em; }
+  .pre-said { margin:0; font-family:var(--serif);
               direction:rtl; text-align:right; font-size:1.02rem; line-height:1.7;
               color:var(--muted); }
   .pre-said b { color:var(--ink); font-weight:600; }
@@ -46,6 +49,7 @@
   .halacha .cl:hover { background:color-mix(in srgb, var(--mas) 12%, transparent); }
   .halacha .cl[aria-pressed="true"] { background:color-mix(in srgb, var(--mas) 20%, transparent);
                  border-bottom-style:solid; color:var(--ink); }
+  .hdr #figSay b { color:var(--mas); font-weight:700; }
   .bigtitle .item { font-family:var(--mono); font-size:.62em; color:var(--brass);
                     margin-inline-end:.4rem; vertical-align:.18em; }
 
@@ -297,7 +301,10 @@
     el("dPassed").textContent = p.passed + " מזלות שלמים לפניו";
     el("dOrd").textContent = gem(p.ordinal);
     el("dInto").textContent = formatDms(p.into) + " מן המזל";
-    el("figSay").textContent = "מקומו בגלגל " + formatDms(p.lon) +
+    /* with a piece open, the strip over the drawing says which rung it is on */
+    var chain = chainSay(clause, p);
+    if (chain) el("figSay").innerHTML = chain;
+    else el("figSay").textContent = "מקומו בגלגל " + formatDms(p.lon) +
       " — במזל " + p.mazal + ", מעלה " + gem(p.ordinal) + " בו.";
     var d = decimalToDms(p.into);
     el("ladderSay").innerHTML = "מזל " + p.mazal + " · מעלה <b>" + gem(p.ordinal) +
@@ -318,7 +325,7 @@
     for (var i = 0; i < all.length; i++) {
       all[i].setAttribute("aria-pressed", String(all[i] === btn && clause !== ""));
     }
-    showOn(clause, place);
+    show(place);
   }
 
   document.addEventListener("click", function (e) {

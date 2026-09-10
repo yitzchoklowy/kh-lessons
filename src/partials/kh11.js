@@ -165,88 +165,132 @@
   /* Which piece of the circle a clause opens, and into how many. Each one is a
      piece of the piece above it: a mazal out of the round, a מעלה out of the
      mazal, a חלק out of the מעלה, a שניה out of the חלק. */
-  function magSource(mode, p) {
+  /* ── one piece, opened out ────────────────────────────────────────────────
+     A place sits inside a chain of pieces, each one a cell of the one before
+     it: a mazal out of the round, a מעלה out of that mazal, a חלק out of that
+     מעלה, a שניה out of that חלק. */
+  function pieceChain(p) {
     var d = decimalToDms(p.into), sec = Math.floor(d.seconds);
-    var degAt = p.index * ARC + Math.floor(p.into);
-    var chelekAt = degAt + d.minutes / PER;
-    var shniyaAt = chelekAt + sec / (PER * PER);
-    if (mode === "sign")
-      return { a0: p.index * ARC, w: ARC, n: ARC, hit: Math.floor(p.into),
-               name: "מזל " + p.mazal, holds: ARC + " מעלות" };
-    if (mode === "maalah")
-      return { a0: degAt, w: 1, n: PER, hit: d.minutes,
-               name: "מעלה " + gem(p.ordinal), holds: PER + " חלקים" };
-    if (mode === "chelek")
-      return { a0: chelekAt, w: 1 / PER, n: PER, hit: sec,
-               name: "חלק " + gem(d.minutes || PER), holds: PER + " שניות" };
-    if (mode === "shniya")
-      return { a0: shniyaAt, w: 1 / (PER * PER), n: PER,
-               hit: Math.round((d.seconds - sec) * PER),
-               name: "שניה " + gem(sec || PER), holds: PER + " שלישיות" };
-    return null;
+    return [
+      { key: "sign",   n: ARC, hit: Math.floor(p.into),
+        name: "מזל " + p.mazal,            holds: ARC + " מעלות" },
+      { key: "maalah", n: PER, hit: d.minutes,
+        name: "מעלה " + gem(p.ordinal),    holds: PER + " חלקים" },
+      { key: "chelek", n: PER, hit: sec,
+        name: "חלק " + gem(d.minutes || PER),  holds: PER + " שניות" },
+      { key: "shniya", n: PER, hit: Math.round((d.seconds - sec) * PER),
+        name: "שניה " + gem(sec || PER),   holds: PER + " שלישיות" }
+    ];
   }
 
-  /* One piece of the circle, opened out inside the circle it came off — with
-     the two lines that say which piece it is. A חלק of a מעלה is a sixtieth of
-     a thirtieth of a twelfth of the round; it cannot be drawn where it lies, so
-     it is drawn beside itself, and the two lines carry the eye between them. */
-  function magMarkup(mode, p) {
-    var s = magSource(mode, p);
-    if (!s) return "";
-    var mid = s.a0 + s.w / 2, half = MAG_SPAN / 2;
-    var b0 = mid - half, b1 = mid + half, cw = MAG_SPAN / s.n, g = "", k;
+  var LEVEL = { sign: 0, maalah: 1, chelek: 2, shniya: 3 };
+  /* Each opened piece hangs at its own radius inside the circle, so the chain
+     nests inward and can be read from the outside in. */
+  var FANS = [{ r0: 148, r1: 174 }, { r0: 104, r1: 130 }, { r0: 60, r1: 86 }];
+  var FAN_SPAN = 150;
 
-    // the two lines out of the piece it came from
-    var e0 = P11(R_CIRC, s.a0), e1 = P11(R_CIRC, s.a0 + s.w);
-    var f0 = P11(R_MAG_OUT, b0), f1 = P11(R_MAG_OUT, b1);
-    g += '<path d="M ' + e0[0].toFixed(1) + " " + e0[1].toFixed(1) + " L " + f0[0].toFixed(1) +
-         " " + f0[1].toFixed(1) + " M " + e1[0].toFixed(1) + " " + e1[1].toFixed(1) + " L " +
-         f1[0].toFixed(1) + " " + f1[1].toFixed(1) + '" stroke="var(--mas)" ' +
-         'stroke-opacity=".45" stroke-width="1" stroke-dasharray="4 3" fill="none"></path>';
-
-    // the piece itself on the circle, marked however small it is
-    g += '<path d="' + annulus(R_CIRC, R_CIRC + R_SUB, s.a0, s.a0 + Math.max(s.w, 0.45)) +
-         '" fill="var(--mas)" fill-opacity=".85"></path>';
-
-    // opened out
-    g += '<path d="' + annulus(R_MAG_IN, R_MAG_OUT, b0, b1) + '" fill="var(--sunk)" ' +
-         'stroke="currentColor" stroke-opacity=".25"></path>';
-    g += '<path d="' + annulus(R_MAG_IN, R_MAG_OUT, b0 + s.hit * cw, b0 + (s.hit + 1) * cw) +
-         '" fill="var(--mas)" fill-opacity=".45"></path>';
-    for (k = 0; k <= s.n; k++) {
-      var a = b0 + k * cw, ten = k % 10 === 0;
-      var t0 = P11(ten ? R_MAG_IN : R_MAG_OUT - 8, a), t1 = P11(R_MAG_OUT, a);
+  /* The ruled band itself. `hinge` is the ray it opens from — always the ray
+     the piece it came from begins on, so its nought stands on that piece's own
+     beginning rather than anywhere. Ticks are numbered at the marks, not
+     between them, and the last mark carries the count. */
+  function fanMarkup(r0, r1, hinge, span, n, hit, lit) {
+    var cw = span / n, g = "", k;
+    g += '<path d="' + annulus(r0, r1, hinge, hinge + span) + '" fill="var(--sunk)" ' +
+         'stroke="currentColor" stroke-opacity="' + (lit ? ".35" : ".18") + '"></path>';
+    g += '<path d="' + annulus(r0, r1, hinge + hit * cw, hinge + (hit + 1) * cw) +
+         '" fill="var(--mas)" fill-opacity="' + (lit ? ".5" : ".22") + '"></path>';
+    for (k = 0; k <= n; k++) {
+      var a = hinge + k * cw, ten = k % 10 === 0 || k === n;
+      var t0 = P11(ten ? r0 : r1 - 8, a), t1 = P11(r1, a);
       g += '<line x1="' + t0[0].toFixed(1) + '" y1="' + t0[1].toFixed(1) + '" x2="' +
            t1[0].toFixed(1) + '" y2="' + t1[1].toFixed(1) + '" stroke="currentColor" ' +
            'stroke-opacity="' + (ten ? ".45" : ".2") + '" stroke-width="1"></line>';
-      if (ten && k < s.n) {
-        var nl = P11(R_MAG_OUT + 11, a + cw / 2);
+      if (ten) {
+        var nl = P11(r0 - 10, a);
         g += '<text x="' + nl[0].toFixed(1) + '" y="' + (nl[1] + 3.5).toFixed(1) +
-             '" font-size="9" text-anchor="middle" fill="currentColor" fill-opacity=".4" ' +
-             'font-family="IBM Plex Mono, monospace">' + k + "</text>";
+             '" font-size="9" text-anchor="middle" paint-order="stroke" stroke="var(--card)" ' +
+             'stroke-width="3" stroke-linejoin="round" fill="currentColor" fill-opacity="' +
+             (lit ? ".55" : ".3") + '" font-family="IBM Plex Mono, monospace">' + k + "</text>";
       }
     }
-
-    var lb = P11(R_MAG_IN - 16, mid);
-    g += '<text x="' + lb[0].toFixed(1) + '" y="' + lb[1].toFixed(1) + '" font-size="12.5" ' +
-         'text-anchor="middle" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" ' +
-         'stroke-linejoin="round" fill="var(--mas)">' + s.name + "</text>";
-    g += '<text x="' + lb[0].toFixed(1) + '" y="' + (lb[1] + 15).toFixed(1) + '" font-size="10.5" ' +
-         'text-anchor="middle" paint-order="stroke" stroke="var(--card)" stroke-width="3.5" ' +
-         'stroke-linejoin="round" fill="currentColor" fill-opacity=".5">' + s.holds + "</text>";
     return g;
   }
 
-  /* A mazal divided into its thirty, drawn where it lies — at this size the
-     degrees still have room to be told apart, and the finer parts do not. */
-  function subMarkup(mode, p) {
-    if (mode !== "sign" && mode !== "maalah") return "";
-    var g = "", k, a0 = p.index * ARC;
+  /* The mazal, cut into its thirty where it lies — at this size the degrees can
+     still be told apart, so this one is not opened out at all. */
+  function signOnCircle(p, hit, lit) {
+    var a0 = p.index * ARC, g = "", k;
     for (k = 0; k <= ARC; k++) {
       var t0 = P11(R_CIRC, a0 + k), t1 = P11(R_CIRC + R_SUB, a0 + k);
+      var ten = k % 10 === 0 || k === ARC;
       g += '<line x1="' + t0[0].toFixed(1) + '" y1="' + t0[1].toFixed(1) + '" x2="' +
            t1[0].toFixed(1) + '" y2="' + t1[1].toFixed(1) + '" stroke="var(--mas)" ' +
-           'stroke-opacity=".55" stroke-width="1"></line>';
+           'stroke-opacity="' + (ten ? ".85" : ".5") + '" stroke-width="1"></line>';
+      if (ten) {
+        var nl = P11(R_CIRC - 11, a0 + k);
+        g += '<text x="' + nl[0].toFixed(1) + '" y="' + (nl[1] + 3.5).toFixed(1) +
+             '" font-size="9" text-anchor="middle" paint-order="stroke" stroke="var(--card)" ' +
+             'stroke-width="3" stroke-linejoin="round" fill="var(--mas)" fill-opacity="' +
+             (lit ? ".8" : ".45") + '" font-family="IBM Plex Mono, monospace">' + k + "</text>";
+      }
+    }
+    g += '<path d="' + annulus(R_CIRC, R_CIRC + R_SUB, a0 + hit, a0 + hit + 1) +
+         '" fill="var(--mas)" fill-opacity="' + (lit ? ".55" : ".3") + '"></path>';
+    return g;
+  }
+
+  /* How one cell becomes the band below it. A straight line from a cell a
+     degree wide to a band a hundred and fifty wide would cut across the whole
+     disc, so the far edge is unrolled instead — it runs round the ring from the
+     cell's end to the band's end, dropping from one radius to the other as it
+     goes. The near edge is a single ray, because the band opens from that
+     cell's own first ray; that is what puts its nought where the cell begins. */
+  function coneMarkup(rIn, a0, a1, rOut, b0, b1) {
+    var N = 40, i, d, pt;
+    var e0 = P11(rIn, a0), e1 = P11(rIn, a1), f0 = P11(rOut, b0);
+    d = "M " + e0[0].toFixed(1) + " " + e0[1].toFixed(1) +
+        " A " + rIn + " " + rIn + " 0 0 0 " + e1[0].toFixed(1) + " " + e1[1].toFixed(1);
+    for (i = 1; i <= N; i++) {
+      var t = i / N;
+      pt = P11(rIn + (rOut - rIn) * t, a1 + (b1 - a1) * t);
+      d += " L " + pt[0].toFixed(1) + " " + pt[1].toFixed(1);
+    }
+    d += " A " + rOut + " " + rOut + " 0 " + (normalizeDegrees(b1 - b0) > 180 ? 1 : 0) + " 1 " +
+         f0[0].toFixed(1) + " " + f0[1].toFixed(1) + " Z";
+    return '<path d="' + d + '" fill="var(--mas)" fill-opacity=".12" stroke="var(--mas)" ' +
+           'stroke-opacity=".4" stroke-width="1" stroke-dasharray="4 3"></path>';
+  }
+
+  /* The chain, written out, so the piece being looked at is never just another
+     nought-to-sixty: every rung above it, and the one open now. */
+  function chainSay(mode, p) {
+    var depth = LEVEL[mode];
+    if (depth === undefined) return null;
+    var chain = pieceChain(p), parts = [], i;
+    for (i = 0; i <= depth; i++) {
+      parts.push(i === depth ? "<b>" + chain[i].name + " — " + chain[i].holds + "</b>"
+                             : chain[i].name);
+    }
+    return parts.join(" › ");
+  }
+
+  function magMarkup(mode, p) {
+    var depth = LEVEL[mode];
+    if (depth === undefined) return "";
+    var chain = pieceChain(p), g = "", L;
+
+    g += signOnCircle(p, chain[0].hit, depth === 0);
+    /* the ray the chosen degree begins on — every band below opens from here */
+    var hinge = p.index * ARC + chain[0].hit;
+    var parentIn = R_CIRC, parentCell = 1;
+
+    for (L = 1; L <= depth; L++) {
+      var f = FANS[L - 1], b = chain[L], lit = L === depth;
+      g += coneMarkup(parentIn, hinge, hinge + parentCell, f.r1, hinge, hinge + FAN_SPAN);
+      g += fanMarkup(f.r0, f.r1, hinge, FAN_SPAN, b.n, b.hit, lit);
+      parentCell = FAN_SPAN / b.n;
+      hinge = hinge + b.hit * parentCell;
+      parentIn = f.r0;
     }
     return g;
   }
@@ -261,7 +305,7 @@
       /* The circle he is dividing. Nothing travels on it on this page — there is
          the earth, the mazalos, and the three hundred and sixty degrees between
          them — so it is drawn as a graduation, not as anybody's path. */
-      '<circle cx="' + CX11 + '" cy="' + CY11 + '" r="' + R_CIRC + '" fill="none" ' +
+      '<circle id="zgal" cx="' + CX11 + '" cy="' + CY11 + '" r="' + R_CIRC + '" fill="none" ' +
       'stroke="currentColor" stroke-width="1.4" stroke-opacity=".3"></circle>' +
       '<g id="zsub"></g><g id="zmag" opacity="0"></g>' +
       // ראש טלה, where the count opens
@@ -331,14 +375,19 @@
 
     /* the finer parts, on the circle itself: the mazal cut into its thirty
        where that can still be seen, and the piece opened out where it cannot */
-    document.getElementById("zsub").innerHTML = subMarkup(mode, p);
     var mag = document.getElementById("zmag");
     mag.innerHTML = magMarkup(mode, p);
-    mag.setAttribute("opacity", mag.innerHTML ? "1" : "0");
-    /* the pointer would run straight through what is being looked at */
-    document.getElementById("zptr").setAttribute("opacity", mag.innerHTML ? ".25" : "1");
+    var opened = !!mag.innerHTML;
+    mag.setAttribute("opacity", opened ? "1" : "0");
+    document.getElementById("zsub").innerHTML = "";
+    /* while one piece is being looked at, the rest of the round steps back —
+       the graduation, the sweep, and the sight-line all belong to the whole */
+    document.getElementById("zptr").setAttribute("opacity", opened ? ".18" : "1");
+    document.getElementById("zarc").setAttribute("opacity", opened ? ".18" : "1");
+    document.getElementById("zgal").setAttribute("stroke-opacity", opened ? ".1" : ".3");
+    document.getElementById("zdot").setAttribute("opacity", opened ? ".2" : "1");
 
-    var onSector = mode === "sign" || mode === "start" || mode === "maalah";
+    var onSector = mode === "start" || LEVEL[mode] !== undefined;
     var band = mode === "start" ? 0 : p.index;
     if (onSector) {
       arc.setAttribute("d", arc11(R_CIRC + 30, band * ARC, (band + 1) * ARC));
@@ -357,9 +406,10 @@
        place happens to stand in */
     for (i = 0; i < 12; i++) {
       var lit = onSector ? i === band : i === p.index;
+      var rest = opened ? ".12" : ".45";
       document.getElementById("zsec" + i).setAttribute("fill-opacity", lit ? (onSector ? ".2" : ".1") : "0");
-      document.getElementById("znm" + i).setAttribute("fill-opacity", lit ? ".95" : ".45");
-      document.getElementById("zst" + i).setAttribute("opacity", lit ? "1" : ".45");
+      document.getElementById("znm" + i).setAttribute("fill-opacity", lit ? ".95" : rest);
+      document.getElementById("zst" + i).setAttribute("opacity", lit ? "1" : rest);
     }
     litBand(mode === "sign" ? "sign" : mode === "maalah" ? "maalah"
           : mode === "chelek" ? "chelek" : mode === "shniya" ? "shniya" : "");

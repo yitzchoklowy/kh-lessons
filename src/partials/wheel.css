@@ -32,7 +32,11 @@
   .page { max-width:53rem; margin:0 auto; padding:1.8rem 1.1rem 4rem; }
 
   header { border-bottom:1px solid var(--line); padding-bottom:1.1rem; }
-  .eyebrow { font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  /* The chapter-and-halacha line is Hebrew, so it reads and sits on the right,
+     under the title it belongs to. Left to the document's own direction it
+     drifted to the left edge on every page. */
+  .eyebrow { font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--faint);
+             font-weight:600; direction:rtl; text-align:right; }
   h1 { font-family:var(--serif); font-weight:700; font-size:2rem; line-height:1.15; margin:.3rem 0 .4rem; }
   h1 .heb { display:block; font-size:1.4rem; color:var(--muted); direction:rtl; text-align:left; font-weight:500; }
   .halacha { font-family:var(--serif); direction:rtl; text-align:right; font-size:1.3rem;
