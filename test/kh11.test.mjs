@@ -26,6 +26,7 @@ const K = new Function(
   + '\n' + include(read('src/partials/kh11.js'))
   + '\nreturn { readPlace, hisOrdinal, mazalRows, gem, ARC, ROUND, PER,'
   + ' hebrewWordsToNumber, numText, loupeBands,'
+  + ' slabHome, SP, SLAB, ringSource, cellSource, pieceChain, CX11, CY11,'
   + ' CONSTANTS, formatDms, dmsToDecimal, zodiacPosition };')();
 
 const { CONSTANTS: C, formatDms: F, dmsToDecimal: D } = K;
@@ -145,7 +146,53 @@ test('the ladder opens each band out of one cell of the band above', () => {
   assert.equal(bands[1].n, K.PER, 'a degree holds sixty parts');
   assert.equal(bands[1].hit, 30, 'ושלשים חלקים');
   assert.equal(bands[2].n, K.PER, 'a part holds sixty seconds');
-  assert.equal(bands[2].hit, 40, 'וארבעים שניות');
+  assert.equal(bands[2].hit, 39, 'וארבעים שניות — exactly on the mark, so the fortieth, by his count in י״א:ט');
   assert.equal(bands[3].n, K.PER, 'a second holds sixty thirds');
   bands.forEach((b) => assert.ok(b.hit >= 0 && b.hit < b.n, b.key + ': the cell is inside the band'));
+});
+
+/* The lifted pieces: each one stands clear of the next and inside the drawing,
+   and reads with its nought on the right, the way the count runs. */
+test('each lifted piece stands clear of the next, inside the drawing, nought on the right', () => {
+  let prevBottom = -Infinity;
+  for (let j = 0; j < 4; j++) {
+    const s = K.slabHome(j);
+    const a0 = s.mid - s.span / 2, a1 = s.mid + s.span / 2;
+    const right = K.SP(s, s.r1, a0), left = K.SP(s, s.r1, a1);
+    const top = K.SP(s, s.r1, s.mid)[1], bottom = K.SP(s, s.r0 - 12, a0)[1] + 6;
+    assert.ok(right[0] > left[0], 'wedge ' + j + ': its nought is on the right');
+    assert.ok(left[0] >= 0 && right[0] <= 620, 'wedge ' + j + ': inside the drawing across');
+    assert.ok(top > prevBottom, 'wedge ' + j + ': clear of the one above it');
+    assert.ok(bottom <= 640, 'wedge ' + j + ': inside the drawing down');
+    prevBottom = bottom;
+  }
+});
+
+test("the first piece starts as the mazal's own sector of the ring", () => {
+  const p = K.readPlace(70 + 30 / 60 + 40 / 3600);
+  const s = K.ringSource(p);
+  assert.ok(Math.abs(s.ax - K.CX11) < 1e-9 && Math.abs(s.ay - K.CY11) < 1e-9, 'it hangs from the earth');
+  assert.equal(s.mid, 75, 'the middle of תאומים');
+  assert.equal(s.span, K.ARC, 'thirty degrees wide');
+});
+
+test('each later piece starts as its own cell of the wedge above it', () => {
+  const p = K.readPlace(70 + 30 / 60 + 40 / 3600);
+  const chain = K.pieceChain(p), H = K.slabHome(0), s = K.cellSource(H, chain[0]);
+  const cw = H.span / chain[0].n;
+  assert.ok(Math.abs(s.span - cw) < 1e-9, 'one cell wide');
+  assert.ok(Math.abs(s.mid - (H.mid - H.span / 2 + (chain[0].hit + 0.5) * cw)) < 1e-9, 'the eleventh cell');
+  assert.ok(Math.abs(s.ax - H.ax) < 1e-6 && Math.abs(s.ay - H.ay) < 1e-6, 'cut from the same wedge');
+});
+
+test('every rung is named by his count, and the lit cell is the one named', () => {
+  const at0 = K.pieceChain(K.readPlace(0));
+  assert.deepEqual(at0.map((b) => b.name), ['מזל טלה', 'מעלה א׳', 'חלק א׳', 'שניה א׳'],
+    'at ראש טלה, the first of everything');
+  at0.forEach((b) => assert.equal(b.hit, 0, b.key + ': the first cell is lit'));
+
+  const his = K.pieceChain(K.readPlace(70 + 30 / 60 + 40 / 3600));
+  assert.deepEqual(his.map((b) => b.name), ['מזל תאומים', 'מעלה י״א', 'חלק ל״א', 'שניה מ׳'],
+    'בחצי מעלת אחת עשרה — and by the same count, the thirty-first חלק');
+  assert.deepEqual(his.map((b) => b.hit), [10, 30, 39, 0], 'each lit cell is the one its name says');
 });

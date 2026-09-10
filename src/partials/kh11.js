@@ -84,7 +84,6 @@
      nothing has a path of its own. */
   var CX11 = 310, CY11 = 320,
       R_CIRC = 196, R_PTR = 196, R_IN11 = 206, R_OUT11 = 270,
-      R_SUB = 9, R_MAG_IN = 104, R_MAG_OUT = 132, MAG_SPAN = 150,
       R_NAME11 = 218, R_STAR11 = 248, R_TICK = 286;
 
   function P11(r, deg) {
@@ -153,112 +152,172 @@
     return s.join("");
   }
 
-  function annulus(r0, r1, a0, a1) {
-    var big = normalizeDegrees(a1 - a0) > 180 ? 1 : 0;
-    var o0 = P11(r1, a0), o1 = P11(r1, a1), i1 = P11(r0, a1), i0 = P11(r0, a0);
-    return "M " + o0[0].toFixed(1) + " " + o0[1].toFixed(1) +
-           " A " + r1 + " " + r1 + " 0 " + big + " 0 " + o1[0].toFixed(1) + " " + o1[1].toFixed(1) +
-           " L " + i1[0].toFixed(1) + " " + i1[1].toFixed(1) +
-           " A " + r0 + " " + r0 + " 0 " + big + " 1 " + i0[0].toFixed(1) + " " + i0[1].toFixed(1) + " Z";
-  }
-
-  /* Which piece of the circle a clause opens, and into how many. Each one is a
-     piece of the piece above it: a mazal out of the round, a מעלה out of the
-     mazal, a חלק out of the מעלה, a שניה out of the חלק. */
   /* ── one piece, opened out ────────────────────────────────────────────────
      A place sits inside a chain of pieces, each one a cell of the one before
      it: a mazal out of the round, a מעלה out of that mazal, a חלק out of that
      מעלה, a שניה out of that חלק. */
   function pieceChain(p) {
-    var d = decimalToDms(p.into), sec = Math.floor(d.seconds);
+    /* Every rung is named the way he names a degree in י״א:ח — a place part-way
+       through a piece is in the next one up, and one standing exactly on a mark
+       has completed it (י״א:ט) — and the cell lit on each wedge is the one its
+       name says. The parts come off the engine already rounded, so a place
+       exactly on a mark reads as exactly on it. */
+    var d = decimalToDms(p.into);
+    var o1 = p.ordinal,
+        o2 = hisOrdinal(d.minutes + d.seconds / PER),
+        o3 = hisOrdinal(d.seconds),
+        o4 = hisOrdinal((d.seconds - Math.floor(d.seconds)) * PER);
     return [
-      { key: "sign",   n: ARC, hit: Math.floor(p.into),
-        name: "מזל " + p.mazal,            holds: ARC + " מעלות" },
-      { key: "maalah", n: PER, hit: d.minutes,
-        name: "מעלה " + gem(p.ordinal),    holds: PER + " חלקים" },
-      { key: "chelek", n: PER, hit: sec,
-        name: "חלק " + gem(d.minutes || PER),  holds: PER + " שניות" },
-      { key: "shniya", n: PER, hit: Math.round((d.seconds - sec) * PER),
-        name: "שניה " + gem(sec || PER),   holds: PER + " שלישיות" }
+      { key: "sign",   n: ARC, hit: o1 - 1, name: "מזל " + p.mazal,     holds: ARC + " מעלות" },
+      { key: "maalah", n: PER, hit: o2 - 1, name: "מעלה " + gem(o1),    holds: PER + " חלקים" },
+      { key: "chelek", n: PER, hit: o3 - 1, name: "חלק " + gem(o2),     holds: PER + " שניות" },
+      { key: "shniya", n: PER, hit: o4 - 1, name: "שניה " + gem(o3),    holds: PER + " שלישיות" }
     ];
   }
 
   var LEVEL = { sign: 0, maalah: 1, chelek: 2, shniya: 3 };
-  /* Each opened piece hangs at its own radius inside the circle, so the chain
-     nests inward and can be read from the outside in. */
-  var FANS = [{ r0: 148, r1: 174 }, { r0: 104, r1: 130 }, { r0: 60, r1: 86 }];
-  var FAN_SPAN = 150;
+  /* ── the piece itself, lifted out ─────────────────────────────────────────
+     Pressing a clause lifts the piece it names out of the circle — the wedge
+     itself, the same curved shape — and it grows as it comes, turning upright
+     so its marks can be read, while the rest of the round steps back. Its
+     thirty, or its sixty, are drawn across it. Press the next clause and one
+     cell of that wedge lifts out of it in turn and settles under it. Each is a
+     piece of the one above: that is the whole of ותחלק כל זמן שתרצה.
 
-  /* The ruled band itself. `hinge` is the ray it opens from — always the ray
-     the piece it came from begins on, so its nought stands on that piece's own
-     beginning rather than anywhere. Ticks are numbered at the marks, not
-     between them, and the last mark carries the count. */
-  function fanMarkup(r0, r1, hinge, span, n, hit, lit) {
-    var cw = span / n, g = "", k;
-    g += '<path d="' + annulus(r0, r1, hinge, hinge + span) + '" fill="var(--sunk)" ' +
-         'stroke="currentColor" stroke-opacity="' + (lit ? ".35" : ".18") + '"></path>';
-    g += '<path d="' + annulus(r0, r1, hinge + hit * cw, hinge + (hit + 1) * cw) +
-         '" fill="var(--mas)" fill-opacity="' + (lit ? ".5" : ".22") + '"></path>';
+     Every wedge is drawn from five numbers — where its middle is, which way it
+     faces, how wide it opens, and its two radii — so the flight from the ring
+     to its place is just those five numbers moving. */
+  var SLAB = { span: 30, r1: 955, thick: 60, top: 34, step: 128, ms: 560, lag: 320 };
+
+  function slabAt(C, mid, span, r0, r1) {
+    var rm = (r0 + r1) / 2, t = mid * RAD11;
+    return { C: C, ax: C[0] - rm * Math.cos(t), ay: C[1] + rm * Math.sin(t),
+             mid: mid, span: span, r0: r0, r1: r1 };
+  }
+  function SP(s, r, a) {
+    var t = a * RAD11;
+    return [s.ax + r * Math.cos(t), s.ay - r * Math.sin(t)];
+  }
+  function xy(pt) { return pt[0].toFixed(1) + " " + pt[1].toFixed(1); }
+  function slabPath(s, a0, a1, r0, r1) {
+    var big = Math.abs(a1 - a0) > 180 ? 1 : 0;
+    return "M " + xy(SP(s, r1, a0)) + " A " + r1.toFixed(1) + " " + r1.toFixed(1) + " 0 " + big +
+           " 0 " + xy(SP(s, r1, a1)) + " L " + xy(SP(s, r0, a1)) + " A " + r0.toFixed(1) + " " +
+           r0.toFixed(1) + " 0 " + big + " 1 " + xy(SP(s, r0, a0)) + " Z";
+  }
+
+  /* where the j-th wedge comes to rest: upright, one under the other */
+  function slabHome(j) {
+    var r1 = SLAB.r1, r0 = r1 - SLAB.thick, top = SLAB.top + j * SLAB.step;
+    return slabAt([CX11, top + SLAB.thick / 2], 90, SLAB.span, r0, r1);
+  }
+  /* where the first one comes from: the mazal's own sector of the ring */
+  function ringSource(p) {
+    var mid = p.index * ARC + ARC / 2;
+    return slabAt(P11((R_IN11 + R_OUT11) / 2, mid), mid, ARC, R_IN11, R_OUT11);
+  }
+  /* where each later one comes from: its cell of the wedge above it */
+  function cellSource(H, b) {
+    var cw = H.span / b.n, a = H.mid - H.span / 2 + (b.hit + 0.5) * cw;
+    return slabAt(SP(H, (H.r0 + H.r1) / 2, a), a, cw, H.r0, H.r1);
+  }
+  function lerpSlab(S, T, e) {
+    var sm = S.mid - 360 * Math.round((S.mid - T.mid) / 360);   // turn the short way
+    function L(a, b) { return a + (b - a) * e; }
+    return slabAt([L(S.C[0], T.C[0]), L(S.C[1], T.C[1])], L(sm, T.mid),
+                  L(S.span, T.span), L(S.r0, T.r0), L(S.r1, T.r1));
+  }
+
+  var HALO11 = 'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" ';
+
+  function slabMarkup(s, b, e, lit) {
+    var n = b.n, a0 = s.mid - s.span / 2, cw = s.span / n, th = s.r1 - s.r0, g = "", k;
+    g += '<path d="' + slabPath(s, a0, a0 + s.span, s.r0, s.r1) + '" fill="var(--card)" ' +
+         'stroke="var(--mas)" stroke-opacity="' + (lit ? ".85" : ".5") + '" stroke-width="1.4"></path>';
+    g += '<path d="' + slabPath(s, a0 + b.hit * cw, a0 + (b.hit + 1) * cw, s.r0, s.r1) +
+         '" fill="var(--mas)" fill-opacity="' + (lit ? ".55" : ".32") + '"></path>';
     for (k = 0; k <= n; k++) {
-      var a = hinge + k * cw, ten = k % 10 === 0 || k === n;
-      var t0 = P11(ten ? r0 : r1 - 8, a), t1 = P11(r1, a);
-      g += '<line x1="' + t0[0].toFixed(1) + '" y1="' + t0[1].toFixed(1) + '" x2="' +
-           t1[0].toFixed(1) + '" y2="' + t1[1].toFixed(1) + '" stroke="currentColor" ' +
-           'stroke-opacity="' + (ten ? ".45" : ".2") + '" stroke-width="1"></line>';
-      if (ten) {
-        var nl = P11(r0 - 10, a);
-        g += '<text x="' + nl[0].toFixed(1) + '" y="' + (nl[1] + 3.5).toFixed(1) +
-             '" font-size="9" text-anchor="middle" paint-order="stroke" stroke="var(--card)" ' +
-             'stroke-width="3" stroke-linejoin="round" fill="currentColor" fill-opacity="' +
-             (lit ? ".55" : ".3") + '" font-family="IBM Plex Mono, monospace">' + k + "</text>";
+      var a = a0 + k * cw, major = k % 10 === 0 || k === n;
+      g += '<line x1="' + SP(s, s.r1, a)[0].toFixed(1) + '" y1="' + SP(s, s.r1, a)[1].toFixed(1) +
+           '" x2="' + SP(s, s.r1 - th * (major ? .5 : .22), a)[0].toFixed(1) +
+           '" y2="' + SP(s, s.r1 - th * (major ? .5 : .22), a)[1].toFixed(1) +
+           '" stroke="currentColor" stroke-opacity="' + (major ? ".6" : ".3") + '" stroke-width="1"></line>';
+    }
+    /* the marks are only read once it has settled */
+    var o = e > .6 ? (e - .6) / .4 : 0;
+    if (o > 0) {
+      for (k = 0; k <= n; k += 10) {
+        var q = SP(s, s.r0 - 12, a0 + k * cw);
+        g += '<text x="' + q[0].toFixed(1) + '" y="' + (q[1] + 3.5).toFixed(1) + '" font-size="10" ' +
+             'text-anchor="middle" ' + HALO11 + 'fill="currentColor" fill-opacity="' +
+             (.6 * o).toFixed(2) + '" font-family="IBM Plex Mono, monospace">' + k + "</text>";
       }
+      if (n % 10) {
+        var qe = SP(s, s.r0 - 12, a0 + n * cw);
+        g += '<text x="' + qe[0].toFixed(1) + '" y="' + (qe[1] + 3.5).toFixed(1) + '" font-size="10" ' +
+             'text-anchor="middle" ' + HALO11 + 'fill="currentColor" fill-opacity="' +
+             (.6 * o).toFixed(2) + '" font-family="IBM Plex Mono, monospace">' + n + "</text>";
+      }
+      var c = SP(s, s.r0 + th * .24, s.mid);
+      g += '<text x="' + c[0].toFixed(1) + '" y="' + (c[1] + 4).toFixed(1) + '" font-size="12.5" ' +
+           'text-anchor="middle" ' + HALO11 + 'fill="var(--mas)" fill-opacity="' + o.toFixed(2) + '"' +
+           (lit ? ' font-weight="700"' : "") + ">" + b.name + " — " + b.holds + "</text>";
     }
     return g;
   }
 
-  /* The mazal, cut into its thirty where it lies — at this size the degrees can
-     still be told apart, so this one is not opened out at all. */
-  function signOnCircle(p, hit, lit) {
-    var a0 = p.index * ARC, g = "", k;
-    for (k = 0; k <= ARC; k++) {
-      var t0 = P11(R_CIRC, a0 + k), t1 = P11(R_CIRC + R_SUB, a0 + k);
-      var ten = k % 10 === 0 || k === ARC;
-      g += '<line x1="' + t0[0].toFixed(1) + '" y1="' + t0[1].toFixed(1) + '" x2="' +
-           t1[0].toFixed(1) + '" y2="' + t1[1].toFixed(1) + '" stroke="var(--mas)" ' +
-           'stroke-opacity="' + (ten ? ".85" : ".5") + '" stroke-width="1"></line>';
-      if (ten) {
-        var nl = P11(R_CIRC - 11, a0 + k);
-        g += '<text x="' + nl[0].toFixed(1) + '" y="' + (nl[1] + 3.5).toFixed(1) +
-             '" font-size="9" text-anchor="middle" paint-order="stroke" stroke="var(--card)" ' +
-             'stroke-width="3" stroke-linejoin="round" fill="var(--mas)" fill-opacity="' +
-             (lit ? ".8" : ".45") + '" font-family="IBM Plex Mono, monospace">' + k + "</text>";
-      }
-    }
-    g += '<path d="' + annulus(R_CIRC, R_CIRC + R_SUB, a0 + hit, a0 + hit + 1) +
-         '" fill="var(--mas)" fill-opacity="' + (lit ? ".55" : ".3") + '"></path>';
-    return g;
+  /* the cell a wedge came out of, joined to the wedge it became */
+  function connector(H, b, s, o) {
+    var cw = H.span / b.n, a0 = H.mid - H.span / 2 + b.hit * cw;
+    var p0 = SP(H, H.r0, a0), p1 = SP(H, H.r0, a0 + cw);
+    var q0 = SP(s, s.r1, s.mid - s.span / 2), q1 = SP(s, s.r1, s.mid + s.span / 2);
+    return '<path d="M ' + xy(p0) + " L " + xy(q0) + " L " + xy(q1) + " L " + xy(p1) + ' Z" ' +
+           'fill="var(--mas)" fill-opacity="' + (.07 * o).toFixed(3) + '" stroke="var(--mas)" ' +
+           'stroke-opacity="' + (.5 * o).toFixed(2) + '" stroke-width="1" stroke-dasharray="4 3"></path>';
   }
 
-  /* How one cell becomes the band below it. A straight line from a cell a
-     degree wide to a band a hundred and fifty wide would cut across the whole
-     disc, so the far edge is unrolled instead — it runs round the ring from the
-     cell's end to the band's end, dropping from one radius to the other as it
-     goes. The near edge is a single ray, because the band opens from that
-     cell's own first ray; that is what puts its nought where the cell begins. */
-  function coneMarkup(rIn, a0, a1, rOut, b0, b1) {
-    var N = 40, i, d, pt;
-    var e0 = P11(rIn, a0), e1 = P11(rIn, a1), f0 = P11(rOut, b0);
-    d = "M " + e0[0].toFixed(1) + " " + e0[1].toFixed(1) +
-        " A " + rIn + " " + rIn + " 0 0 0 " + e1[0].toFixed(1) + " " + e1[1].toFixed(1);
-    for (i = 1; i <= N; i++) {
-      var t = i / N;
-      pt = P11(rIn + (rOut - rIn) * t, a1 + (b1 - a1) * t);
-      d += " L " + pt[0].toFixed(1) + " " + pt[1].toFixed(1);
+  var POP = { depth: 0, key: "", starts: [], raf: 0, p: null };
+
+  function popDraw(now) {
+    var host = document.getElementById("zmag");
+    if (!host) return;
+    var p = POP.p, chain = pieceChain(p), g = "", busy = false, homes = [], j;
+    for (j = 0; j < POP.depth; j++) {
+      var T = slabHome(j);
+      homes.push(T);
+      var st = POP.starts[j];
+      var t = st === null ? 1 : Math.min(1, Math.max(0, (now - st) / SLAB.ms));
+      if (t < 1) busy = true;
+      if (t <= 0) continue;
+      var e = 1 - Math.pow(1 - t, 3);
+      var S = j === 0 ? ringSource(p) : cellSource(homes[j - 1], chain[j - 1]);
+      var s = lerpSlab(S, T, e);
+      if (j > 0 && e > .5) g += connector(homes[j - 1], chain[j - 1], s, (e - .5) * 2);
+      g += slabMarkup(s, chain[j], e, j === POP.depth - 1);
     }
-    d += " A " + rOut + " " + rOut + " 0 " + (normalizeDegrees(b1 - b0) > 180 ? 1 : 0) + " 1 " +
-         f0[0].toFixed(1) + " " + f0[1].toFixed(1) + " Z";
-    return '<path d="' + d + '" fill="var(--mas)" fill-opacity=".12" stroke="var(--mas)" ' +
-           'stroke-opacity=".4" stroke-width="1" stroke-dasharray="4 3"></path>';
+    host.innerHTML = g;
+    POP.raf = busy ? requestAnimationFrame(popDraw) : 0;
+  }
+
+  /* Lift out as many pieces as the clause names. A new piece flies out of the
+     one above it; pieces already out stay where they are; and when the place
+     itself moves, everything is simply redrawn where it now stands. */
+  function popTo(depth, p) {
+    var key = depth + ":" + p.lon;
+    if (key === POP.key) return;
+    var was = POP.depth, fresh = !POP.p || POP.p.lon !== p.lon, now = performance.now(), j;
+    /* a reader who has asked for less motion gets the pieces already in place */
+    var still = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    POP.key = key; POP.p = p; POP.depth = depth; POP.starts = [];
+    for (j = 0; j < depth; j++) {
+      if (still || (fresh && was > 0)) POP.starts.push(null);
+      else if (!fresh && j < was) POP.starts.push(null);
+      else POP.starts.push(now + (j - (fresh ? 0 : was)) * SLAB.lag);
+    }
+    if (POP.raf) cancelAnimationFrame(POP.raf);
+    POP.raf = 0;
+    if (!depth) { var h = document.getElementById("zmag"); if (h) h.innerHTML = ""; return; }
+    popDraw(now);
   }
 
   /* The chain, written out, so the piece being looked at is never just another
@@ -274,27 +333,6 @@
     return parts.join(" › ");
   }
 
-  function magMarkup(mode, p) {
-    var depth = LEVEL[mode];
-    if (depth === undefined) return "";
-    var chain = pieceChain(p), g = "", L;
-
-    g += signOnCircle(p, chain[0].hit, depth === 0);
-    /* the ray the chosen degree begins on — every band below opens from here */
-    var hinge = p.index * ARC + chain[0].hit;
-    var parentIn = R_CIRC, parentCell = 1;
-
-    for (L = 1; L <= depth; L++) {
-      var f = FANS[L - 1], b = chain[L], lit = L === depth;
-      g += coneMarkup(parentIn, hinge, hinge + parentCell, f.r1, hinge, hinge + FAN_SPAN);
-      g += fanMarkup(f.r0, f.r1, hinge, FAN_SPAN, b.n, b.hit, lit);
-      parentCell = FAN_SPAN / b.n;
-      hinge = hinge + b.hit * parentCell;
-      parentIn = f.r0;
-    }
-    return g;
-  }
-
   function wheelMarkup() {
     return '' +
       '<defs><marker id="zTip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" ' +
@@ -307,7 +345,7 @@
          them — so it is drawn as a graduation, not as anybody's path. */
       '<circle id="zgal" cx="' + CX11 + '" cy="' + CY11 + '" r="' + R_CIRC + '" fill="none" ' +
       'stroke="currentColor" stroke-width="1.4" stroke-opacity=".3"></circle>' +
-      '<g id="zsub"></g><g id="zmag" opacity="0"></g>' +
+      '<g id="zsub"></g>' +
       // ראש טלה, where the count opens
       '<line x1="' + CX11 + '" y1="' + CY11 + '" x2="' + (CX11 + R_OUT11) + '" y2="' + CY11 +
       '" stroke="currentColor" stroke-opacity=".22" stroke-width="1"></line>' +
@@ -338,7 +376,9 @@
       '<circle id="zdot" r="8" fill="none" stroke="var(--mas)" stroke-width="1.5"></circle>' +
       '<use href="#zEarth" x="' + CX11 + '" y="' + CY11 + '"></use>' +
       '<text x="' + CX11 + '" y="' + (CY11 + 24) + '" font-size="11" text-anchor="middle" ' +
-      'fill="currentColor" fill-opacity=".55">הארץ</text>';
+      'fill="currentColor" fill-opacity=".55">הארץ</text>' +
+      /* the lifted pieces go over everything, and never take the hand off the wheel */
+      '<g id="zmag" opacity="0" pointer-events="none"></g>';
   }
 
   /* Put the place at `deg` on the drawing. */
@@ -375,10 +415,11 @@
 
     /* the finer parts, on the circle itself: the mazal cut into its thirty
        where that can still be seen, and the piece opened out where it cannot */
+    var depth = LEVEL[mode] === undefined ? 0 : LEVEL[mode] + 1;
+    var opened = depth > 0;
     var mag = document.getElementById("zmag");
-    mag.innerHTML = magMarkup(mode, p);
-    var opened = !!mag.innerHTML;
     mag.setAttribute("opacity", opened ? "1" : "0");
+    popTo(depth, p);
     document.getElementById("zsub").innerHTML = "";
     /* while one piece is being looked at, the rest of the round steps back —
        the graduation, the sweep, and the sight-line all belong to the whole */
@@ -391,12 +432,12 @@
     var band = mode === "start" ? 0 : p.index;
     if (onSector) {
       arc.setAttribute("d", arc11(R_CIRC + 30, band * ARC, (band + 1) * ARC));
-      arc.setAttribute("opacity", ".95");
+      arc.setAttribute("opacity", mode === "start" ? ".95" : "0");
       var mid = P11(R_CIRC + 15, band * ARC + ARC / 2);
       lbl.setAttribute("x", mid[0].toFixed(1));
       lbl.setAttribute("y", (mid[1] + 4).toFixed(1));
       lbl.textContent = ARC + "°";
-      lbl.setAttribute("opacity", mode === "sign" ? ".95" : "0");
+      lbl.setAttribute("opacity", "0");
     } else {
       arc.setAttribute("opacity", "0");
       lbl.setAttribute("opacity", "0");
@@ -426,18 +467,8 @@
   var LOU = { x0: 44, x1: 584, top: 44, h: 26, gap: 84 };
 
   function loupeBands(p) {
-    var d = decimalToDms(p.into);
-    var sec = Math.floor(d.seconds), third = Math.round((d.seconds - sec) * PER);
-    return [
-      { key: "sign",   n: ARC, hit: Math.floor(p.into),
-        name: "מזל " + p.mazal, holds: ARC + " מעלות" },
-      { key: "maalah", n: PER, hit: d.minutes,
-        name: "מעלה " + gem(p.ordinal) + " בו", holds: PER + " חלקים" },
-      { key: "chelek", n: PER, hit: sec,
-        name: "חלק " + gem(d.minutes || PER), holds: PER + " שניות" },
-      { key: "shniya", n: PER, hit: third,
-        name: "שניה " + gem(sec || PER), holds: PER + " שלישיות" }
-    ];
+    /* the flat ruler reads the place exactly as the lifted wedges do */
+    return pieceChain(p);
   }
 
   function loupeMarkup(p) {
