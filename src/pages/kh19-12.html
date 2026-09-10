@@ -1,0 +1,149 @@
+<title>להיכן היה נוטה</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh17.css--></style>
+<style><!--@include partials/kh19.css--></style>
+
+<div class="page solo" data-emph="orech" data-fig="מקום השמש האמיתי ומקום הירח האמיתי במזלות. מהם יוצאים המרחק מעל הקו השוה, וקשת הראייה.">
+
+  <header>
+    <h1 class="bigtitle">להיכן היה נוטה</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/19" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ט:י״ב–ט״ז</a></div>
+    <p class="halacha lead">אם תרצה לידע לאי זו רוח מרוחות העולם ייראה הירח נוטה, תחשוב ותדע מרחקו מעל הקו השוה.<br>
+      אם יהיה על הקו השוה, או <b class="line">קרוב ממנו בשתים שלש מעלות</b> בצפון או בדרום,<br>
+      ייראה <b class="mean">מכוון כנגד אמצע מערב</b>, ותיראה <b class="mas">פגמתו</b> מכוונת כנגד מזרח העולם בשוה:</p>
+    <p class="halacha">ואם היה רחוק מעל הקו השוה לצפון העולם, ייראה <b class="mean">בין מערב העולם ובין צפונו</b>,<br>
+      ותיראה פגמתו נוטה מכנגד מזרח העולם <b class="mas">כנגד דרום העולם</b>:</p>
+    <p class="halacha">ואם היה רחוק מעל הקו השוה לדרום העולם, ייראה <b class="mean">בין מערב העולם ובין דרומו</b>,<br>
+      ותיראה פגמתו נוטה מכנגד מזרח העולם <b class="mas">כנגד צפון העולם</b>.<br>
+      ולפי רוב המרחק לפי רוב הנטייה:</p>
+    <p class="halacha">ומחקירת העדים, שאומרין להן, <b class="mean">כמה היה גבוה</b>.<br>
+      ודבר זה ייודע מ<b class="sun">קשת הראייה</b>,<br>
+      שבזמן שתהיה קשת הראייה קצרה, ייראה הירח כאילו הוא קרוב מן הארץ,<br>
+      ובזמן שתהיה ארוכה, ייראה גבוה מעל הארץ.<br>
+      ולפי אורך קשת הראייה לפי גבהו מעל הארץ בראיית העינים:</p>
+    <p class="halacha">הרי ביארנו חשבונות כל הדרכים שצריכין להן בידיעת הראייה ובחקירת העדים,<br>
+      כדי שיהיה הכל ידוע למבינים, ולא יחסרו דרך מדרכי התורה, ולא ישוטטו לבקש אחריה בספרים אחרים.<br>
+      ״דרשו מעל ספר י״י וקראו, אחת מהנה לא נעדרה״:</p>
+  </header>
+
+  <div class="pair">
+    <div class="rchart first19" id="fig" style="--c:var(--mean)">
+      <div class="rc-head"><h4>המערב, בשעת הראייה</h4><span class="rc-ref">י״ט:י״ב–ט״ו</span></div>
+      <div class="sky19" id="sky"></div>
+      <div class="cases" id="cases"></div>
+      <div class="rc-sum" id="say"></div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mean)"></div>
+
+  <p class="note"><a href="kh19-10.html">מרחק הירח מעל הקו השוה</a> · <a href="kh17-12.html">קשת הראייה</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh17.js-->
+  <!--@include partials/kh19.js-->
+  <!--@include partials/wheel.js-->
+
+  /* his three cases, one each, in his order */
+  var CASES = [bearingOf(0, true), bearingOf(10, true), bearingOf(10, false)];
+
+  function ORECH_AT(n) {
+    var v = chapter19At(n);
+    return { sun: v.sunTrue, moon: v.amiti,
+             orech: normalizeDegrees(v.amiti - v.sunTrue),
+             rochav: v.rochav, north: v.rochavNorth };
+  }
+
+  function side(north) { return north ? "צפון" : "דרום"; }
+
+  function dials19(v, keshet) {
+    var cl = el.corner ? el.corner.querySelectorAll("text") : [];
+    if (cl[0]) cl[0].textContent = "מרחק מעל הקו השוה";
+    if (el.cMasLbl) el.cMasLbl.textContent = "קשת הראייה";
+    if (el.cMean) el.cMean.textContent = degIncl(v.distDeg) + " " + side(v.distNorth);
+    if (el.cMas) el.cMas.textContent = degIncl(Math.round(keshet));
+  }
+
+  function show(n) {
+    var v = chapter19At(n), keshet = chapter17At(n).keshet, b = v.bearing;
+    markSky(v, keshet);
+    dials19(v, keshet);
+    var h = "";
+    for (var i = 0; i < CASES.length; i++) {
+      var c = CASES[i];
+      h += '<div class="case' + (c.id === b.id ? " on" : "") + '"><span class="mark">' + c.mark +
+           "</span><b>" + c.where + "</b><br>" + c.says + "</div>";
+    }
+    document.getElementById("cases").innerHTML = h;
+    document.getElementById("say").innerHTML =
+      "מרחקו מעל הקו השוה <b>" + degIncl(v.distDeg) + "</b> " + side(v.distNorth) +
+      " · קשת הראייה <b>" + degIncl(Math.round(keshet)) + "</b>." +
+      '<span class="eq">' + b.where + "</span>";
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    document.getElementById("sky").innerHTML = skyFigure();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ט:י״ב–ט״ו",
+      note: "מן המרחק — לאי זו רוח, ומן הקשת — כמה גבוה.",
+      newCase: function () {
+        var d = 280000 + Math.floor(Math.random() * 60000), c = chapter19At(d);
+        c.keshet = chapter17At(d).keshet;
+        return c;
+      },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מרחק הירח מעל הקו השוה <b>" + degIncl(c.distDeg) + " " + side(c.distNorth) + "</b>" +
+          "<br>קשת הראייה <b>" + degIncl(Math.round(c.keshet)) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "לאי זו רוח ייראה?"; },
+          type: "pick",
+          choices: function () {
+            return CASES.map(function (k) { return { label: k.where, value: k.id }; });
+          },
+          answer: function (c) { return c.bearing.id; },
+          hint: function () { return "על הקו השוה, או קרוב ממנו בשתים שלש מעלות — כנגד אמצע מערב."; },
+          after: function (c) { return c.bearing.mark + "."; } },
+
+        { ask: function () { return "ולאן תיראה פגמתו?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "כנגד מזרח העולם בשוה", value: "east" },
+                    { label: "נוטה מכנגד מזרח כנגד דרום העולם", value: "south" },
+                    { label: "נוטה מכנגד מזרח כנגד צפון העולם", value: "north" }];
+          },
+          answer: function (c) { return c.bearing.notch; },
+          hint: function () { return "לצד שכנגד הרוח שהוא נוטה אליה."; },
+          after: function () { return "ולפי רוב המרחק לפי רוב הנטייה."; } },
+
+        { ask: function (c) { return "אילו היתה הקשת ארוכה מ־" + degIncl(Math.round(c.keshet)) +
+            " — כיצד ייראה?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "גבוה יותר מעל הארץ", value: "high" },
+                    { label: "קרוב יותר מן הארץ", value: "low" }];
+          },
+          answer: function () { return "high"; },
+          hint: function () { return "קצרה — כאילו הוא קרוב מן הארץ; ארוכה — גבוה."; },
+          after: function () { return "ולפי אורך קשת הראייה לפי גבהו מעל הארץ בראיית העינים."; } }
+      ]
+    });
+  }
+})();
+</script>

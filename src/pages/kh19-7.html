@@ -1,0 +1,179 @@
+<title>שיעורי הנטייה</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh19.css--></style>
+
+<div class="page solo" data-emph="orech" data-fig="מקום הירח האמיתי במזלות. המעלה שהוא עומד בה היא שנכנסין בה לטבלה.">
+
+  <header>
+    <h1 class="bigtitle">שיעורי הנטייה</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/19" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ט:ז–ט</a></div>
+    <p class="halacha lead">ואלו הן השיעורין של נטייות לפי מניין המעלות של מזלות,<br>
+      וההתחלה <b class="line">מתחילת מזל טלה</b>:<br>
+      עשר מעלות, נטייתם <b class="sun">ארבע מעלות</b>:<br>
+      עשרים מעלות, נטייתם <b class="sun">שמונה מעלות</b>:<br>
+      שלשים מעלות, נטייתם <b class="sun">אחת עשרה מעלות ומחצה</b>:<br>
+      ארבעים מעלות, נטייתם <b class="sun">חמש עשרה מעלות</b>:<br>
+      חמישים מעלות, נטייתם <b class="sun">שמונה עשרה מעלות</b>:<br>
+      שישים מעלות, נטייתם <b class="sun">עשרים מעלות</b>:<br>
+      שבעים מעלות, נטייתם <b class="sun">שתים ועשרים מעלות</b>:<br>
+      שמונים מעלות, נטייתם <b class="sun">שלש ועשרים מעלות</b>:<br>
+      תשעים מעלות, נטייתם <b class="sun">שלש ועשרים מעלות וחצי מעלה</b>:</p>
+    <p class="halacha">ואם יהיו <b class="mas">אחדים במנין</b>, תקח להם מנתם מבין שתי הנטייות, כמו שביארנו בשמש ובירח.<br>
+      כיצד, חמש מעלות, נטייתם שתי מעלות,<br>
+      ואם היה מנין המעלות שלש ועשרים, נטייתם תשע מעלות.<br>
+      ועל דרך זה בכל האחדים שעם העשרות:</p>
+    <p class="halacha">ומאחר שתדע הנטייה של מעלות מאחת עד תשעים, תדע נטיית כולן, <b class="mas">כדרך שהודענוך ברוחב הירח</b>.<br>
+      שאם היה המנין יתר על תשעים עד מאה ושמונים, תגרע אותו ממאה ושמונים,<br>
+      ואם היה יתר על מאה ושמונים עד מאתים ושבעים, תגרע ממנו מאה ושמונים,<br>
+      ואם היה יתר על מאתים ושבעים עד שלש מאות ושישים, תגרע אותו משלש מאות ושישים.<br>
+      והנשאר תדע נטייתו, והיא נטיית אותו המנין שבידך <b class="mas">בלא גרעון ולא תוספת</b>:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack first19">
+      <div class="rchart" id="chart" style="--c:var(--sunc)"></div>
+      <div class="book n" id="work">
+        <h3><i></i>שני מניניו שלו</h3>
+        <p class="cap">י״ט:ח</p>
+        <div class="agree" id="agree"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--sunc)"></div>
+
+  <p class="note"><a href="kh19-1.html">נטיית המזלות</a> · <a href="kh19-10.html">מרחק הירח מעל הקו השוה</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/chart-list.js-->
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh19.js-->
+  <!--@include partials/wheel.js-->
+
+  var ROWS = inclinationRows(), T = KH19.INCLINATION_TABLE;
+
+  /* His own two of י״ט:ח, quoted, and checked against the rows they are read
+     between. He rounds each to the degree — "כל חשבון זה בקירוב". */
+  var HIS = [
+    { mnin: 5,  name: "חמש מעלות",        sign: "שתי מעלות", deg: 2 },
+    { mnin: 23, name: "שלש ועשרים מעלות", sign: "תשע מעלות", deg: 9 }
+  ];
+
+  function ORECH_AT(n) {
+    var v = chapter19At(n);
+    return { sun: v.sunTrue, moon: v.amiti,
+             orech: normalizeDegrees(v.amiti - v.sunTrue),
+             rochav: v.rochav, north: v.rochavNorth };
+  }
+
+  function dials19(v) {
+    var cl = el.corner ? el.corner.querySelectorAll("text") : [];
+    if (cl[0]) cl[0].textContent = "נטיית המעלה";
+    if (el.cMasLbl) el.cMasLbl.textContent = "מעלת הירח";
+    if (el.cMean) el.cMean.textContent = degIncl(v.inclDeg) + " " + (v.inclNorth ? "צפון" : "דרום");
+    if (el.cMas) el.cMas.textContent = formatDms(v.amiti);
+  }
+
+  function show(n) {
+    var v = chapter19At(n), f = inclFold(v.amiti), b = inclBracket(f.eff);
+    var hits = [];
+    if (b.lo > 0) hits.push({ i: b.lo - 1, tag: "מכאן" });
+    hits.push({ i: b.hi - 1, tag: "עד כאן" });
+
+    var sum = "מעלת הירח <b>" + degIncl(Math.floor(normalizeDegrees(v.amiti))) + "</b>";
+    if (f.q > 0) {
+      sum += " · " + INCL_FOLD[f.q - 1].says + ": <b>" + degIncl(Math.floor(f.eff)) + "</b>";
+    }
+    sum += ". בין שורת <b>" + T[b.lo].degrees + "°</b> לשורת <b>" + T[b.hi].degrees + "°</b>, " +
+           "<b>" + Math.round(b.part * 100) + "%</b> מן היתר שביניהן." +
+           '<span class="eq">' + degIncl(v.inclDeg) + "   " + (v.inclNorth ? "צפון" : "דרום") + "</span>";
+
+    traceListChart(document.getElementById("chart"), hits, sum);
+    markInclWave(v);
+    dials19(v);
+  }
+
+  function onDraw(n) { show(n); }
+
+  function agree() {
+    var h = '<h4>אצלו · וכאן</h4><table class="cmp"><tbody>';
+    for (var i = 0; i < HIS.length; i++) {
+      var r = HIS[i], got = Math.round(calculateInclination(r.mnin).result);
+      h += '<tr><td class="l">' + r.name + "</td>" +
+           '<td class="a">' + r.sign + "</td>" +
+           '<td class="t">' + degIncl(got) + "</td>" +
+           '<td class="o">' + (got === r.deg ? "—" : (got - r.deg) + "°") + "</td></tr>";
+    }
+    document.getElementById("agree").innerHTML = h + "</tbody></table>";
+  }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+
+    renderListChart(document.getElementById("chart"), {
+      title: "שיעורי הנטייה", ref: "י״ט:ז",
+      heads: ["מנין המעלות", "נטייתם"],
+      rows: ROWS.map(function (r) { return { in: r.degrees + "°", out: degIncl(r.inclination) }; })
+    });
+    document.getElementById("chart").insertAdjacentHTML("beforeend", '<div id="wave19"></div>');
+    document.getElementById("wave19").innerHTML = inclWaveFigure(false);
+    agree();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ט:ז–ט",
+      note: "הבא את המנין לתוך תשעים, וקרא את נטייתו.",
+      newCase: function () { return chapter19At(280000 + Math.floor(Math.random() * 60000)); },
+      caseLine: function (c) {
+        var z = zodiacPosition(c.amiti);
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מעלת הירח <b>" + degIncl(Math.floor(normalizeDegrees(c.amiti))) + "</b> — " +
+          z.ordinalDegree + " מעלות במזל " + z.hebrew + ".";
+      },
+      steps: [
+        { ask: function () { return "באיזה רביע הוא נופל, ומה תגרע?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "עד תשעים — כמות שהוא", value: 0 }].concat(
+              INCL_FOLD.map(function (r, i) { return { label: r.says, value: i + 1 }; }));
+          },
+          answer: function (c) { return inclFold(c.amiti).q; },
+          hint: function (c) { return "המנין " + Math.floor(normalizeDegrees(c.amiti)) + "°."; },
+          after: function (c) { var q = inclFold(c.amiti).q;
+            return q ? "והנשאר תדע נטייתו." : "ונטייתו בטבלה כמות שהוא."; } },
+
+        { ask: function () { return "כמה נשאר בידך?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return Math.floor(inclFold(c.amiti).eff); },
+          hint: function () { return "ואין מדקדקין בחלקים, שאין חשבון זה מועיל בראייה."; },
+          after: function () { return "ובו תבקש בטבלה."; } },
+
+        { ask: function () { return "כמה היא <b>נטיית המעלה</b>?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return c.inclDeg; },
+          hint: function (c) { var b = inclBracket(inclFold(c.amiti).eff);
+            return "בין " + degIncl(T[b.lo].inclination) + " לבין " + degIncl(T[b.hi].inclination) +
+                   " — תקח להם מנתם מבין שתי הנטייות."; },
+          after: function () { return "ועל דרך זה בכל האחדים שעם העשרות."; } },
+
+        { ask: function () { return "ולאיזו רוח?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "לצפון", value: "north" }, { label: "לדרום", value: "south" }];
+          },
+          answer: function (c) { return c.inclNorth ? "north" : "south"; },
+          hint: function () { return "המנין עצמו אומר: מטלה עד סוף בתולה — צפון."; },
+          after: function (c) { return "והיא נטיית אותו המנין שבידך בלא גרעון ולא תוספת."; } }
+      ]
+    });
+  }
+})();
+</script>

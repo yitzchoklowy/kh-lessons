@@ -4,7 +4,7 @@ Chapters 1–5 (the court, the witnesses, the procedure) are out of scope.
 What follows is one page per *thing the Rambam does*, not per numbered halacha.
 Each page names the halachos it covers and follows [CLAUDE.md](CLAUDE.md).
 
-**Done: 24 of 55.** Table lessons are now generated from a spec in `src/lessons/`
+**Done: 28 of 56.** Table lessons are now generated from a spec in `src/lessons/`
 through `src/shell.html` + `src/lib/lesson.js`, so a page is a description of
 which halachos, which table and which drill — not a bespoke file.
 
@@ -113,19 +113,25 @@ the קשת. The worked example got the page that freed up.
 | 51 | Why a month is never left without a sighting | 18:5–11 |
 | 52 | East and west — who else could have seen it | 18:12–16 |
 
-## Checking the witnesses — KH 19 ▸ ✎
+## Checking the witnesses — KH 19
 
-| # | page | halachos | chart |
-|---|---|---|---|
-| 53 | The equator against the mazalos | 19:1–6 | — |
-| 54 | The inclination table | 19:7–9 | ✎ **not in the engine** — needs adding |
-| 55 | Which way the crescent points, and how high | 19:10–16 | — |
+| # | page | halachos | chart | status |
+|---|---|---|---|---|
+| 53 | The equator against the mazalos | 19:1–6 | — | **done** |
+| 54 | The inclination table | 19:7–9 | `KH19.INCLINATION_TABLE` | **done** |
+| 55 | The moon's distance from the line | 19:10–11 | — | **done** |
+| 56 | Which way it is seen, and how high | 19:12–16 | — | **done** |
+
+The inclination table is not in the vendored engine — upstream stops where the
+sighting stops, and chapter 19 is past it. It lives in `src/lib/kh19-local.js`,
+bundled with the engine the way `pipeline-local.js` is, and
+`test/kh19.test.mjs` pins every row of it and all three of his worked sums.
 
 ## Order of work
 
 1. **KH 11 → 13**, then **15 → 17**: the engine already carries every table, so
    these can be built to the standard chapter 14 now sets.
-2. **KH 18 → 19**: mostly reasoning; 19 needs its inclination table added to the
-   engine surface first.
+2. **KH 18**: mostly reasoning. (KH 19 is built; its table is in
+   `src/lib/kh19-local.js`.)
 3. **KH 6 → 10**: last, because they need the fixed-calendar arithmetic written
    and checked before a single page can be honest about a number.

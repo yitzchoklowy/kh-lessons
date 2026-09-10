@@ -1,0 +1,180 @@
+<title>מרחק הירח מעל הקו השוה</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh19.css--></style>
+
+<div class="page solo" data-emph="orech" data-fig="מקום הירח האמיתי במזלות, ורוחבו. מן הראשון נטיית מעלתו, ומן השני כמה הוא עצמו נוטה ממנה.">
+
+  <header>
+    <h1 class="bigtitle">מרחק הירח מעל הקו השוה</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/19" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ט:י–י״א</a></div>
+    <p class="halacha lead">אם תרצה לידע כמה מעלות הוא הירח נוטה מעל הקו השוה כנגד צפון העולם או כנגד דרום העולם,<br>
+      תדע תחילה כמה <b class="sun">נטיית המעלה שהיא מקום הירח האמיתי</b>, ולאי זו רוח היא נוטה, לצפון או לדרום.<br>
+      ותחזור ותחשב ותוציא <b class="mean">רוחב הירח הראשון</b>, ותראה אם הוא צפוני או דרומי.<br>
+      אם נמצאו רוחב הירח ונטיית מעלתו ברוח אחת, כגון שהיו שניהם צפוניים או דרומיים, <b class="mas">תקבץ שניהן</b>.<br>
+      ואם נמצאו בשתי רוחות, כגון שהיה האחד דרומי והשני צפוני, <b class="mas">תגרע המעט משניהם מן הרב</b>,<br>
+      והנשאר הוא מרחק הירח מעל הקו השוה באותה הרוח שהיה בה הרב משניהם.</p>
+    <p class="halacha">כיצד, באנו לידע כמה הירח נוטה מעל הקו השוה בליל הראייה שהוא שני לחודש אייר משנה זו.<br>
+      וכבר ידעת שמעלת הירח היתה <b class="sun">תשע עשרה ממזל שור</b>, נטייתה בצפון כמו <b class="sun">שמונה עשרה מעלות</b>,<br>
+      ורוחב הירח היה בדרום כמו <b class="mean">ארבע מעלות</b>.<br>
+      תגרע המעט מן הרב, יישאר ארבע עשרה מעלות,<br>
+      ונמצא הירח רחוק מעל הקו השוה <b class="mas">ארבע עשרה מעלות לרוח צפון</b>, שהרי המנין הרב שהוא שמונה עשרה מעלות היה צפוני.<br>
+      <b class="line">כל חשבון זה בקירוב בלא דקדוק</b>, לפי שאינו מועיל בראייה:</p>
+  </header>
+
+  <div class="pair">
+    <div class="stack first19">
+      <div class="rchart" id="fig" style="--c:var(--mas)">
+        <div class="rc-head"><h4>הנטייה, והרוחב עליה</h4><span class="rc-ref">י״ט:י</span></div>
+        <div id="wave19"></div>
+        <div class="rc-sum" id="say"></div>
+      </div>
+      <div class="book n" id="work">
+        <h3><i></i>שתי רוחות, או רוח אחת</h3>
+        <p class="cap">י״ט:י</p>
+        <table class="led"><tbody id="led"></tbody></table>
+        <div class="agree" id="agree"></div>
+      </div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--mas)"></div>
+
+  <p class="note"><a href="kh19-7.html">שיעורי הנטייה</a> · <a href="kh16-9.html">רוחב הירח</a> · <a href="kh19-12.html">להיכן היה נוטה</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh19.js-->
+  <!--@include partials/wheel.js-->
+
+  var HIS_DAY = 29;
+
+  /* His own four figures for that night, י״ט:י״א, quoted as he writes them. */
+  var HIS = [
+    { k: "deg",  name: "מעלת הירח",          sign: "תשע עשרה ממזל שור" },
+    { k: "incl", name: "נטיית המעלה",        sign: "שמונה עשרה בצפון", want: 18, north: true },
+    { k: "roch", name: "רוחב הירח",          sign: "ארבע בדרום",       want: 4,  north: false },
+    { k: "dist", name: "מרחק מעל הקו השוה", sign: "ארבע עשרה לצפון",  want: 14, north: true }
+  ];
+
+  function ORECH_AT(n) {
+    var v = chapter19At(n);
+    return { sun: v.sunTrue, moon: v.amiti,
+             orech: normalizeDegrees(v.amiti - v.sunTrue),
+             rochav: v.rochav, north: v.rochavNorth };
+  }
+
+  function side(north) { return north ? "צפון" : "דרום"; }
+
+  function dials19(v) {
+    var cl = el.corner ? el.corner.querySelectorAll("text") : [];
+    if (cl[0]) cl[0].textContent = "מרחק מעל הקו השוה";
+    if (el.cMasLbl) el.cMasLbl.textContent = "רוחב הירח";
+    if (el.cMean) el.cMean.textContent = degIncl(v.distDeg) + " " + side(v.distNorth);
+    if (el.cMas) el.cMas.textContent = degIncl(v.rochavDeg) + " " + side(v.rochavNorth);
+  }
+
+  function show(n) {
+    var v = chapter19At(n), z = v.mazal;
+    var same = v.inclNorth === v.rochavNorth;
+    markInclWave(v);
+    dials19(v);
+    paint(document.getElementById("led"), [
+      { l: "מעלת הירח", s: z.ordinalDegree + " ממזל " + z.hebrew + " · פרק ט״ו", a: "",
+        t: degIncl(Math.floor(normalizeDegrees(v.amiti))) },
+      { l: "נטיית המעלה", s: "י״ט:ז–ט", a: side(v.inclNorth), t: degIncl(v.inclDeg) },
+      { l: "רוחב הירח הראשון", s: "פרק ט״ז", a: side(v.rochavNorth), t: degIncl(v.rochavDeg) },
+      { l: same ? "ברוח אחת — תקבץ שניהן" : "בשתי רוחות — תגרע המעט מן הרב",
+        a: same ? "+" : "−", t: degIncl(v.distDeg), drop: true },
+      { l: "מרחק הירח מעל הקו השוה", s: same ? "" : "ברוח שהיה בה הרב",
+        a: side(v.distNorth), t: degIncl(v.distDeg), out: true }
+    ]);
+    document.getElementById("say").innerHTML =
+      "נטיית מעלתו <b>" + degIncl(v.inclDeg) + "</b> " + side(v.inclNorth) +
+      " · רוחבו <b>" + degIncl(v.rochavDeg) + "</b> " + side(v.rochavNorth) + "." +
+      '<span class="eq">' + degIncl(v.distDeg) + " " + side(v.distNorth) + "</span>";
+    agree(n, v);
+  }
+
+  function agree(n, v) {
+    var host = document.getElementById("agree");
+    if (n !== HIS_DAY) {
+      host.innerHTML = '<p class="cap">חשבונו שלו הוא לליל הראייה, שני לחודש אייר — תשעה ועשרים יום מן העיקר.</p>';
+      return;
+    }
+    var got = {
+      deg: z19(v),
+      incl: degIncl(v.inclDeg) + " " + side(v.inclNorth),
+      roch: degIncl(v.rochavDeg) + " " + side(v.rochavNorth),
+      dist: degIncl(v.distDeg) + " " + side(v.distNorth)
+    };
+    var val = { incl: [v.inclDeg, v.inclNorth], roch: [v.rochavDeg, v.rochavNorth],
+                dist: [v.distDeg, v.distNorth] };
+    var h = '<h4>אצלו · וכאן</h4><table class="cmp"><tbody>';
+    for (var i = 0; i < HIS.length; i++) {
+      var r = HIS[i], ok = r.want === undefined ? true
+        : (val[r.k][0] === r.want && val[r.k][1] === r.north);
+      h += '<tr><td class="l">' + r.name + '</td><td class="a">' + r.sign + "</td>" +
+           '<td class="t">' + got[r.k] + '</td><td class="o">' + (ok ? "—" : "≠") + "</td></tr>";
+    }
+    host.innerHTML = h + "</tbody></table>";
+  }
+  function z19(v) { return v.mazal.ordinalDegree + " " + v.mazal.hebrew; }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    document.getElementById("wave19").innerHTML = inclWaveFigure(true);
+    setDay(HIS_DAY);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה, לליל אחר", ref: "י״ט:י",
+      note: "שתי נטיות, ורוח לכל אחת.",
+      newCase: function () { return chapter19At(280000 + Math.floor(Math.random() * 60000)); },
+      caseLine: function (c) {
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מעלת הירח <b>" + c.mazal.ordinalDegree + " ממזל " + c.mazal.hebrew + "</b>" +
+          " · נטייתה <b>" + degIncl(c.inclDeg) + " " + side(c.inclNorth) + "</b>" +
+          "<br>רוחב הירח <b>" + degIncl(c.rochavDeg) + " " + side(c.rochavNorth) + "</b>.";
+      },
+      steps: [
+        { ask: function () { return "ברוח אחת הם, או בשתי רוחות?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "ברוח אחת — תקבץ שניהן", value: true },
+                    { label: "בשתי רוחות — תגרע המעט מן הרב", value: false }];
+          },
+          answer: function (c) { return c.inclNorth === c.rochavNorth; },
+          hint: function () { return "צפוני וצפוני, או דרומי ודרומי — רוח אחת."; },
+          after: function (c) { return c.inclNorth === c.rochavNorth
+            ? "ושניהם מרחיקים אותו לאותו צד." : "והאחד מקרב מה שהשני מרחיק."; } },
+
+        { ask: function () { return "כמה הוא <b>מרחק הירח מעל הקו השוה</b>?"; },
+          type: "int", unit: "°",
+          answer: function (c) { return c.distDeg; },
+          hint: function (c) { return degIncl(c.inclDeg) +
+            (c.inclNorth === c.rochavNorth ? " ועוד " : " פחות ") + degIncl(c.rochavDeg) + "."; },
+          after: function () { return "כל חשבון זה בקירוב בלא דקדוק."; } },
+
+        { ask: function () { return "ולאיזו רוח?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "לצפון העולם", value: true }, { label: "לדרום העולם", value: false }];
+          },
+          answer: function (c) { return c.distNorth; },
+          hint: function () { return "באותה הרוח שהיה בה הרב משניהם."; },
+          after: function (c) { return "והוא " + degIncl(c.distDeg) + " ל" + side(c.distNorth) +
+            " — ומזה ידעו להיכן היה נוטה."; } }
+      ]
+    });
+  }
+})();
+</script>

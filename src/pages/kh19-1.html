@@ -1,0 +1,160 @@
+<title>נטיית המזלות</title>
+<!--@include partials/lesson-head.html-->
+<style><!--@include partials/kh19.css--></style>
+
+<div class="page solo" data-emph="orech" data-fig="מקום השמש האמיתי ומקום הירח האמיתי במזלות. כאן אין שואלין מה ביניהם, אלא כמה כל מעלה ומעלה נוטה מעל הקו השוה.">
+
+  <header>
+    <h1 class="bigtitle">נטיית המזלות</h1>
+    <div class="eyebrow"><a href="https://mg.alhatorah.org/Full/Rambam_Mishneh_Torah_Sefer_Zemanim_Kiddush_HaChodesh/19" target="_blank" rel="noopener">רמב״ם · הלכות קידוש החודש י״ט:א–ו</a></div>
+    <p class="halacha lead">לפי שאמרו חכמים שבכלל דברים שהיו בודקין בהן את העדים,<br>
+      אומרין להן, <b class="mean">להיכן היה הירח נוטה</b>,<br>
+      כשר בעיני להודיע דרך חשבון דבר זה.<br>
+      ואין אני מדקדק בו, לפי שאינו מועיל בראייה כלל.<br>
+      ותחילת חשבון זה, לידע <b class="sun">נטיית המזלות</b> תחילה:</p>
+    <p class="halacha">העגולה שהיא עוברת במחצית המזלות שבה מהלך השמש,<br>
+      אינה עוברת באמצע העולם מחצי המזרח לחצי המערב,<br>
+      אלא נוטה היא מעל <b class="line">הקו השוה המסבב באמצע העולם</b> כנגד צפון ודרום,<br>
+      חציה נוטה לצפון וחציה נוטה לדרום:</p>
+    <p class="halacha">ושתי נקודות יש בה שפוגעת בהן בעגולת הקו השוה המסבב באמצע העולם,<br>
+      הנקודה האחת <b class="line">ראש מזל טלה</b>, והנקודה השניה שכנגדה <b class="line">ראש מזל מאזנים</b>.<br>
+      ונמצאו <b class="sun">שישה מזלות נוטות לצפון</b>, מתחילת טלה עד סוף בתולה,<br>
+      ו<b class="sun">שישה נוטות לדרום</b>, מתחילת מזל מאזנים עד סוף מזל דגים:</p>
+    <p class="halacha">ומראש מזל טלה יתחילו המזלות לנטות מעט מעט ולהתרחק מעל הקו השוה כנגד הצפון, עד ראש הסרטן.<br>
+      יהיה <b class="sun">ראש סרטן</b> רחוק מעל הקו השוה לרוח צפון <b class="sun">שלש ועשרים מעלות וחצי מעלה</b> בקירוב,<br>
+      ויחזרו המזלות להתקרב לקו השוה מעט מעט, עד ראש מאזנים שהוא על הקו השוה.<br>
+      ומראש מאזנים יתחילו לנטות ולהתרחק כנגד רוח דרום, עד ראש גדי.<br>
+      ויהיה <b class="sun">ראש גדי</b> רחוק מעל הקו השוה לרוח דרום שלש ועשרים מעלות וחצי מעלה,<br>
+      ויחזרו המזלות להתקרב מעט מעט כנגד הקו השוה, עד ראש טלה:</p>
+    <p class="halacha">נמצא ראש טלה וראש מאזנים מסבב על הקו השוה.<br>
+      ולפיכך כשתהיה השמש בשני ראשים אלו, לא תהיה נוטה לא לצפון ולא לדרום,<br>
+      ותזרח מחצי מזרח ותשקע בחצי מערב, ו<b class="line">יהיה היום והלילה שוין בכל היישוב</b>:</p>
+    <p class="halacha">הרי נתברר לך שכל מעלה ומעלה ממעלות המזלות נוטה לצפון או לדרום, ויש לנטייתה שיעור.<br>
+      ורוב הנטייה לא תהיה יתר על שלש ועשרים מעלות וחצי בקירוב:</p>
+  </header>
+
+  <div class="pair">
+    <div class="rchart first19" id="fig" style="--c:var(--minus)">
+      <div class="rc-head"><h4>הקו השוה, והעגולה שבה מהלך השמש</h4><span class="rc-ref">י״ט:ב–ה</span></div>
+      <div class="tilt19" id="tilt19"></div>
+      <div class="rc-sum" id="say"></div>
+    </div>
+    <!--@include partials/wheel.html-->
+  </div>
+
+  <div class="drill" id="drill" style="--c:var(--minus)"></div>
+
+  <p class="note"><a href="kh19-7.html">שיעורי הנטייה</a> · <a href="index.html">כל השיעורים</a></p>
+</div>
+
+<!--ENGINE-->
+
+<script>
+(function () {
+  "use strict";
+  <!--@include partials/practice.js-->
+  <!--@include partials/kh15.js-->
+  <!--@include partials/kh19.js-->
+  <!--@include partials/wheel.js-->
+
+  var MZ = CONSTANTS.CONSTELLATIONS;
+
+  function ORECH_AT(n) {
+    var v = chapter19At(n);
+    return { sun: v.sunTrue, moon: v.amiti,
+             orech: normalizeDegrees(v.amiti - v.sunTrue),
+             rochav: v.rochav, north: v.rochavNorth };
+  }
+
+  /* the instrument's own readouts say what this chapter reads off it */
+  function dials19(v) {
+    var s = calculateInclination(v.sunTrue);
+    var cl = el.corner ? el.corner.querySelectorAll("text") : [];
+    if (cl[0]) cl[0].textContent = "נטיית מעלת השמש";
+    if (el.cMasLbl) el.cMasLbl.textContent = "מקום השמש";
+    if (el.cMean) el.cMean.textContent = degIncl(Math.round(s.result)) + " " +
+      (s.direction === "north" ? "צפון" : "דרום");
+    if (el.cMas) el.cMas.textContent = formatDms(v.sunTrue);
+    var ds = document.querySelector(".dial.s");
+    if (ds) ds.querySelector(".lbl").innerHTML = "<i></i>מקום השמש האמיתי";
+  }
+
+  function show(n) {
+    var v = chapter19At(n);
+    markZodiacTilt(v);
+    dials19(v);
+    var s = calculateInclination(v.sunTrue), z = zodiacPosition(v.sunTrue);
+    document.getElementById("say").innerHTML =
+      "השמש במזל <b>" + z.hebrew + "</b>, " + z.ordinalDegree + " מעלות · " +
+      "נטייתה <b>" + degIncl(Math.round(s.result)) + "</b> ל" +
+      (s.direction === "north" ? "צפון" : "דרום") + " הקו השוה." +
+      '<span class="eq">' + (s.result < 1
+        ? "ותזרח מחצי מזרח ותשקע בחצי מערב"
+        : "מן הראשים ועד " + degIncl(maxIncl())) + "</span>";
+  }
+
+  function onDraw(n) { show(n); }
+
+  function pageReady() {
+    playing = false;
+    if (el.play) el.play.textContent = "▶ Turn";
+    document.getElementById("tilt19").innerHTML = zodiacTiltFigure();
+    grabTilt19();
+    setDay(29);
+
+    drill(document.getElementById("drill"), {
+      title: "עשה אתה", ref: "י״ט:ב–ו",
+      note: "שתי עגולות, ושתי נקודות שבהן הן פוגעות.",
+      newCase: function () { return chapter19At(280000 + Math.floor(Math.random() * 60000)); },
+      caseLine: function (c) {
+        var z = zodiacPosition(c.sunTrue);
+        return "מן העיקר <b>" + c.day.toLocaleString() + "</b> ימים." +
+          "<br>מקום השמש האמיתי <b>" + formatDms(c.sunTrue) + "</b> — במזל " + z.hebrew +
+          ", " + z.ordinalDegree + " מעלות.";
+      },
+      steps: [
+        { ask: function () { return "באילו שתי נקודות פוגעות שתי העגולות זו בזו?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "ראש טלה וראש מאזנים", value: "aries" },
+                    { label: "ראש סרטן וראש גדי", value: "cancer" },
+                    { label: "ראש שור וראש עקרב", value: "taurus" }];
+          },
+          answer: function () { return "aries"; },
+          hint: function () { return "הנקודה השניה כנגד הראשונה, ומזל שביעי ממנה."; },
+          after: function () { return "ושם אין נטייה לא לצפון ולא לדרום."; } },
+
+        { ask: function () { return "כמה מזלות נוטים לצפון?"; },
+          type: "int",
+          answer: function () { return CONSTANTS.CONSTELLATIONS.length / 2; },
+          hint: function () { return "מתחילת טלה עד סוף בתולה."; },
+          after: function () { return "וכנגדם שישה לדרום, ממאזנים עד סוף דגים."; } },
+
+        { ask: function () { return "ובאיזה ראש תגיע הנטייה לגדולה שבה?"; },
+          type: "pick",
+          choices: function (c) {
+            return [{ label: "ראש סרטן, לצפון", value: 90 },
+                    { label: "ראש טלה, לצפון", value: 0 },
+                    { label: "ראש מאזנים, לדרום", value: 180 }];
+          },
+          answer: function () { return 90; },
+          hint: function () { return "רביע גלגל מן הנקודה שבה הן פוגעות."; },
+          after: function () { return "והיא " + degIncl(maxIncl()) +
+            ", וכנגדה בראש גדי לדרום."; } },
+
+        { ask: function (c) { return "השמש עומדת במזל <b>" + zodiacPosition(c.sunTrue).hebrew +
+            "</b>. לאיזו רוח נוטה מעלתה?"; },
+          type: "pick",
+          choices: function () {
+            return [{ label: "לצפון הקו השוה", value: "north" },
+                    { label: "לדרום הקו השוה", value: "south" }];
+          },
+          answer: function (c) { return calculateInclination(c.sunTrue).direction; },
+          hint: function () { return "מטלה עד סוף בתולה — צפון; ממאזנים עד סוף דגים — דרום."; },
+          after: function (c) { var s = calculateInclination(c.sunTrue);
+            return "ושיעור נטייתה " + degIncl(Math.round(s.result)) + "."; } }
+      ]
+    });
+  }
+})();
+</script>

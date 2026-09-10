@@ -1,7 +1,8 @@
 /* Build every lesson page into a single self-contained file in dist/.
  *
  * Each page in src/pages is plain HTML with three kinds of placeholder:
- *   <!--ENGINE-->                    the vendored engine + the local pipeline
+ *   <!--ENGINE-->                    the vendored engine, the local pipeline, and
+ *                                    the one table upstream does not carry (KH 19)
  *   <!--WORKING-->                   the worked-arithmetic ledger
  *   <!--@include partials/x.js-->    any shared partial, inlined as-is
  *
@@ -23,7 +24,8 @@ fs.writeFileSync(R('build/engine-bundle.js'), engine);
 
 const ORDER = JSON.parse(read('src/order.json'));
 
-const ENGINE_BLOCK = '<script>\n' + engine + '\n' + read('src/lib/pipeline-local.js') + '\n</script>';
+const ENGINE_BLOCK = '<script>\n' + engine + '\n' + read('src/lib/pipeline-local.js')
+  + '\n' + read('src/lib/kh19-local.js') + '\n</script>';
 const WORKING_BLOCK = '<script>\n' + read('src/lib/working.js') + '\n</script>';
 
 /* Every page is a fragment — title, style, body — so give it a real document.
