@@ -26,7 +26,7 @@ const K = new Function(
   + '\n' + include(read('src/partials/kh11.js'))
   + '\nreturn { readPlace, hisOrdinal, mazalRows, gem, ARC, ROUND, PER,'
   + ' hebrewWordsToNumber, numText, loupeBands,'
-  + ' slabHome, SP, SLAB, ringSource, cellSource, pieceChain, CX11, CY11,'
+  + ' slabHome, SP, SLAB, ringSource, pieceChain, pieceAt, windowFor, CX11, CY11,'
   + ' CONSTANTS, formatDms, dmsToDecimal, zodiacPosition };')();
 
 const { CONSTANTS: C, formatDms: F, dmsToDecimal: D } = K;
@@ -151,38 +151,12 @@ test('the ladder opens each band out of one cell of the band above', () => {
   bands.forEach((b) => assert.ok(b.hit >= 0 && b.hit < b.n, b.key + ': the cell is inside the band'));
 });
 
-/* The lifted pieces: each one stands clear of the next and inside the drawing,
-   and reads with its nought on the right, the way the count runs. */
-test('each lifted piece stands clear of the next, inside the drawing, nought on the right', () => {
-  let prevBottom = -Infinity;
-  for (let j = 0; j < 4; j++) {
-    const s = K.slabHome(j);
-    const a0 = s.mid - s.span / 2, a1 = s.mid + s.span / 2;
-    const right = K.SP(s, s.r1, a0), left = K.SP(s, s.r1, a1);
-    const top = K.SP(s, s.r1, s.mid)[1], bottom = K.SP(s, s.r0 - 12, a0)[1] + 6;
-    assert.ok(right[0] > left[0], 'wedge ' + j + ': its nought is on the right');
-    assert.ok(left[0] >= 0 && right[0] <= 620, 'wedge ' + j + ': inside the drawing across');
-    assert.ok(top > prevBottom, 'wedge ' + j + ': clear of the one above it');
-    assert.ok(bottom <= 640, 'wedge ' + j + ': inside the drawing down');
-    prevBottom = bottom;
-  }
-});
-
 test("the first piece starts as the mazal's own sector of the ring", () => {
   const p = K.readPlace(70 + 30 / 60 + 40 / 3600);
   const s = K.ringSource(p);
   assert.ok(Math.abs(s.ax - K.CX11) < 1e-9 && Math.abs(s.ay - K.CY11) < 1e-9, 'it hangs from the earth');
   assert.equal(s.mid, 75, 'the middle of תאומים');
   assert.equal(s.span, K.ARC, 'thirty degrees wide');
-});
-
-test('each later piece starts as its own cell of the wedge above it', () => {
-  const p = K.readPlace(70 + 30 / 60 + 40 / 3600);
-  const chain = K.pieceChain(p), H = K.slabHome(0), s = K.cellSource(H, chain[0]);
-  const cw = H.span / chain[0].n;
-  assert.ok(Math.abs(s.span - cw) < 1e-9, 'one cell wide');
-  assert.ok(Math.abs(s.mid - (H.mid - H.span / 2 + (chain[0].hit + 0.5) * cw)) < 1e-9, 'the eleventh cell');
-  assert.ok(Math.abs(s.ax - H.ax) < 1e-6 && Math.abs(s.ay - H.ay) < 1e-6, 'cut from the same wedge');
 });
 
 test('every rung is named by his count, and the lit cell is the one named', () => {
@@ -195,4 +169,27 @@ test('every rung is named by his count, and the lit cell is the one named', () =
   assert.deepEqual(his.map((b) => b.name), ['מזל תאומים', 'מעלה י״א', 'חלק ל״א', 'שניה מ׳'],
     'בחצי מעלת אחת עשרה — and by the same count, the thirty-first חלק');
   assert.deepEqual(his.map((b) => b.hit), [10, 30, 39, 0], 'each lit cell is the one its name says');
+});
+
+/* One wedge, looked into: each clause narrows the window onto the piece it
+   names, the piece fills four fifths of it, it stays inside the window before
+   it, and it is exactly the cell that was lit a rung up. */
+test('each clause narrows the wedge onto the cell lit a rung above', () => {
+  const chain = K.pieceChain(K.readPlace(70 + 30 / 60 + 40 / 3600));
+  const w1 = K.windowFor(1, chain);
+  assert.equal(w1.c - w1.w / 2, 0, 'the whole mazal, from its head');
+  assert.equal(w1.w, K.ARC, 'to its end');
+  let prev = w1;
+  for (let d = 2; d <= 4; d++) {
+    const w = K.windowFor(d, chain), q = K.pieceAt(d, chain);
+    const lo = w.c - w.w / 2, hi = w.c + w.w / 2;
+    assert.ok(q.start > lo && q.start + q.size < hi, 'depth ' + d + ': the piece is inside its window');
+    assert.ok(Math.abs(q.size / w.w - 0.8) < 1e-9, 'depth ' + d + ': it fills four fifths of it');
+    assert.ok(lo >= prev.c - prev.w / 2 && hi <= prev.c + prev.w / 2,
+      'depth ' + d + ': inside the window before it, so it never leaves the view on the way in');
+    const up = K.pieceAt(d - 1, chain), cw = up.size / up.n;
+    assert.ok(Math.abs(up.start + up.hit * cw - q.start) < 1e-12, 'depth ' + d + ': it is the cell lit a rung up');
+    assert.ok(Math.abs(cw - q.size) < 1e-15, 'depth ' + d + ': and exactly that cell’s size');
+    prev = w;
+  }
 });

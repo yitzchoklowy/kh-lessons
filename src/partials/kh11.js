@@ -176,18 +176,24 @@
   }
 
   var LEVEL = { sign: 0, maalah: 1, chelek: 2, shniya: 3 };
-  /* ── the piece itself, lifted out ─────────────────────────────────────────
-     Pressing a clause lifts the piece it names out of the circle — the wedge
-     itself, the same curved shape — and it grows as it comes, turning upright
-     so its marks can be read, while the rest of the round steps back. Its
-     thirty, or its sixty, are drawn across it. Press the next clause and one
-     cell of that wedge lifts out of it in turn and settles under it. Each is a
-     piece of the one above: that is the whole of ותחלק כל זמן שתרצה.
+  /* ── the piece itself, lifted out — and then looked into ─────────────────
+     Pressing כל מזל ומזל שלשים lifts the mazal's wedge out of the ring — the
+     same curved shape — and it grows as it comes, turning upright so its marks
+     can be read, while the rest of the round steps back.
 
-     Every wedge is drawn from five numbers — where its middle is, which way it
-     faces, how wide it opens, and its two radii — so the flight from the ring
-     to its place is just those five numbers moving. */
-  var SLAB = { span: 30, r1: 955, thick: 60, top: 34, step: 128, ms: 560, lag: 320 };
+     The finer clauses bring out nothing new. They enlarge the wedge already
+     out: the chosen מעלה swells inside it until it is wide enough to hold its
+     sixty חלקים, and they appear inside it; press again and the chosen חלק
+     swells in turn until its sixty שניות fit. The wedge is a window on the
+     mazal and each clause narrows it onto the piece it names, so every part
+     keeps its true size against its neighbours — which is the point of dividing
+     at all. The piece shown fills four fifths of the window, with a sliver of
+     each neighbour at either side, so it is always plain what it is a part of. */
+  var SLAB = { span: 30, r1: 955, thick: 84, top: 56, ms: 560, zoom: 950 };
+  /* a degree, a חלק, a שניה, a שלישית — each a sixtieth of the one before,
+     the sixty read off the engine */
+  var UNIT = [1, 1 / PER, 1 / (PER * PER), 1 / (PER * PER * PER)];
+  var MARK = ["°", "′", "″", "‴"];
 
   function slabAt(C, mid, span, r0, r1) {
     var rm = (r0 + r1) / 2, t = mid * RAD11;
@@ -206,20 +212,15 @@
            r0.toFixed(1) + " 0 " + big + " 1 " + xy(SP(s, r0, a0)) + " Z";
   }
 
-  /* where the j-th wedge comes to rest: upright, one under the other */
-  function slabHome(j) {
-    var r1 = SLAB.r1, r0 = r1 - SLAB.thick, top = SLAB.top + j * SLAB.step;
-    return slabAt([CX11, top + SLAB.thick / 2], 90, SLAB.span, r0, r1);
+  /* where the wedge comes to rest, upright over the wheel */
+  function slabHome() {
+    var r1 = SLAB.r1, r0 = r1 - SLAB.thick;
+    return slabAt([CX11, SLAB.top + SLAB.thick / 2], 90, SLAB.span, r0, r1);
   }
-  /* where the first one comes from: the mazal's own sector of the ring */
+  /* where it comes from: the mazal's own sector of the ring */
   function ringSource(p) {
     var mid = p.index * ARC + ARC / 2;
     return slabAt(P11((R_IN11 + R_OUT11) / 2, mid), mid, ARC, R_IN11, R_OUT11);
-  }
-  /* where each later one comes from: its cell of the wedge above it */
-  function cellSource(H, b) {
-    var cw = H.span / b.n, a = H.mid - H.span / 2 + (b.hit + 0.5) * cw;
-    return slabAt(SP(H, (H.r0 + H.r1) / 2, a), a, cw, H.r0, H.r1);
   }
   function lerpSlab(S, T, e) {
     var sm = S.mid - 360 * Math.round((S.mid - T.mid) / 360);   // turn the short way
@@ -228,95 +229,165 @@
                   L(S.span, T.span), L(S.r0, T.r0), L(S.r1, T.r1));
   }
 
+  /* The piece a depth shows, in degrees of its mazal — where it starts, how big
+     it is, into how many it is cut and which of them this place is in. Depth 1
+     is the mazal; 2 the chosen מעלה; 3 the chosen חלק; 4 the chosen שניה. */
+  function pieceAt(d, chain) {
+    if (d <= 1) return { start: 0, size: ARC, n: chain[0].n, hit: chain[0].hit };
+    var start = 0, k;
+    for (k = 0; k < d - 1; k++) start += chain[k].hit * UNIT[k];
+    return { start: start, size: UNIT[d - 2], n: chain[d - 1].n, hit: chain[d - 1].hit };
+  }
+  /* what the wedge looks onto: the whole mazal, or the piece and a sliver
+     either side of it */
+  function windowFor(d, chain) {
+    if (d <= 1) return { c: ARC / 2, w: ARC };
+    var q = pieceAt(d, chain);
+    return { c: q.start + q.size / 2, w: q.size * 1.25 };
+  }
+
   var HALO11 = 'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" ';
 
-  function slabMarkup(s, b, e, lit) {
-    var n = b.n, a0 = s.mid - s.span / 2, cw = s.span / n, th = s.r1 - s.r0, g = "", k;
-    g += '<path d="' + slabPath(s, a0, a0 + s.span, s.r0, s.r1) + '" fill="var(--card)" ' +
-         'stroke="var(--mas)" stroke-opacity="' + (lit ? ".85" : ".5") + '" stroke-width="1.4"></path>';
-    g += '<path d="' + slabPath(s, a0 + b.hit * cw, a0 + (b.hit + 1) * cw, s.r0, s.r1) +
-         '" fill="var(--mas)" fill-opacity="' + (lit ? ".55" : ".32") + '"></path>';
-    for (k = 0; k <= n; k++) {
-      var a = a0 + k * cw, major = k % 10 === 0 || k === n;
-      g += '<line x1="' + SP(s, s.r1, a)[0].toFixed(1) + '" y1="' + SP(s, s.r1, a)[1].toFixed(1) +
-           '" x2="' + SP(s, s.r1 - th * (major ? .5 : .22), a)[0].toFixed(1) +
-           '" y2="' + SP(s, s.r1 - th * (major ? .5 : .22), a)[1].toFixed(1) +
-           '" stroke="currentColor" stroke-opacity="' + (major ? ".6" : ".3") + '" stroke-width="1"></line>';
+  function wedgeMarkup(s, view, d, chain, o) {
+    var W = view.w, lo = view.c - W / 2, hi = lo + W;
+    var arcPx = s.r1 * s.span * RAD11, th = s.r1 - s.r0, a0 = s.mid - s.span / 2;
+    function A(x) { return a0 + (x - lo) / W * s.span; }
+    function line(x, r0, r1, col, op, wd) {
+      var pa = SP(s, r1, A(x)), pb = SP(s, r0, A(x));
+      return '<line x1="' + pa[0].toFixed(1) + '" y1="' + pa[1].toFixed(1) + '" x2="' +
+             pb[0].toFixed(1) + '" y2="' + pb[1].toFixed(1) + '" stroke="' + col +
+             '" stroke-opacity="' + op + '" stroke-width="' + wd + '"></line>';
     }
-    /* the marks are only read once it has settled */
-    var o = e > .6 ? (e - .6) / .4 : 0;
+    function text(x, r, str, size, fill, op, bold) {
+      var q = SP(s, r, A(x));
+      return '<text x="' + q[0].toFixed(1) + '" y="' + (q[1] + size * .35).toFixed(1) +
+             '" font-size="' + size + '" text-anchor="middle" ' + HALO11 + 'fill="' + fill +
+             '" fill-opacity="' + op + '"' + (bold ? ' font-weight="700"' : "") +
+             ' font-family="IBM Plex Mono, monospace">' + str + "</text>";
+    }
+    var g = "", L, t, k, x;
+
+    g += '<path d="' + slabPath(s, a0, a0 + s.span, s.r0, s.r1) + '" fill="var(--card)" ' +
+         'stroke="var(--mas)" stroke-opacity=".85" stroke-width="1.4"></path>';
+    /* past either end of the mazal the window looks onto its neighbour */
+    if (lo < 0) g += '<path d="' + slabPath(s, A(lo), A(Math.min(0, hi)), s.r0, s.r1) +
+                     '" fill="var(--sunk)"></path>';
+    if (hi > ARC) g += '<path d="' + slabPath(s, A(Math.max(ARC, lo)), A(hi), s.r0, s.r1) +
+                       '" fill="var(--sunk)"></path>';
+
+    /* two cells are lit: the piece now filling the window, lightly — it was the
+       lit cell a rung up — and where the place stands inside it. The rungs
+       above are wider than the window, so lighting them would only wash it out. */
+    for (L = Math.max(1, d - 1); L <= d; L++) {
+      var q = pieceAt(L, chain), cw = q.size / q.n;
+      var c0 = Math.max(q.start + q.hit * cw, lo), c1 = Math.min(q.start + (q.hit + 1) * cw, hi);
+      if (c1 > c0) g += '<path d="' + slabPath(s, A(c0), A(c1), s.r0, s.r1) + '" fill="var(--mas)" ' +
+                        'fill-opacity="' + (L === d ? ".5" : ".16") + '"></path>';
+    }
+
+    /* every mark that has room to be seen, coarsest first; a finer one comes
+       into view as the window narrows enough to give it room */
+    for (t = 0; t < UNIT.length; t++) {
+      var u = UNIT[t], px = u / W * arcPx;
+      if (px < 2.5) continue;
+      var op = (Math.min(1, (px - 2.5) / 4) * [.75, .6, .5, .45][t]).toFixed(2);
+      var kS = Math.ceil(Math.max(lo, 0) / u - 1e-9), kE = Math.floor(Math.min(hi, ARC) / u + 1e-9);
+      for (k = kS; k <= kE; k++) {
+        if (t > 0 && k % PER === 0) continue;                 // a coarser mark stands here
+        var h = th * Math.min(.9, [.5, .36, .24, .15][t] * (k % 10 === 0 ? 1.35 : 1));
+        g += line(k * u, s.r1 - h, s.r1, "currentColor", op, t === 0 ? 1.2 : 1);
+      }
+    }
+
+    /* the piece shown, bounded by the two marks it lies between */
+    var P = pieceAt(d, chain);
+    if (d >= 2) {
+      g += line(P.start, s.r0, s.r1, "var(--mas)", ".95", 2.2);
+      g += line(P.start + P.size, s.r0, s.r1, "var(--mas)", ".95", 2.2);
+    }
+
     if (o > 0) {
-      for (k = 0; k <= n; k += 10) {
-        var q = SP(s, s.r0 - 12, a0 + k * cw);
-        g += '<text x="' + q[0].toFixed(1) + '" y="' + (q[1] + 3.5).toFixed(1) + '" font-size="10" ' +
-             'text-anchor="middle" ' + HALO11 + 'fill="currentColor" fill-opacity="' +
-             (.6 * o).toFixed(2) + '" font-family="IBM Plex Mono, monospace">' + k + "</text>";
+      /* under it: its own count, nought to thirty or to sixty */
+      for (k = 0; k <= P.n; k += 10) {
+        x = P.start + k * P.size / P.n;
+        if (x >= lo && x <= hi) g += text(x, s.r0 - 14, k + MARK[d - 1], 10.5, "currentColor", (.65 * o).toFixed(2));
       }
-      if (n % 10) {
-        var qe = SP(s, s.r0 - 12, a0 + n * cw);
-        g += '<text x="' + qe[0].toFixed(1) + '" y="' + (qe[1] + 3.5).toFixed(1) + '" font-size="10" ' +
-             'text-anchor="middle" ' + HALO11 + 'fill="currentColor" fill-opacity="' +
-             (.6 * o).toFixed(2) + '" font-family="IBM Plex Mono, monospace">' + n + "</text>";
+      /* over it: where it sits in the piece it was cut from */
+      if (d >= 2) {
+        var pv = chain[d - 2].hit;
+        g += text(P.start, s.r1 + 13, pv + MARK[d - 2], 12, "var(--mas)", o.toFixed(2), true);
+        g += text(P.start + P.size, s.r1 + 13, (pv + 1) + MARK[d - 2], 12, "var(--mas)", o.toFixed(2), true);
       }
-      var c = SP(s, s.r0 + th * .24, s.mid);
-      g += '<text x="' + c[0].toFixed(1) + '" y="' + (c[1] + 4).toFixed(1) + '" font-size="12.5" ' +
-           'text-anchor="middle" ' + HALO11 + 'fill="var(--mas)" fill-opacity="' + o.toFixed(2) + '"' +
-           (lit ? ' font-weight="700"' : "") + ">" + b.name + " — " + b.holds + "</text>";
+      var nm = SP(s, s.r0 + th * .2, s.mid);
+      g += '<text x="' + nm[0].toFixed(1) + '" y="' + (nm[1] + 4).toFixed(1) + '" font-size="13" ' +
+           'text-anchor="middle" ' + HALO11 + 'fill="var(--mas)" fill-opacity="' + o.toFixed(2) +
+           '" font-weight="700">' + chain[d - 1].name + " — " + chain[d - 1].holds + "</text>";
     }
     return g;
   }
 
-  /* the cell a wedge came out of, joined to the wedge it became */
-  function connector(H, b, s, o) {
-    var cw = H.span / b.n, a0 = H.mid - H.span / 2 + b.hit * cw;
-    var p0 = SP(H, H.r0, a0), p1 = SP(H, H.r0, a0 + cw);
-    var q0 = SP(s, s.r1, s.mid - s.span / 2), q1 = SP(s, s.r1, s.mid + s.span / 2);
-    return '<path d="M ' + xy(p0) + " L " + xy(q0) + " L " + xy(q1) + " L " + xy(p1) + ' Z" ' +
-           'fill="var(--mas)" fill-opacity="' + (.07 * o).toFixed(3) + '" stroke="var(--mas)" ' +
-           'stroke-opacity="' + (.5 * o).toFixed(2) + '" stroke-width="1" stroke-dasharray="4 3"></path>';
-  }
+  var POP = { depth: 0, key: "", p: null, raf: 0, view: null,
+              lift: null, zFrom: null, zTo: null, zStart: 0 };
 
-  var POP = { depth: 0, key: "", starts: [], raf: 0, p: null };
+  /* the window between two depths: its width shrinks at an even rate to the
+     eye, and its middle moves in step, so the piece being entered never leaves
+     the view on the way in */
+  function viewAt(now) {
+    if (!POP.zFrom) return { c: POP.zTo.c, w: POP.zTo.w, u: 1 };
+    var u = Math.min(1, Math.max(0, (now - POP.zStart) / SLAB.zoom));
+    var e = u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+    var a = POP.zFrom, b = POP.zTo;
+    if (Math.abs(a.w - b.w) < 1e-15) return { c: a.c + (b.c - a.c) * e, w: b.w, u: u };
+    var w = Math.exp(Math.log(a.w) * (1 - e) + Math.log(b.w) * e);
+    return { c: b.c + (a.c - b.c) * (w - b.w) / (a.w - b.w), w: w, u: u };
+  }
 
   function popDraw(now) {
     var host = document.getElementById("zmag");
-    if (!host) return;
-    var p = POP.p, chain = pieceChain(p), g = "", busy = false, homes = [], j;
-    for (j = 0; j < POP.depth; j++) {
-      var T = slabHome(j);
-      homes.push(T);
-      var st = POP.starts[j];
-      var t = st === null ? 1 : Math.min(1, Math.max(0, (now - st) / SLAB.ms));
-      if (t < 1) busy = true;
-      if (t <= 0) continue;
-      var e = 1 - Math.pow(1 - t, 3);
-      var S = j === 0 ? ringSource(p) : cellSource(homes[j - 1], chain[j - 1]);
-      var s = lerpSlab(S, T, e);
-      if (j > 0 && e > .5) g += connector(homes[j - 1], chain[j - 1], s, (e - .5) * 2);
-      g += slabMarkup(s, chain[j], e, j === POP.depth - 1);
-    }
-    host.innerHTML = g;
-    POP.raf = busy ? requestAnimationFrame(popDraw) : 0;
+    if (!host || !POP.depth) return;
+    var p = POP.p, chain = pieceChain(p), home = slabHome();
+    var el = POP.lift === null ? 1 : Math.min(1, Math.max(0, (now - POP.lift) / SLAB.ms));
+    var s = el < 1 ? lerpSlab(ringSource(p), home, 1 - Math.pow(1 - el, 3)) : home;
+    var v = viewAt(now);
+    POP.view = { c: v.c, w: v.w };
+    /* the counts are read once it has come to rest */
+    var o = el < 1 ? 0 : (v.u < .85 ? 0 : (v.u - .85) / .15);
+    host.innerHTML = el <= 0 ? "" : wedgeMarkup(s, v, POP.depth, chain, o);
+    POP.raf = (el < 1 || v.u < 1) ? requestAnimationFrame(popDraw) : 0;
   }
 
-  /* Lift out as many pieces as the clause names. A new piece flies out of the
-     one above it; pieces already out stay where they are; and when the place
-     itself moves, everything is simply redrawn where it now stands. */
+  /* Lift the mazal out, or look further into it. The first press brings the
+     wedge out of the ring; each press after narrows the window onto the piece
+     it names, or widens it back out; when the place itself moves, everything
+     is simply redrawn where it now stands. */
   function popTo(depth, p) {
     var key = depth + ":" + p.lon;
     if (key === POP.key) return;
-    var was = POP.depth, fresh = !POP.p || POP.p.lon !== p.lon, now = performance.now(), j;
-    /* a reader who has asked for less motion gets the pieces already in place */
+    var was = POP.depth, fresh = !POP.p || POP.p.lon !== p.lon, now = performance.now();
+    /* a reader who has asked for less motion gets it already in place */
     var still = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    POP.key = key; POP.p = p; POP.depth = depth; POP.starts = [];
-    for (j = 0; j < depth; j++) {
-      if (still || (fresh && was > 0)) POP.starts.push(null);
-      else if (!fresh && j < was) POP.starts.push(null);
-      else POP.starts.push(now + (j - (fresh ? 0 : was)) * SLAB.lag);
-    }
+    POP.key = key; POP.p = p; POP.depth = depth;
     if (POP.raf) cancelAnimationFrame(POP.raf);
     POP.raf = 0;
-    if (!depth) { var h = document.getElementById("zmag"); if (h) h.innerHTML = ""; return; }
+    if (!depth) {
+      POP.view = null; POP.lift = null; POP.zFrom = null;
+      var h = document.getElementById("zmag");
+      if (h) h.innerHTML = "";
+      return;
+    }
+    var chain = pieceChain(p);
+    POP.zTo = windowFor(depth, chain);
+    if (still || (fresh && was > 0)) {
+      POP.lift = null; POP.zFrom = null;
+    } else if (!was) {
+      POP.lift = now;
+      POP.zFrom = depth > 1 ? windowFor(1, chain) : null;
+      POP.zStart = now + SLAB.ms;
+    } else {
+      POP.lift = null;
+      POP.zFrom = POP.view || windowFor(was, chain);
+      POP.zStart = now;
+    }
     popDraw(now);
   }
 
