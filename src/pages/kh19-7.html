@@ -74,11 +74,8 @@
   }
 
   function dials19(v) {
-    var cl = el.corner ? el.corner.querySelectorAll("text") : [];
-    if (cl[0]) cl[0].textContent = "נטיית המעלה";
-    if (el.cMasLbl) el.cMasLbl.textContent = "מעלת הירח";
-    if (el.cMean) el.cMean.textContent = degIncl(v.inclDeg) + " " + (v.inclNorth ? "צפון" : "דרום");
-    if (el.cMas) el.cMas.textContent = formatDms(v.amiti);
+    corner19({ label: "מעלת הירח", value: formatDms(v.amiti) },
+             { label: "נטיית המעלה", value: degIncl(v.inclDeg) + " " + (v.inclNorth ? "צפון" : "דרום") });
   }
 
   function show(n) {

@@ -73,11 +73,8 @@
   function side(north) { return north ? "צפון" : "דרום"; }
 
   function dials19(v) {
-    var cl = el.corner ? el.corner.querySelectorAll("text") : [];
-    if (cl[0]) cl[0].textContent = "מרחק מעל הקו השוה";
-    if (el.cMasLbl) el.cMasLbl.textContent = "רוחב הירח";
-    if (el.cMean) el.cMean.textContent = degIncl(v.distDeg) + " " + side(v.distNorth);
-    if (el.cMas) el.cMas.textContent = degIncl(v.rochavDeg) + " " + side(v.rochavNorth);
+    corner19({ label: "מקום הירח", value: formatDms(v.amiti) },
+             { label: "מרחק מעל הקו השוה", value: degIncl(v.distDeg) + " " + side(v.distNorth) });
   }
 
   function show(n) {

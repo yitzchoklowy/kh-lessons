@@ -35,7 +35,9 @@
       rochav: Math.abs(lat.result), rochavDeg: rochavDeg, rochavNorth: rochavNorth,
       dist: dist.result, distDeg: Math.round(dist.result),
       distNorth: dist.direction === 'north', distStep: dist,
-      bearing: bearingOf(Math.round(dist.result), dist.direction === 'north')
+      bearing: bearingOf(Math.round(dist.result), dist.direction === 'north'),
+      /* the same distance unrounded, + north: where the drawings place it */
+      signed: (incl.direction === 'north' ? 1 : -1) * incl.result + lat.result
     };
   }
 
@@ -46,7 +48,7 @@
   var C19 = {}, C19N = 0;
   function chapter19Cached(n) {
     if (!C19[n]) {
-      if (C19N > 24) { C19 = {}; C19N = 0; }
+      if (C19N > 80) { C19 = {}; C19N = 0; }
       C19[n] = chapter19At(n); C19N++;
     }
     return C19[n];
@@ -459,86 +461,236 @@
 
   // ═══ י״ט:י״ב–ט״ו — where it is seen, and how high ════════════════════
   /* The western sky at the hour of the sighting, as a man standing in it sees:
-     מערב before him, צפון at his right hand, דרום at his left. The moon stands
-     where his three cases put it, and its פגימה — the hollow side — turns as he
-     says it turns. How far it turns, and how high it hangs, are drawn to a
-     scale that is not his; that the one grows with the distance and the other
-     with the length of the קשת is entirely his. */
-  var SK = { w: 520, h: 250, mid: 260, horizon: 196, span: 210 };
+     מערב before him, צפון at his right hand, דרום at his left.
+
+     This is the chapter's instrument, and everything it asks for is on it. The
+     moon stands north or south along the horizon by its distance from the line
+     — the lean of its degree and its own רוחב together, י״ט:י. Its פגימה turns
+     away from due east toward the side he names, and turns further the further
+     it stands off, "ולפי רוב המרחק לפי רוב הנטייה". It hangs as high as its
+     קשת is long, י״ט:ט״ו. Take hold of it and carry it north or south, and the
+     day count is what answers: the page finds the nearest moment when the
+     moon really stood there, and every figure is the engine's for that moment.
+
+     The direction of the turn and that it grows are his; how many degrees it
+     turns by, and how high a degree of קשת hangs, are a scale drawn here, and
+     the drawing says so. */
+  var SK = { w: 560, h: 300, mid: 280, horizon: 226, span: 236, unit: 24 };
+
+  function skX(signed) {
+    var k = Math.max(-1.25, Math.min(1.25, signed / SK.unit));
+    return SK.mid + k * 0.66 * SK.span;
+  }
+  /* degrees and minutes — the קשת is carried to the minute in chapter 17 */
+  function dm19(x) {
+    var d = Math.floor(x + 1e-9), m = Math.round((x - d) * 60);
+    if (m === 60) { d++; m = 0; }
+    return d + "° " + (m < 10 ? "0" : "") + m + "′";
+  }
 
   function skyFigure() {
     var halo = 'paint-order="stroke" stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" ';
-    var g = '<line x1="' + (SK.mid - SK.span) + '" y1="' + SK.horizon + '" x2="' + (SK.mid + SK.span) +
-            '" y2="' + SK.horizon + '" stroke="currentColor" stroke-opacity=".45" stroke-width="2"></line>';
-    g += '<rect x="' + (SK.mid - SK.span) + '" y="' + SK.horizon + '" width="' + (2 * SK.span) +
-         '" height="' + (SK.h - SK.horizon) + '" fill="currentColor" fill-opacity=".05"></rect>';
+    var L = SK.mid - SK.span, R = SK.mid + SK.span, g = "";
+    g += '<rect x="' + L + '" y="' + SK.horizon + '" width="' + (2 * SK.span) + '" height="' +
+         (SK.h - SK.horizon) + '" fill="currentColor" fill-opacity=".05"></rect>' +
+         '<line x1="' + L + '" y1="' + SK.horizon + '" x2="' + R + '" y2="' + SK.horizon +
+         '" stroke="currentColor" stroke-opacity=".45" stroke-width="2"></line>';
+    // how far from the line, in degrees, north to the right and south to the left
+    for (var d = -20; d <= 20; d += 10) {
+      var x = skX(d);
+      g += '<line x1="' + x.toFixed(1) + '" y1="' + SK.horizon + '" x2="' + x.toFixed(1) + '" y2="' +
+           (SK.horizon + (d === 0 ? 9 : 5)) + '" stroke="currentColor" stroke-opacity=".4"></line>' +
+           (d === 0 ? "" : '<text x="' + x.toFixed(1) + '" y="' + (SK.horizon + 17) + '" font-size="10" ' +
+           'text-anchor="middle" fill="currentColor" fill-opacity=".38" ' +
+           'font-family="IBM Plex Mono, monospace">' + Math.abs(d) + "°</text>");
+    }
     [[1, "צפון העולם"], [0, "אמצע מערב"], [-1, "דרום העולם"]].forEach(function (m) {
-      var x = SK.mid + m[0] * SK.span * 0.86;
-      g += '<line x1="' + x + '" y1="' + (SK.horizon - 6) + '" x2="' + x + '" y2="' +
-           (SK.horizon + 6) + '" stroke="currentColor" stroke-opacity=".35"></line>' +
-           '<text x="' + x + '" y="' + (SK.horizon + 22) + '" font-size="13" text-anchor="middle" ' +
-           'fill="currentColor" fill-opacity=".55" direction="rtl">' + m[1] + "</text>";
+      g += '<text x="' + (SK.mid + m[0] * SK.span * 0.86).toFixed(1) + '" y="' + (SK.horizon + 38) +
+           '" font-size="13.5" text-anchor="middle" fill="currentColor" fill-opacity=".6" ' +
+           'direction="rtl">' + m[1] + "</text>";
     });
-    // the moon, drawn as two circles: the lit body, and the shadow that bites it
+    // due east, which is straight up — the sun is beneath the horizon — and the
+    // angle the פגימה turns away from it
+    g += '<line id="sk19Up" stroke="currentColor" stroke-opacity=".3" stroke-dasharray="3 4"></line>' +
+         '<text id="sk19UpL" font-size="11.5" ' + halo + 'text-anchor="middle" fill="currentColor" ' +
+         'fill-opacity=".55" direction="rtl">כנגד מזרח</text>' +
+         '<path id="sk19Arc" fill="none" stroke="var(--mas)" stroke-width="2"></path>';
+    // the moon: the lit body, and the shadow that bites it
     g += '<defs><mask id="sk19Mask">' +
-         '<circle id="sk19Lit" cx="0" cy="0" r="26" fill="#fff"></circle>' +
-         '<circle id="sk19Cut" cx="0" cy="0" r="26" fill="#000"></circle>' +
+         '<circle id="sk19Lit" cx="0" cy="0" r="28" fill="#fff"></circle>' +
+         '<circle id="sk19Cut" cx="0" cy="0" r="28" fill="#000"></circle>' +
          "</mask></defs>" +
-         '<circle id="sk19Disc" cx="0" cy="0" r="26" fill="none" stroke="currentColor" ' +
+         '<circle id="sk19Disc" cx="0" cy="0" r="28" fill="none" stroke="currentColor" ' +
          'stroke-opacity=".18" stroke-dasharray="3 3"></circle>' +
-         '<circle id="sk19Body" cx="0" cy="0" r="26" fill="var(--mean)" mask="url(#sk19Mask)"></circle>' +
-         '<line id="sk19Notch" stroke="var(--mas)" stroke-width="1.6" stroke-dasharray="4 3"></line>' +
-         '<text id="sk19NotchL" font-size="12.5" ' + halo + 'text-anchor="middle" fill="var(--mas)" ' +
+         '<circle id="sk19Body" cx="0" cy="0" r="28" fill="var(--mean)" mask="url(#sk19Mask)"></circle>' +
+         '<line id="sk19Notch" stroke="var(--mas)" stroke-width="1.8" stroke-dasharray="5 3"></line>' +
+         '<text id="sk19NotchL" font-size="13" ' + halo + 'text-anchor="middle" fill="var(--mas)" ' +
          'direction="rtl">פגימה</text>';
+    // how high it hangs, and how far it stands off the line, at its foot
     g += '<line id="sk19Height" stroke="currentColor" stroke-opacity=".3" stroke-dasharray="3 4"></line>' +
          '<text id="sk19HeightL" font-size="12.5" ' + halo + 'text-anchor="middle" ' +
-         'fill="currentColor" fill-opacity=".6" direction="rtl">—</text>';
-    // down in the ground, where the moon never goes and nothing it carries can reach
-    g += '<text x="' + SK.mid + '" y="' + (SK.h - 10) + '" font-size="12" ' +
-         'text-anchor="middle" fill="currentColor" fill-opacity=".45" direction="rtl">' +
-         'לא שלו: שיעור ההטיה והגובה מצוירים</text>';
+         'fill="currentColor" fill-opacity=".7" direction="rtl">—</text>' +
+         '<path id="sk19Foot" fill="var(--mas)"></path>' +
+         '<text id="sk19FootL" font-size="12.5" ' + halo + 'text-anchor="middle" fill="var(--mas)" ' +
+         'direction="rtl">—</text>';
+    g += '<circle id="sk19Grab" class="grab19" r="36" fill="transparent" ' +
+         'style="cursor:grab;touch-action:none"></circle>';
+    g += '<text x="' + SK.mid + '" y="' + (SK.h - 7) + '" font-size="12" text-anchor="middle" ' +
+         'fill="currentColor" fill-opacity=".42" direction="rtl">' +
+         'לא שלו: כמה מעלות ההטיה, וכמה גובה למעלת קשת — מצוירים</text>';
     return '<div class="curve"><svg viewBox="0 0 ' + SK.w + " " + SK.h + '" role="img" ' +
-      'aria-label="The western sky at sunset: west ahead, north to the right, south to the left, with the crescent standing where its distance from the line puts it and its hollow side turned as the halacha says.">' +
-      g + "</svg></div>";
+      'aria-label="The western sky at sunset: west ahead, north to the right, south to the left. The crescent stands off the middle of the west by its distance from the line, turns its hollow side away from due east as far as it stands off, and hangs as high as its arc of vision is long.">' +
+      g + '</svg><div class="sky-read" id="sk19Read"></div></div>';
   }
 
-  /* keshet: his קשת הראייה, from chapter seventeen — how high it hangs. */
-  function markSky(v, keshet) {
+  /* keshet: his קשת הראייה, from chapter seventeen */
+  /* seen: chapter seventeen's own verdict for the night. His question is asked
+     of witnesses, and there are none on a night the moon is not seen — then it
+     is drawn faint, with no height, and the page says so. */
+  function markSky(v, keshet, seen) {
     var body = document.getElementById("sk19Body");
     if (!body) return;
-    var b = v.bearing;
-    /* along the horizon by which of his three cases, and how far by the
-       distance — not his scale, and the drawing says so */
-    var side = b.id === "even" ? 0 : (b.id === "north" ? 1 : -1);      // north is to the right
-    var x = SK.mid + side * Math.min(1, v.distDeg / 24) * SK.span * 0.7;
-    var high = Math.max(0.18, Math.min(1, (keshet || 0) / 14));
-    var y = SK.horizon - 22 - high * 96;
-
-    [["sk19Disc", 0], ["sk19Body", 0], ["sk19Lit", 0]].forEach(function (id) {
-      var e2 = document.getElementById(id[0]);
+    var visible = seen !== false;
+    body.setAttribute("opacity", visible ? "1" : ".28");
+    var s = v.signed, x = skX(s);
+    var high = visible ? Math.max(0.15, Math.min(1, (keshet || 0) / 14)) : 0.3;
+    var y = SK.horizon - 30 - high * 118;
+    ["sk19Disc", "sk19Body", "sk19Lit", "sk19Grab"].forEach(function (id) {
+      var e2 = document.getElementById(id);
       e2.setAttribute("cx", x.toFixed(1)); e2.setAttribute("cy", y.toFixed(1));
     });
-    /* the hollow turns from due east — straight up, as the sun is straight
-       below — toward the side his halacha names, by how far it stands off */
-    var turn = (b.notch === "east" ? 0 : (b.notch === "south" ? -1 : 1)) *
-               Math.min(1, v.distDeg / 24) * 55;
-    var t = (turn - 90) * RAD19;                    // up is east: the sun is beneath
+    /* north of the line the hollow leans toward the south — to the left — and
+       south of it toward the north; how far, by how far it stands off */
+    var turn = -Math.max(-1.25, Math.min(1.25, s / SK.unit)) * 48;
+    var t = (turn - 90) * RAD19, up = -90 * RAD19;
     var cut = document.getElementById("sk19Cut");
-    cut.setAttribute("cx", (x + Math.cos(t) * 15).toFixed(1));
-    cut.setAttribute("cy", (y + Math.sin(t) * 15).toFixed(1));
-    var n = document.getElementById("sk19Notch");
-    n.setAttribute("x1", x.toFixed(1)); n.setAttribute("y1", y.toFixed(1));
-    n.setAttribute("x2", (x + Math.cos(t) * 62).toFixed(1));
-    n.setAttribute("y2", (y + Math.sin(t) * 62).toFixed(1));
-    var nl = document.getElementById("sk19NotchL");
-    nl.setAttribute("x", (x + Math.cos(t) * 78).toFixed(1));
-    nl.setAttribute("y", (y + Math.sin(t) * 78 + 4).toFixed(1));
+    cut.setAttribute("cx", (x + Math.cos(t) * 17).toFixed(1));
+    cut.setAttribute("cy", (y + Math.sin(t) * 17).toFixed(1));
+    seg("sk19Notch", x, y, x + Math.cos(t) * 76, y + Math.sin(t) * 76);
+    at("sk19NotchL", x + Math.cos(t) * 92, y + Math.sin(t) * 92 + 4);
+    seg("sk19Up", x, y - 30, x, y - 80);
+    at("sk19UpL", x + (turn < 0 ? 30 : -30), y - 84);
+    var r = 52, a0 = [x + Math.cos(up) * r, y + Math.sin(up) * r],
+        a1 = [x + Math.cos(t) * r, y + Math.sin(t) * r];
+    document.getElementById("sk19Arc").setAttribute("d", Math.abs(turn) < 1 ? "" :
+      "M " + a0[0].toFixed(1) + " " + a0[1].toFixed(1) + " A " + r + " " + r + " 0 0 " +
+      (turn < 0 ? 0 : 1) + " " + a1[0].toFixed(1) + " " + a1[1].toFixed(1));
 
-    var h = document.getElementById("sk19Height");
-    h.setAttribute("x1", x.toFixed(1)); h.setAttribute("y1", SK.horizon);
-    h.setAttribute("x2", x.toFixed(1)); h.setAttribute("y2", (y + 26).toFixed(1));
-    var hl = document.getElementById("sk19HeightL");
-    hl.setAttribute("x", (x + 34).toFixed(1));
-    hl.setAttribute("y", ((SK.horizon + y) / 2 + 4).toFixed(1));
-    hl.textContent = keshet === undefined ? "—" : "קשת " + degIncl(Math.round(keshet));
+    /* a night nobody sees has no height to show — the verdict and the קשת's
+       own chip already say so — so the height and its label step aside */
+    var hline = document.getElementById("sk19Height"), hl = document.getElementById("sk19HeightL");
+    hline.setAttribute("opacity", visible ? "1" : "0");
+    hl.setAttribute("opacity", visible ? "1" : "0");
+    seg("sk19Height", x, SK.horizon, x, y + 30);
+    at("sk19HeightL", x + (s >= 0 ? -44 : 44), (SK.horizon + y + 30) / 2 + 4);
+    hl.textContent = keshet === undefined ? "—" : "קשת " + dm19(keshet);
+    document.getElementById("sk19Foot").setAttribute("d",
+      "M " + x.toFixed(1) + " " + (SK.horizon - 1) + " l -6 -9 l 12 0 z");
+    var fl = document.getElementById("sk19FootL");
+    at("sk19FootL", x, SK.horizon - 14);
+    fl.textContent = v.distDeg <= 0 ? "על הקו" :
+      degIncl(v.distDeg) + " " + (v.distNorth ? "צפון" : "דרום");
+
+    var read = document.getElementById("sk19Read");
+    if (read) {
+      read.innerHTML =
+        chip("sun", "נטיית מעלתו", degIncl(v.inclDeg) + " " + (v.inclNorth ? "צפון" : "דרום"), "י״ט:ז–ט") +
+        chip("mean", "רוחבו", degIncl(v.rochavDeg) + " " + (v.rochavNorth ? "צפון" : "דרום"), "פרק ט״ז") +
+        chip("mas", "מרחקו מעל הקו השוה", fl.textContent, "י״ט:י") +
+        (keshet === undefined ? "" : chip("ink", "קשת הראייה", visible ? dm19(keshet) : "—", "פרק י״ז"));
+    }
+  }
+  function chip(c, name, val, mark) {
+    return '<span class="c-' + c + '"><small>' + name + " · " + mark + '</small><b dir="ltr">' +
+           val + "</b></span>";
+  }
+  function seg(id, x1, y1, x2, y2) {
+    var l = document.getElementById(id);
+    l.setAttribute("x1", x1.toFixed(1)); l.setAttribute("y1", y1.toFixed(1));
+    l.setAttribute("x2", x2.toFixed(1)); l.setAttribute("y2", y2.toFixed(1));
+  }
+  function at(id, x, y) {
+    var t = document.getElementById(id);
+    t.setAttribute("x", x.toFixed(1)); t.setAttribute("y", y.toFixed(1));
+  }
+
+  /* Rule eight, in the sky — but his question is asked of witnesses, and there
+     are witnesses only on a ליל ראייה. So the hand carries the moon from one
+     such night to another: the page gathers the nights of seeing two years
+     either side, the very nights the instrument's ‹ ליל ראייה › steps through,
+     and goes to the one on which the moon stood nearest to where the hand has
+     put it — the nearest in time, of those that stood equally near. */
+  var LIL19 = null;
+  function lilNights(around) {
+    var d = Math.max(1, Math.round(around));
+    if (LIL19 && LIL19.at === d) return LIL19.list;
+    var days = [], back = d, fwd = d, i;
+    if (isLil(d)) days.push(d);                        // tonight is one of them
+    for (i = 0; i < 24; i++) {
+      var p = prevLil(back);
+      if (!(p >= 0) || p >= back) break;
+      days.push(back = p);
+    }
+    for (i = 0; i < 24; i++) {
+      var q = nextLil(fwd);
+      if (!(q > fwd)) break;
+      days.push(fwd = q);
+    }
+    LIL19 = { at: d, list: days.map(function (n) {
+      return { day: n, signed: chapter19At(n).signed, seen: chapter17At(n).verdict.seen };
+    }) };
+    return LIL19.list;
+  }
+
+  function grabSky() {
+    var h = document.getElementById("sk19Grab");
+    if (!h) return;
+    var svg = h.ownerSVGElement, holding = false, from = 0, nights = [];
+    function want(e) {
+      var b = svg.getBoundingClientRect();
+      var x = (e.clientX - b.left) * SK.w / b.width;
+      return Math.max(-30, Math.min(30, (x - SK.mid) / (0.66 * SK.span) * SK.unit));
+    }
+    h.addEventListener("pointerdown", function (e) {
+      holding = true;
+      playing = false; el.play.textContent = "▶ Turn"; stopRun();
+      from = Math.round(day);
+      nights = lilNights(from);
+      svg.classList.add("dragging");
+      h.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    h.addEventListener("pointermove", function (e) {
+      if (!holding || !nights.length) return;
+      var target = want(e), best = nights[0], cost = Infinity;
+      for (var i = 0; i < nights.length; i++) {
+        /* a night with witnesses outweighs one a few degrees nearer on which
+           nobody sees it — his question is only asked when there is an answer */
+        var c = Math.abs(nights[i].signed - target) + (nights[i].seen ? 0 : 4) +
+                0.002 * Math.abs(nights[i].day - from);
+        if (c < cost) { cost = c; best = nights[i]; }
+      }
+      if (best.day !== day) { day = best.day; drawAt(day); }
+    });
+    function drop() {
+      if (!holding) return;
+      holding = false;
+      svg.classList.remove("dragging");
+      setDay(Math.round(day));
+    }
+    h.addEventListener("pointerup", drop);
+    h.addEventListener("pointercancel", drop);
+  }
+
+  /* The instrument's corner says what this chapter reads off it, and in full
+     light: the view it is borrowed from dims that slot, which is how a figure
+     came to be drawn at a seventh of its strength. The place goes on top. */
+  function corner19(top, bottom) {
+    if (!el.corner) return;
+    var all = el.corner.querySelectorAll("text, circle"), t = el.corner.querySelectorAll("text");
+    for (var i = 0; i < all.length; i++) all[i].classList.remove("dimmed");
+    if (t[0]) t[0].textContent = top.label;
+    if (el.cMean) { el.cMean.classList.remove("dimmed"); el.cMean.textContent = top.value; }
+    if (el.cMasLbl) el.cMasLbl.textContent = bottom.label;
+    if (el.cMas) { el.cMas.classList.remove("dimmed"); el.cMas.textContent = bottom.value; }
   }

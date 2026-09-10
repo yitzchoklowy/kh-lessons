@@ -69,12 +69,9 @@
   /* the instrument's own readouts say what this chapter reads off it */
   function dials19(v) {
     var s = calculateInclination(v.sunTrue);
-    var cl = el.corner ? el.corner.querySelectorAll("text") : [];
-    if (cl[0]) cl[0].textContent = "נטיית מעלת השמש";
-    if (el.cMasLbl) el.cMasLbl.textContent = "מקום השמש";
-    if (el.cMean) el.cMean.textContent = degIncl(Math.round(s.result)) + " " +
-      (s.direction === "north" ? "צפון" : "דרום");
-    if (el.cMas) el.cMas.textContent = formatDms(v.sunTrue);
+    corner19({ label: "מקום השמש", value: formatDms(v.sunTrue) },
+             { label: "נטיית מעלת השמש", value: degIncl(Math.round(s.result)) + " " +
+               (s.direction === "north" ? "צפון" : "דרום") });
     var ds = document.querySelector(".dial.s");
     if (ds) ds.querySelector(".lbl").innerHTML = "<i></i>מקום השמש האמיתי";
   }

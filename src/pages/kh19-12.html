@@ -30,16 +30,17 @@
     <div class="stack first19">
       <div class="verdict" id="verdict" style="--c:var(--mean)"></div>
 
+      <div class="rchart" id="fig" style="--c:var(--mean)">
+        <div class="rc-head"><h4>המערב, בשעת הראייה</h4><span class="rc-ref">י״ט:י–ט״ו</span></div>
+        <div class="sky19" id="sky"></div>
+        <div class="rc-sum" id="ssay"></div>
+        <div class="cases" id="cases"></div>
+      </div>
+
       <div class="rchart" id="wavebox" style="--c:var(--sunc)">
         <div class="rc-head"><h4>מקום הירח, ונטיית מעלתו</h4><span class="rc-ref">י״ט:ז–י</span></div>
         <div id="wave19"></div>
         <div class="rc-sum" id="wsay"></div>
-      </div>
-
-      <div class="rchart" id="fig" style="--c:var(--mean)">
-        <div class="rc-head"><h4>המערב, בשעת הראייה</h4><span class="rc-ref">י״ט:י״ב–ט״ו</span></div>
-        <div class="sky19" id="sky"></div>
-        <div class="cases" id="cases"></div>
       </div>
 
       <div class="book n" id="work">
@@ -151,18 +152,35 @@
                 s: bb.mark, a: "", t: "", drop: true });
     rows.push({ l: "ייראה " + bb.where, s: bb.mark, a: "", t: "", out: true });
     rows.push({ l: bb.says, s: bb.mark, a: "", t: "", drop: true });
+    if (!v17.verdict.seen) {
+      /* no crescent, no witnesses — and a קשת of a night nobody sees is no height */
+      rows.push({ l: "ובליל זה אינו נראה כלל", s: v17.verdict.mark, a: "", t: "", out: true });
+      return rows;
+    }
     rows.push({ l: "קשת הראייה", s: "פרק י״ז", a: "", t: degMin(v17.keshet) });
     rows.push({ l: "וכמה היה גבוה", s: heightOf(v17.keshet) + " · י״ט:ט״ו", a: "", t: "", out: true });
     return rows;
   }
   function L(x) { return '<span dir="ltr">' + x + "</span>"; }
 
-  function dials19(v, keshet) {
-    var cl = el.corner ? el.corner.querySelectorAll("text") : [];
-    if (cl[0]) cl[0].textContent = "מרחק מעל הקו השוה";
-    if (el.cMasLbl) el.cMasLbl.textContent = "קשת הראייה";
-    if (el.cMean) el.cMean.textContent = degIncl(v.distDeg) + " " + side(v.distNorth);
-    if (el.cMas) el.cMas.textContent = degMin(keshet);
+  function dials19(v) {
+    corner19({ label: "מקום הירח", value: formatDms(v.amiti) },
+             { label: "מרחק מעל הקו השוה", value: degIncl(v.distDeg) + " " + side(v.distNorth) });
+  }
+
+  /* the קשת between two whole days, so the moon rises and sinks as it moves;
+     each whole day's is chapter seventeen's own */
+  var K17 = {};
+  function k17(n) {
+    if (K17[n] === undefined) {
+      if (Object.keys(K17).length > 80) K17 = {};
+      K17[n] = chapter17At(n).keshet;
+    }
+    return K17[n];
+  }
+  function keshetLive(d) {
+    var n = Math.floor(d), f = d - n;
+    return f > 0 ? k17(n) + (k17(n + 1) - k17(n)) * f : k17(n);
   }
 
   function show(n) {
@@ -171,8 +189,10 @@
        working below keeps to the whole day */
     var live = chapter19Live(day);
     markInclWave(live);
-    markSky(live, v17.keshet);
-    dials19(v, v17.keshet);
+    markSky(live, keshetLive(day), v17.verdict.seen);
+    dials19(live);
+    document.getElementById("ssay").innerHTML =
+      '<span class="eq">↔ אחוז בירח שבמערב, והוליכהו לצפון או לדרום</span>';
     document.getElementById("wsay").innerHTML =
       "הירח " + live.mazal.ordinalDegree + " ממזל <b>" + live.mazal.hebrew + "</b>" +
       " · נטיית מעלתו <b>" + degIncl(live.inclDeg) + "</b> " + side(live.inclNorth) +
@@ -189,13 +209,17 @@
     markChain(v17, "keshet");
     document.getElementById("hsay").innerHTML =
       "מן האורך הראשון, בתיקוני פרק י״ז, עד <b>קשת הראייה " + degMin(v17.keshet) + "</b>." +
-      '<span class="eq">' + heightOf(v17.keshet) + "</span>";
-    document.getElementById("verdict").innerHTML =
-      "<h3>ליל " + (n === HIS_DAY ? "הראייה, שני לחודש אייר"
-        : '<span dir="ltr">' + n.toLocaleString() + "</span> מן העיקר") + " — מה יאמרו העדים</h3>" +
-      '<span class="say">' + b.where + '</span><span class="mark">' + b.mark + "</span>" +
-      '<span class="why">' + b.says + " · קשת הראייה " + degMin(v17.keshet) + ", " +
-      heightOf(v17.keshet) + "</span>";
+      '<span class="eq">' + (v17.verdict.seen ? heightOf(v17.keshet)
+        : "ובליל זה אינו נראה — " + v17.verdict.mark) + "</span>";
+    var head = "<h3>ליל " + (n === HIS_DAY ? "הראייה, שני לחודש אייר"
+      : '<span dir="ltr">' + n.toLocaleString() + "</span> מן העיקר") + " — מה יאמרו העדים</h3>";
+    document.getElementById("verdict").innerHTML = v17.verdict.seen
+      ? head + '<span class="say">' + b.where + '</span><span class="mark">' + b.mark + "</span>" +
+        '<span class="why">' + b.says + " · קשת הראייה " + degMin(v17.keshet) + ", " +
+        heightOf(v17.keshet) + "</span>"
+      : head + '<span class="say no">אינו נראה בליל זה</span><span class="mark">' +
+        v17.verdict.mark + '</span><span class="why">' + v17.verdict.says +
+        " — ואין כאן עדים לחקור.</span>";
     agree(n, v, v17);
   }
 
@@ -237,6 +261,7 @@
     playing = false;
     if (el.play) el.play.textContent = "▶ Turn";
     document.getElementById("sky").innerHTML = skyFigure();
+    grabSky();
     document.getElementById("chain").innerHTML = chainFigure();
     document.getElementById("wave19").innerHTML = inclWaveFigure(true);
     grabInclWave();
